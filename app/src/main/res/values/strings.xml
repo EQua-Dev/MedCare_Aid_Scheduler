@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">MedCare Aid Scheduler</string>
+    <string name="sign_in_text">Sign In</string>
+    <string name="sign_in_sub_text">Enter Details To Sign In</string>
+    <string name="forgot_password_text">Forgot Password?</string>
+    <string name="forgot_password_sub_text">Enter Registered Email To Reset</string>
+    <string name="reset_password_text">Get Reset Link</string>
+    <string name="houses_title">Houses</string>
+    <string name="staff_title">Staff</string>
+    <string name="shift_title">Shifts</string>
+    <string name="profile_title">Profile</string>
+</resources>

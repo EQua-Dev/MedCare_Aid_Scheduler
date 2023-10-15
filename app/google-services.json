@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "758202707847",
+    "project_id": "medcare-aid-schedule-project",
+    "storage_bucket": "medcare-aid-schedule-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:758202707847:android:2948f7f85da37c0b0a6d22",
+        "android_client_info": {
+          "package_name": "org.devstrike.app.medcareaidscheduler"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwixyi6a8SsL5TAmFP-Ldiv2QKlwmos-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
