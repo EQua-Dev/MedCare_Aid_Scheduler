@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import org.devstrike.app.medcareaidscheduler.ui.AppSplashScreen
 import org.devstrike.app.medcareaidscheduler.ui.auth.ResetPassword
 import org.devstrike.app.medcareaidscheduler.ui.auth.SignIn
+import org.devstrike.app.medcareaidscheduler.ui.staff.StaffHome
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorHome
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorHouses
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorProfile
@@ -41,6 +42,11 @@ fun SetupNavGraph(navController: NavHostController) {
             route = Screen.SupervisorLanding.route
         ){
             SupervisorHome(baseNavHostController = navController)
+        }
+        composable(
+            route = Screen.StaffLanding.route
+        ){
+            StaffHome(baseNavHostController = navController)
         }
     }
 }

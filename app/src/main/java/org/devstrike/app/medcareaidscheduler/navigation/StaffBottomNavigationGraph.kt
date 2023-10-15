@@ -11,13 +11,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import org.devstrike.app.medcareaidscheduler.data.BottomBarScreen
+import org.devstrike.app.medcareaidscheduler.ui.staff.StaffNotifications
+import org.devstrike.app.medcareaidscheduler.ui.staff.StaffPayments
+import org.devstrike.app.medcareaidscheduler.ui.staff.StaffProfile
+import org.devstrike.app.medcareaidscheduler.ui.staff.StaffShifts
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorHouses
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorProfile
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorShifts
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorStaff
 
 @Composable
-fun SupervisorBottomNavigationGraph(navController: NavHostController) {
+fun StaffBottomNavigationGraph(navController: NavHostController) {
 //    NavHost(navController = navController, startDestination = Screen.SupervisorHouses.route) {
 //        composable(
 //            route = Screen.SupervisorHouses.route
@@ -40,26 +44,26 @@ fun SupervisorBottomNavigationGraph(navController: NavHostController) {
 //            SupervisorProfile(navController = navController)
 //        }
 //    }
- NavHost(navController = navController, startDestination = BottomBarScreen.SupervisorHouses.route) {
+ NavHost(navController = navController, startDestination = BottomBarScreen.StaffShifts.route) {
         composable(
-            route = BottomBarScreen.SupervisorHouses.route
+            route = BottomBarScreen.StaffShifts.route
         ) {
-            SupervisorHouses(navController = navController)
+            StaffShifts(navController = navController)
         }
         composable(
-            route = BottomBarScreen.SupervisorStaff.route
+            route = BottomBarScreen.StaffNotifications.route
         ) {
-            SupervisorStaff(navController = navController)
+            StaffNotifications(navController = navController)
         }
         composable(
-            route = BottomBarScreen.SupervisorShifts.route
+            route = BottomBarScreen.StaffPayments.route
         ) {
-            SupervisorShifts(navController = navController)
+            StaffPayments(navController = navController)
         }
         composable(
-            route = BottomBarScreen.SupervisorProfile.route
+            route = BottomBarScreen.StaffProfile.route
         ) {
-            SupervisorProfile(navController = navController)
+            StaffProfile(navController = navController)
         }
     }
 

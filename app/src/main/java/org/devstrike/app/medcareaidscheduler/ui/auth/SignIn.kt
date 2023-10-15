@@ -98,7 +98,11 @@ fun SignIn(navController: NavHostController) {
 
         ButtonComponent(onClick = {
             Log.d("TAG", "SignIn: ")
-            navController.navigate(Screen.SupervisorLanding.route)
+            when (email.value) {
+                "Staff" -> navController.navigate(Screen.StaffLanding.route)
+                "Supervisor" -> navController.navigate(Screen.SupervisorLanding.route)
+                else -> context.toast("User Invalid")
+            }
         }, buttonText = stringResource(id = R.string.sign_in_text))
 
 

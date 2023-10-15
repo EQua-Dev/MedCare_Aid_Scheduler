@@ -9,4 +9,7 @@
     <string name="staff_title">Staff</string>
     <string name="shift_title">Shifts</string>
     <string name="profile_title">Profile</string>
+    <string name="search_icon_content_description">Search</string>
+    <string name="clear_text_content_description">Clear Text</string>
+    <string name="search_placeholder">search</string>
 </resources>

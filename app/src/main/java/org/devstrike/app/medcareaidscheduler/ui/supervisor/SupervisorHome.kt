@@ -6,37 +6,21 @@
 
 package org.devstrike.app.medcareaidscheduler.ui.supervisor
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.data.BottomBarScreen
-import org.devstrike.app.medcareaidscheduler.data.BottomNavigationScreen
-import org.devstrike.app.medcareaidscheduler.navigation.Screen
 import org.devstrike.app.medcareaidscheduler.navigation.SupervisorBottomNavigationGraph
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +31,9 @@ fun SupervisorHome(baseNavHostController: NavHostController) {
 
     Scaffold(bottomBar = {
         BottomBar(navController = navController)
+    }, topBar = {
+
+        Text(text = "Supervisor Top Bar")
     }) {
         SupervisorBottomNavigationGraph(navController = navController)
     }
@@ -111,7 +98,7 @@ fun SupervisorHome(baseNavHostController: NavHostController) {
 //        mutableIntStateOf(0)
 //    }
 //
-//    Surface(modifier = Modifier.fillMaxSize()) {
+//
 //        Scaffold(
 //            bottomBar = {
 //                NavigationBar {
@@ -150,18 +137,16 @@ fun SupervisorHome(baseNavHostController: NavHostController) {
 //            Box(modifier = Modifier.padding(it))
 //
 //        }
-//    }
-
 
 }
 
 @Composable
 fun BottomBar(navController: NavHostController) {
     val screens = listOf(
-        BottomBarScreen.Houses,
-        BottomBarScreen.Staff,
-        BottomBarScreen.Shifts,
-        BottomBarScreen.Profile,
+        BottomBarScreen.SupervisorHouses,
+        BottomBarScreen.SupervisorStaff,
+        BottomBarScreen.SupervisorShifts,
+        BottomBarScreen.SupervisorProfile,
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
