@@ -12,12 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.devstrike.app.medcareaidscheduler.navigation.SetupNavGraph
 import org.devstrike.app.medcareaidscheduler.ui.auth.SignIn
 import org.devstrike.app.medcareaidscheduler.ui.theme.MedCareAidSchedulerTheme
+import org.devstrike.app.medcareaidscheduler.utils.SessionManager
 
 class MainActivity : ComponentActivity() {
     lateinit var navController: NavHostController
+    val sessionManager = SessionManager(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +35,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
                     MedCareAidSchedulerApp{
                         navController = rememberNavController()
                         SetupNavGraph(navController = navController)

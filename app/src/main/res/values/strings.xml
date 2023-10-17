@@ -12,4 +12,5 @@
     <string name="search_icon_content_description">Search</string>
     <string name="clear_text_content_description">Clear Text</string>
     <string name="search_placeholder">search</string>
+    <string name="invalid_email">Invalid Email or Password</string>
 </resources>

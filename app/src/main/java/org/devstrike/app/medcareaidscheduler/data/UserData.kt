@@ -11,5 +11,6 @@ data class UserData(
     val userBankName: String = "",
     val userBankAccountNumber: String = "",
     val userAddress: String = "",
-    val userGender: String = ""
+    val userGender: String = "",
+    val userChangedPassword: Boolean = false
 )
