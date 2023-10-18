@@ -46,8 +46,9 @@ fun TextFieldComponent(
     label: String = "",
     keyboardOptions: KeyboardOptions = KeyboardOptions(),
     keyboardActions: KeyboardActions = KeyboardActions(),
-    leadingIcon: Int = R.drawable.ic_medical_services,
-    inputType: String = ""
+    leadingIcon: Int? = null,
+    inputType: String = "",
+    enabled: Boolean = true
 ) {
 
     var isPasswordVisible by remember { mutableStateOf(true) }
@@ -58,13 +59,13 @@ fun TextFieldComponent(
         label = { Text(text = label) },
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(2.dp),
         shape = RoundedCornerShape(4.dp),
         visualTransformation = if (isPasswordVisible && inputType == PASSWORD_INPUT_TYPE)  PasswordVisualTransformation() else VisualTransformation.None,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color.Gray,
             unfocusedBorderColor = Color.LightGray
-        ),
+        ),enabled = enabled,
         trailingIcon = {
             if (inputType == PASSWORD_INPUT_TYPE) {
                 IconButton(
@@ -82,10 +83,13 @@ fun TextFieldComponent(
             }
         },
         leadingIcon = {
+            leadingIcon?.let {
                 Image(
-                painter = painterResource(leadingIcon),
-                contentDescription = "Toggle Password Visibility",
-            )
+                    painter = painterResource(it),
+                    contentDescription = "Toggle Password Visibility",
+                )
+            }
+
         },
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions

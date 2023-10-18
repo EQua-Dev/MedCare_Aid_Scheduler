@@ -4,7 +4,7 @@
  * Under the authority of Devstrike Digital Limited
  */
 
-package org.devstrike.app.medcareaidscheduler.ui.supervisor
+package org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,13 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
-import org.devstrike.app.medcareaidscheduler.navigation.Screen
 
 @Composable
-fun SupervisorStaff(navController: NavHostController) {
-    Box(modifier = Modifier.fillMaxSize().background(Color.Magenta), contentAlignment = Alignment.Center){
+fun SupervisorProfile(navController: NavHostController) {
 
-        Text(text = "Supervisor Staff")
+    Box(modifier = Modifier.fillMaxSize().background(Color.Blue), contentAlignment = Alignment.Center){
+
+        Text(text = "Supervisor Profile")
     }
 
 }

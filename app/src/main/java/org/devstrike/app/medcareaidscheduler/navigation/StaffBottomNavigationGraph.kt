@@ -15,10 +15,6 @@ import org.devstrike.app.medcareaidscheduler.ui.staff.StaffNotifications
 import org.devstrike.app.medcareaidscheduler.ui.staff.StaffPayments
 import org.devstrike.app.medcareaidscheduler.ui.staff.StaffProfile
 import org.devstrike.app.medcareaidscheduler.ui.staff.StaffShifts
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorHouses
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorProfile
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorShifts
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorStaff
 
 @Composable
 fun StaffBottomNavigationGraph(navController: NavHostController) {

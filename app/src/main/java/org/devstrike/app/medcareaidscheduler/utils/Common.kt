@@ -21,7 +21,21 @@ object Common {
     const val SUPERVISOR_ROLE = "supervisor"
 
     private const val USER_REF = "UserData"
+    private const val PROVINCE_REF = "Province Data"
+    private const val STAFF_REF = "Staff Data"
+    private const val SHIFT_REF = "Shift Data"
+    private const val HOUSES_REF = "Houses Data"
+    private const val PAYMENTS_REF = "Payments Data"
+    private const val NOTIFICATION_REF = "Notifications Data"
+    private const val ASSIGNED_SHIFT_REF = "Assigned Shifts Data"
 
 
     val userCollectionRef = Firebase.firestore.collection(USER_REF)
+    val provinceCollectionRef = Firebase.firestore.collection(PROVINCE_REF)
+    val staffCollectionRef = Firebase.firestore.collection(STAFF_REF)
+    val shiftCollectionRef = Firebase.firestore.collection(SHIFT_REF)
+    val housesCollectionRef = Firebase.firestore.collection(HOUSES_REF)
+    val paymentsCollectionRef = Firebase.firestore.collection(PAYMENTS_REF)
+    val notificationsCollectionRef = Firebase.firestore.collection(NOTIFICATION_REF)
+    val assignedShiftsCollectionRef = Firebase.firestore.collection(ASSIGNED_SHIFT_REF)
 }

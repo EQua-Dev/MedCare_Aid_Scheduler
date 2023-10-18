@@ -15,10 +15,6 @@ import org.devstrike.app.medcareaidscheduler.ui.auth.ResetPassword
 import org.devstrike.app.medcareaidscheduler.ui.auth.SignIn
 import org.devstrike.app.medcareaidscheduler.ui.staff.StaffHome
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorHome
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorHouses
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorProfile
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorShifts
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorStaff
 
 @Composable
 fun SetupNavGraph(navController: NavHostController) {

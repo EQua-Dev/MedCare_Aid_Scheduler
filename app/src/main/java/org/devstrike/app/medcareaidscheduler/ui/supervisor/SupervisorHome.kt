@@ -17,7 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.devstrike.app.medcareaidscheduler.data.BottomBarScreen
@@ -34,7 +36,7 @@ fun SupervisorHome(baseNavHostController: NavHostController) {
     }, topBar = {
 
         Text(text = "Supervisor Top Bar")
-    }) {
+    }) {innerPadding ->
         SupervisorBottomNavigationGraph(navController = navController)
     }
 
@@ -176,6 +178,10 @@ fun RowScope.AddItem(
         label = {
             Text(text = screen.title)
         },
-        onClick = { navController.navigate(screen.route) },
-        icon = { Icon(imageVector = screen.icon, contentDescription = screen.title) })
+        onClick = { navController.navigate(screen.route){
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            }},
+                icon = { Icon(imageVector = screen.icon, contentDescription = screen.title) })
 }

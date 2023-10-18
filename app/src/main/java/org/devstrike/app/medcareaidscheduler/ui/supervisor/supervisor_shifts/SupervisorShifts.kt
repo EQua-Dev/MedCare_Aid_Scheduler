@@ -4,7 +4,7 @@
  * Under the authority of Devstrike Digital Limited
  */
 
-package org.devstrike.app.medcareaidscheduler.ui.supervisor
+package org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_shifts
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

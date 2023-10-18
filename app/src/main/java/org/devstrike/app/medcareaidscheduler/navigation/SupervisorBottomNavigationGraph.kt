@@ -11,10 +11,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import org.devstrike.app.medcareaidscheduler.data.BottomBarScreen
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorHouses
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorProfile
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorShifts
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorStaff
+import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_houses.SupervisorHouses
+import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_profile.SupervisorProfile
+import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_shifts.SupervisorShifts
+import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_staff.SupervisorStaff
 
 @Composable
 fun SupervisorBottomNavigationGraph(navController: NavHostController) {

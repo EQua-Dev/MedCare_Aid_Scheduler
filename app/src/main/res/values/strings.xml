@@ -13,4 +13,6 @@
     <string name="clear_text_content_description">Clear Text</string>
     <string name="search_placeholder">search</string>
     <string name="invalid_email">Invalid Email or Password</string>
+    <string name="no_of_patients_text">No of Clients</string>
+    <string name="names_of_patients_title">Name of Patients</string>
 </resources>
