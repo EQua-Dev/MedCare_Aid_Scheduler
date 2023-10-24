@@ -15,6 +15,7 @@ import org.devstrike.app.medcareaidscheduler.ui.auth.ResetPassword
 import org.devstrike.app.medcareaidscheduler.ui.auth.SignIn
 import org.devstrike.app.medcareaidscheduler.ui.staff.StaffHome
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.SupervisorHome
+import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_houses.SupervisorAddHouseSheet
 
 @Composable
 fun SetupNavGraph(navController: NavHostController) {
@@ -43,6 +44,9 @@ fun SetupNavGraph(navController: NavHostController) {
             route = Screen.StaffLanding.route
         ){
             StaffHome(baseNavHostController = navController)
+        }
+        composable(route = Screen.AddNewHouse.route){
+            SupervisorAddHouseSheet(navController = navController)
         }
     }
 }

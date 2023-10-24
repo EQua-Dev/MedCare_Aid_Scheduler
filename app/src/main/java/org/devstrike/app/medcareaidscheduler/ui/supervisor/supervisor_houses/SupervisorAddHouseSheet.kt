@@ -9,6 +9,7 @@ package org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_houses
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,33 +17,44 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.components.ButtonComponent
 import org.devstrike.app.medcareaidscheduler.components.FloatActionButton
@@ -55,17 +67,21 @@ import org.devstrike.app.medcareaidscheduler.data.UserData
 import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.Common.auth
 import org.devstrike.app.medcareaidscheduler.utils.toast
+import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
+import org.devstrike.app.medcareaidscheduler.utils.Common.housesCollectionRef
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 //@Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun SupervisorAddHouseSheet(/*house: House*/) {
+fun SupervisorAddHouseSheet(house: House = House(), onClose: () -> Unit = {}, navController: NavHostController) {
     val context = LocalContext.current
+    val TAG = "SupervisorAddHouseSheet"
     val houseName: MutableState<String> = remember { mutableStateOf("") }
     val houseAddress: MutableState<String> = remember { mutableStateOf("") }
     val houseDistrict: MutableState<String> = remember { mutableStateOf("") }
     val houseProvince: MutableState<String> = remember { mutableStateOf("") }
-    val houseNoOfClients: MutableState<Int> = remember { mutableStateOf(1) }
+    val houseNoOfClients: MutableState<Int> = remember { mutableIntStateOf(1) }
     val houseID: MutableState<String> = remember { mutableStateOf("") }
     val houseIsSpecialCare: MutableState<Boolean> = remember { mutableStateOf(false) }
     val houseSpecialCareType: MutableState<String> = remember { mutableStateOf("") }
@@ -94,8 +110,25 @@ fun SupervisorAddHouseSheet(/*house: House*/) {
     val provinceInfo = getProvince(userInfo.userProvinceID, context)!!
 
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+//
+//    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//
+//    }
+
+
+    Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
+        if (isTaskRunning.value) {
+            CircularProgressIndicator(modifier = Modifier.size(48.dp))
+        }
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+
+            Text(
+                text = "Add House",
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth().padding(4.dp),
+                textAlign = TextAlign.Center,
+                style = Typography.titleLarge,
+            )
             TextFieldComponent(
                 value = houseName.value,
                 onValueChange = { houseName.value = it },
@@ -149,24 +182,27 @@ fun SupervisorAddHouseSheet(/*house: House*/) {
                 text = stringResource(id = R.string.no_of_patients_text),
                 fontWeight = FontWeight.Bold
             )
-            Row(modifier = Modifier.padding(4.dp)) {
+            Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 PlainFloatActionButton(
                     modifier = Modifier
                         .size(12.dp)
-                        .clickable {
-                            if (houseNoOfClients.value > 1)
-                                houseNoOfClients.value = houseNoOfClients.value - 1
-                            else
-                                houseNoOfClients.value = houseNoOfClients.value
-                        }, fabText = "-"
+                        , fabText = "-", onClick = {
+                        if (houseNoOfClients.value > 1)
+                            houseNoOfClients.value = houseNoOfClients.value - 1
+                        else
+                            houseNoOfClients.value = houseNoOfClients.value
+
+                        Log.d(TAG, "SupervisorAddHouseSheet: ${houseNoOfClients.value}")
+                    }
                 )
                 Text(text = houseNoOfClients.value.toString())
                 PlainFloatActionButton(
                     modifier = Modifier
                         .size(48.dp)
-                        .clickable {
-                            houseNoOfClients.value = houseNoOfClients.value + 1
-                        }, fabText = "+"
+                        , fabText = "+", onClick = {
+                        houseNoOfClients.value = houseNoOfClients.value + 1
+
+                    }
                 )
             }
 
@@ -204,18 +240,18 @@ fun SupervisorAddHouseSheet(/*house: House*/) {
             )
 
             TextFieldComponent(
-                value = houseContactPerson.value,
-                onValueChange = { houseContactPerson.value = it },
+                value = houseContactNumber.value,
+                onValueChange = { houseContactNumber.value = it },
                 label = "House Contact Number",
                 keyboardOptions = KeyboardOptions.Default.copy(
                     autoCorrect = false,
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
                 ),
-                inputType = "House Contact Person Name",
+                inputType = "House Contact Number",
             )
 
-            Row(modifier = Modifier.padding(4.dp)) {
+            Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = houseIs3rdParty.value,
                     onCheckedChange = { isChecked -> houseIs3rdParty.value = isChecked }
@@ -241,7 +277,7 @@ fun SupervisorAddHouseSheet(/*house: House*/) {
                 }
             }
 
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 TextFieldComponent(
                     value = currentPatientName.value,
                     onValueChange = { currentPatientName.value = it },
@@ -253,19 +289,22 @@ fun SupervisorAddHouseSheet(/*house: House*/) {
                         imeAction = ImeAction.Next
                     ),
                     inputType = "House Patient Name",
-                    modifier = Modifier.fillMaxWidth(0.8f)
+                    modifier = Modifier.fillMaxWidth(0.7f)
                 )
 
-                PlainFloatActionButton(
-                    fabText = "Add", onClick = {
-                        if (currentPatientName.value.isNotBlank()) {
-                            houseNameOfPatients.add(currentPatientName.value)
-                            currentPatientName.value = ""
-                        } else {
-                            context.toast("House is 3rd party")
-                        }
+                ButtonComponent(buttonText = "Add", modifier = Modifier.weight(0.3F), onClick = {
+                    if (currentPatientName.value.isNotBlank()) {
+                        houseNameOfPatients.add(currentPatientName.value)
+                        currentPatientName.value = ""
+                    } else {
+                        context.toast("House is 3rd party")
                     }
-                )
+                })
+//                PlainFloatActionButton(
+//                    fabText = "Add", onClick = {
+//
+//                    }
+//                )
 
             }
 
@@ -282,25 +321,71 @@ fun SupervisorAddHouseSheet(/*house: House*/) {
             )
 
             ButtonComponent(buttonText = "Add House", onClick = {
-                if (validateNewHouseInputs(
-                        houseName.value,
-                        houseAddress.value,
-                        houseDistrict.value,
-                        houseProvince.value,
-                        houseNoOfClients.value,
-                        houseIsSpecialCare.value,
-                        houseSpecialCareType.value,
-                        houseContactPerson.value,
-                        houseContactNumber.value,
-                        houseNameOfPatients,
-                        houseNecessaryInformation.value,
-                    )
-                ) {
-                    //save new house
-                } else {
-                    context.toast("Fill out all fields")
+                if (houseName.value.isEmpty()){
+                    context.toast("House name cannot be empty")
                 }
+                if (houseAddress.value.isEmpty()){
+                    context.toast("House address cannot be empty")
+                }
+                if (houseDistrict.value.isEmpty()){
+                    context.toast("House district cannot be empty")
+                }
+                if (houseIsSpecialCare.value && houseSpecialCareType.value.isEmpty()){
+                    context.toast("House special care type cannot be empty")
+                }
+                if (houseContactPerson.value.isEmpty()){
+                    context.toast("House contact person name cannot be empty")
+                }
+                if (houseContactNumber.value.length != 10){
+                    context.toast("Enter a valid phone number")
+                }
+                else{
+                    val newHouse = House(
+                        houseName = houseName.value,
+                                houseAddress = houseAddress.value,
+                                houseDistrict = houseDistrict.value,
+                                houseProvince = provinceInfo.provinceID,
+                                houseNoOfClients = houseNoOfClients.value.toString(),
+                                houseID = System.currentTimeMillis().toString(),
+                                houseIsSpecialCare = houseIsSpecialCare.value,
+                                houseSpecialCareType = houseSpecialCareType.value,
+                                houseContactPerson = houseContactPerson.value,
+                                houseContactNumber = houseContactNumber.value,
+                                houseIs3rdParty = houseIs3rdParty.value,
+                                houseNameOfPatients = houseNameOfPatients,
+                                houseNecessaryInformation = houseNecessaryInformation.value,
+                                houseDateAdded = System.currentTimeMillis().toString(),
+                                houseAddingSupervisor = userInfo.userID,
+                    )
+                    CoroutineScope(Dispatchers.IO).launch {
+                        isTaskRunning.value = true
+                        try {
+                            //val appointmentQuery = Common.facilityCollectionRef.whereEqualTo("facilityId", facility.facilityId).get().await()
+                            housesCollectionRef.document(newHouse.houseID).set(newHouse).addOnCompleteListener {
+                                isTaskRunning.value = false
+                                context.toast("House Saved")
+//                                withContext(Dispatchers.Main){
+                                    navController.popBackStack()
+
+//                                }
+
+                            }
+                                .addOnFailureListener { e->
+                                    isTaskRunning.value = false
+                                    context.toast(e.message.toString())
+
+                                }
+                        } catch (e: Exception) {
+                            context.toast(e.message.toString())
+                        }
+                    }
+                    //save house
+
+                }
+//
             })
+
+            Spacer(modifier = Modifier.height(64.dp))
 
 
         }
@@ -329,9 +414,9 @@ fun validateNewHouseInputs(
     if (houseDistrict.isBlank()) {
         return false
     }
-    if (houseProvince.isBlank()) {
-        return false
-    }
+//    if (houseProvince.isBlank()) {
+//        return false
+//    }
     if (houseNoOfClients < 1) {
         return false
     }

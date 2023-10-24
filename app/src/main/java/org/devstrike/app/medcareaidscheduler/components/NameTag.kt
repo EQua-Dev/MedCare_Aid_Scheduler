@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
@@ -33,15 +34,14 @@ fun NameTag(name: String, onDeleteClick: () -> Unit = {}) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth()
-            .height(100.dp),
+            .height(24.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
         ), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = name, color = Color.White, fontWeight = FontWeight.Bold, style = Typography.bodySmall)
-            IconButton(onClick = onDeleteClick) {
+            IconButton(onClick = { onDeleteClick() }) {
                 Icon(Icons.Default.Close, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)            }
         }
     }

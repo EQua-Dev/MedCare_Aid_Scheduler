@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,7 +50,17 @@ fun SupervisorHouses(navController: NavHostController) {
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState()
 
+
     var isNewHouseClicked by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var isNewStaffClicked by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+
+    var showModal by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -61,8 +72,13 @@ fun SupervisorHouses(navController: NavHostController) {
 //                isNewHouseClicked = true
                     context.toast("Add House Clicked!")
                 },
-                fabText = "Add House", addNewHouse = true, addNewStaff = false)
-                /*addScreen = SupervisorAddHouseSheet(), showSheet = isNewHouseClicked*/
+                fabText = "Add House", onClick = {
+                    navController.navigate(Screen.AddNewHouse.route)
+//                    showModal = true
+//                    isNewHouseClicked = true
+                }
+            )
+            /*addScreen = SupervisorAddHouseSheet(), showSheet = isNewHouseClicked*/
             //)
         },
         floatingActionButtonPosition = FabPosition.End,
@@ -84,7 +100,26 @@ fun SupervisorHouses(navController: NavHostController) {
             }
         }
 
-
+//
+//        if (showModal) {
+//            ModalBottomSheet(
+//                sheetState = sheetState,
+//                onDismissRequest = { showModal = false }) {
+//                Column(
+//                    Modifier
+//                        .fillMaxWidth()
+//                        .padding(8.dp),
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    if (isNewHouseClicked)
+//                        SupervisorAddHouseSheet(onClose = {
+//                            showModal = false
+//                        })
+//                    else if (isNewStaffClicked)
+//                        context.toast("Add New Staff!")
+//                }
+//            }
+//        }
     }
 }
 

@@ -11,6 +11,7 @@ sealed class Screen(val route: String){
     object SignIn: Screen(route = "sign_in_screen")
     object ForgotPassword: Screen(route = "forgot_password_screen")
     object SupervisorLanding: Screen(route = "supervisor_landing_screen")
+    object AddNewHouse: Screen(route = "add_new_house_screen")
     object StaffLanding: Screen(route = "staff_landing_screen")
     object SupervisorHouses: Screen(route = "supervisor_houses_screen")
     object SupervisorStaff: Screen(route = "supervisor_staff_screen")

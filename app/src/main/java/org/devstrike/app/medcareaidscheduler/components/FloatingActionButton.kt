@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
@@ -47,28 +48,27 @@ import org.devstrike.app.medcareaidscheduler.utils.toast
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FloatActionButton(
-    modifier: Modifier = Modifier, fabText: String = "", addNewHouse: Boolean, addNewStaff: Boolean
-) {
+    modifier: Modifier = Modifier, fabText: String = ""/*, addNewHouse: () -> Unit = {}, addNewStaff: () -> Unit = {}
+*/, onClick: () -> Unit) {
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState()
 
-    var isNewHouseClicked by rememberSaveable {
-        mutableStateOf(addNewHouse)
-    }
+//    var isNewHouseClicked by rememberSaveable {
+//        mutableStateOf(addNewHouse)
+//    }
+//
+//    var isNewStaffClicked by rememberSaveable {
+//        mutableStateOf(addNewStaff)
+//    }
 
-    var isNewStaffClicked by rememberSaveable {
-        mutableStateOf(addNewStaff)
-    }
-    var showModal by rememberSaveable {
-        mutableStateOf(false)
-    }
 
     ExtendedFloatingActionButton(shape = MaterialTheme.shapes.large.copy(CornerSize(percent = 30)),
         containerColor = MaterialTheme.colorScheme.secondary,
         contentColor = Color.White,
         onClick = {
             context.toast("Fab clicked")
-            showModal = true
+            onClick()
+//            showModal = true
 //            isNewHouseClicked = true
 
         }, modifier = Modifier.offset(y = (-88).dp)
@@ -78,23 +78,6 @@ fun FloatActionButton(
 
     }
 
-    if (showModal) {
-        ModalBottomSheet(
-            sheetState = sheetState,
-            onDismissRequest = { showModal = false }) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (isNewHouseClicked)
-                    SupervisorAddHouseSheet()
-                else if (isNewStaffClicked)
-                    context.toast("Add New Staff!")
-            }
-        }
-    }
 
 }
 
@@ -117,11 +100,11 @@ fun PlainFloatActionButton(
         containerColor = MaterialTheme.colorScheme.secondary,
         contentColor = Color.White,
         onClick = {
-            onClick
+            onClick()
 //            context.toast("Fab clicked")
 //            isNewEventClicked = true
 
-        }) {
+        }, modifier = Modifier.size(24.dp)) {
         Text(text = fabText, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
     }
 

@@ -41,12 +41,26 @@ fun SupervisorStaff(navController: NavHostController) {
     var isItemClicked = false
     val TAG = "SupervisorHouses"
 
+
+
+    var isNewStaffClicked by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+
+    var showModal by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     val scope = rememberCoroutineScope()
     Scaffold(
         floatingActionButton = {
             FloatActionButton(modifier = Modifier.clickable {
 //            isNewConnectClicked = true
-            }, fabText = "Add Staff", addNewHouse = false, addNewStaff = true)
+            }, fabText = "Add Staff", onClick = {
+                showModal = true
+                isNewStaffClicked = true
+            })
         },
         floatingActionButtonPosition = FabPosition.End,
     ) {
@@ -57,7 +71,11 @@ fun SupervisorStaff(navController: NavHostController) {
         Column(modifier = Modifier.padding(it)) {
             //search bar
             //list of cards
-            Box(modifier = Modifier.fillMaxSize().background(Color.Magenta), contentAlignment = Alignment.Center){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Magenta), contentAlignment = Alignment.Center
+            ) {
 
                 Text(text = "Supervisor Staff")
             }
