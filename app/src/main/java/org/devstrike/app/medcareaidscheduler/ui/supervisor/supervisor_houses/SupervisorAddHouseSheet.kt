@@ -69,6 +69,8 @@ import org.devstrike.app.medcareaidscheduler.utils.Common.auth
 import org.devstrike.app.medcareaidscheduler.utils.toast
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common.housesCollectionRef
+import org.devstrike.app.medcareaidscheduler.utils.getProvince
+import org.devstrike.app.medcareaidscheduler.utils.getUser
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -434,42 +436,5 @@ fun validateNewHouseInputs(
 
 }
 
-private fun getUser(userId: String, context: Context): UserData? {
-    val deferred = CoroutineScope(Dispatchers.IO).async {
-        try {
-            val snapshot = Common.userCollectionRef.document(userId).get().await()
-            if (snapshot.exists()) {
-                return@async snapshot.toObject(UserData::class.java)
-            } else {
-                return@async null
-            }
-        } catch (e: Exception) {
-            Handler(Looper.getMainLooper()).post {
-                context.toast(e.message.toString())
-            }
-            return@async null
-        }
-    }
 
-    return runBlocking { deferred.await() }
-}
 
-private fun getProvince(provinceId: String, context: Context): Province? {
-    val deferred = CoroutineScope(Dispatchers.IO).async {
-        try {
-            val snapshot = Common.provinceCollectionRef.document(provinceId).get().await()
-            if (snapshot.exists()) {
-                return@async snapshot.toObject(Province::class.java)
-            } else {
-                return@async null
-            }
-        } catch (e: Exception) {
-            Handler(Looper.getMainLooper()).post {
-                context.toast(e.message.toString())
-            }
-            return@async null
-        }
-    }
-
-    return runBlocking { deferred.await() }
-}

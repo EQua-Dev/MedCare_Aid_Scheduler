@@ -107,7 +107,8 @@ fun SignIn(navController: NavHostController) {
                 imeAction = ImeAction.Next
             ),
             inputType = "Email",
-            leadingIcon = R.drawable.ic_email
+            leadingIcon = R.drawable.ic_email,
+            modifier = Modifier.padding(8.dp)
         )
 
         TextFieldComponent(
