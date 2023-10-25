@@ -15,4 +15,17 @@
     <string name="invalid_email">Invalid Email or Password</string>
     <string name="no_of_patients_text">No of Clients</string>
     <string name="names_of_patients_title">Name of Patients</string>
+    <string name="contact_title">Contact</string>
+    <string name="contact_address_title">Address</string>
+    <string name="district_province_title">District and Province</string>
+    <string name="email_title">Email Address</string>
+    <string name="phone_number_title">Contact Number</string>
+    <string name="report_staff_btn_text">Report %s</string>
+    <string name="contact_person_title">Contact Person</string>
+    <string name="edit_house_btn_text">Edit %s</string>
+    <string name="delete_house_btn_text">Delete %s</string>
+    <string name="service_title">Service</string>
+    <string name="no_of_patients_title">No of Clients</string>
+    <string name="necessary_info_title">Necessary Information</string>
+    <string name="client_names_title">Client Names</string>
 </resources>

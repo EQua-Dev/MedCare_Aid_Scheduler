@@ -122,11 +122,13 @@ fun SignIn(navController: NavHostController) {
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    context.toast("${password.value} ${email.value}")
+                    //context.toast("${password.value} ${email.value}")
                 }
             ),
             inputType = PASSWORD_INPUT_TYPE,
-            leadingIcon = R.drawable.ic_lock
+            leadingIcon = R.drawable.ic_lock,
+            modifier = Modifier.padding(8.dp)
+
         )
         Text(
             text = stringResource(id = R.string.forgot_password_text),
@@ -146,59 +148,69 @@ fun SignIn(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         ButtonComponent(onClick = {
-            if (!Patterns.EMAIL_ADDRESS.matcher(email.value).matches()) {
-                context.toast("Invalid Email or Password")
-            }else if (email.value.isEmpty() || password.value.isEmpty()){
-                context.toast("Invalid Email or Password")
-            }else{
-
+            signInUser(email.value, password.value, context, onSuccess = {
+                isTaskRunning.value = false
                 CoroutineScope(Dispatchers.IO).launch {
-                    isTaskRunning.value = true
-                    email.value.let { auth.signInWithEmailAndPassword(it, password.value) }
-                    .addOnCompleteListener { it ->
-                        isTaskRunning.value = false
-                        if (it.isSuccessful) {
-                            //login success
-                            //Log.d("Equa", "signIn: ${Common.userId}")
-                            CoroutineScope(Dispatchers.IO).launch {
-                                try {
-                                    withContext(Dispatchers.Main) {
+                    try {
+                        withContext(Dispatchers.Main) {
 
-                                        val getUser = getUser(auth.uid!!, context)
+                            val getUser = getUser(auth.uid!!, context)
 
-                                        if (getUser?.userChangedPassword!!){
-                                            when (getUser.userRole) {
-                                                STAFF_ROLE -> navController.navigate(Screen.StaffLanding.route)
-                                                SUPERVISOR_ROLE -> navController.navigate(Screen.SupervisorLanding.route)
-                                                else -> context.toast("User Invalid")
-                                            }
-                                        }else {
-                                            navController.navigate(Screen.ForgotPassword.route)
-                                        }
-                                    }
-                                } catch (e: Exception) {
-                                    withContext(Dispatchers.Main) {
-
-                                        context.toast(e.message.toString())
-
-                                    }
+                            if (getUser?.userChangedPassword!!){
+                                when (getUser.userRole) {
+                                    STAFF_ROLE -> navController.navigate(Screen.StaffLanding.route)
+                                    SUPERVISOR_ROLE -> navController.navigate(Screen.SupervisorLanding.route)
+                                    else -> context.toast("User Invalid")
                                 }
+                            }else {
+                                navController.navigate(Screen.ForgotPassword.route)
                             }
-//                    Common.currentUser = firebaseUser?.uid!!
-                        } else {
-                            context.toast(it.exception?.message.toString())
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                                    context.toast(e.message.toString())
+
                         }
                     }
-                    .addOnFailureListener { e ->
-                        isTaskRunning.value = false
-                        context.toast(e.message.toString())
-                    }
                 }
-            }
+
+            }, isLoading = {
+                isTaskRunning.value = true
+            }, onFailure = {e ->
+                isTaskRunning.value = false
+                context.toast(e)
+            })
+
     }, buttonText = stringResource(id = R.string.sign_in_text))
 
 
 }
+}
+
+fun signInUser(email: String, password: String, context: Context, onSuccess:() -> Unit, isLoading: () -> Unit, onFailure: (error: String) -> Unit) {
+
+    if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        context.toast("Invalid Email or Password")
+    }else if (email.isEmpty() || password.isEmpty()){
+        context.toast("Invalid Email or Password")
+    }else{
+
+        CoroutineScope(Dispatchers.IO).launch {
+            isLoading()
+            email.let { auth.signInWithEmailAndPassword(it, password) }
+                .addOnCompleteListener { it ->
+                    if (it.isSuccessful) {
+                        onSuccess()
+                        //login success
+                    } else {
+                        onFailure(it.exception?.message.toString())
+                    }
+                }
+                .addOnFailureListener { e ->
+                    onFailure(e.message.toString())
+                }
+        }
+    }
 }
 
 private fun getUser(userId: String, context: Context): UserData? {

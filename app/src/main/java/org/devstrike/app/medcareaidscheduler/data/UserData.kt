@@ -14,5 +14,7 @@ data class UserData(
     val userGender: String = "",
     val userChangedPassword: Boolean = false,
     val userProvinceID: String = "",
+    val userAssignedHouse: String = "",
+    val userPasswordChangedDate: String = "",
 
 )

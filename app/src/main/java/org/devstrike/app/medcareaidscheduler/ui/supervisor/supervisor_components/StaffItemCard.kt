@@ -29,10 +29,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.data.House
+import org.devstrike.app.medcareaidscheduler.data.UserData
 import org.devstrike.app.medcareaidscheduler.utils.getProvince
 
 @Composable
-fun HouseItemCard(house: House, onClick: () -> Unit) {
+fun StaffItemCard(staff: UserData, onClick: () -> Unit = {}) {
 
     val context = LocalContext.current
 //    val isOwner: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -55,8 +56,8 @@ fun HouseItemCard(house: House, onClick: () -> Unit) {
             .padding(8.dp)
             .fillMaxWidth()
             .height(100.dp)
-            .clickable {
-                onClick()
+            .clickable { 
+                       onClick()
             },
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
@@ -64,31 +65,29 @@ fun HouseItemCard(house: House, onClick: () -> Unit) {
 
     ) {
 
-        Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            //Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = house.houseName,
-                fontWeight = FontWeight.Bold,
-                style = Typography.bodyLarge,
-                modifier = Modifier.padding(4.dp)
-            )
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                //Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "${staff.userFirstName}, ${staff.userLastName}",
+                    fontWeight = FontWeight.Bold,
+                    style = Typography.bodyLarge,
+                    modifier = Modifier.padding(4.dp)
+                )
 
-            val houseAddress = "${house.houseAddress}, ${house.houseDistrict}, ${
-                getProvince(
-                    house.houseProvince,
-                    context
-                )!!.provinceName
-            }"
+                //house assigned
+
+                val houseAssigned = staff.userAssignedHouse.ifBlank { "N/A" }
 
 
-            Text(
-                text = houseAddress,
-                style = Typography.bodyMedium,
-                modifier = Modifier.padding(4.dp)
-            )
+
+                Text(
+                    text = "Assigned House: $houseAssigned",
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.padding(4.dp)
+                )
         }
     }
 
