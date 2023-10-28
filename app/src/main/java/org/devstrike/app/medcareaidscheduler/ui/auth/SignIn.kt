@@ -147,7 +147,7 @@ fun SignIn(navController: NavHostController) {
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        ButtonComponent(onClick = {
+        ButtonComponent(enabled = email.value.isNotBlank() && password.value.isNotBlank(), onClick = {
             signInUser(email.value, password.value, context, onSuccess = {
                 isTaskRunning.value = false
                 CoroutineScope(Dispatchers.IO).launch {

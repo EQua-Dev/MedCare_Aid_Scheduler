@@ -22,9 +22,10 @@ import androidx.compose.ui.unit.dp
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ButtonComponent(onClick: () -> Unit = {}, buttonText: String = "", modifier: Modifier = Modifier) {
+fun ButtonComponent(onClick: () -> Unit = {}, buttonText: String = "", modifier: Modifier = Modifier, enabled: Boolean = false) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
