@@ -20,6 +20,8 @@ object Common {
     const val STAFF_ROLE = "staff"
     const val SUPERVISOR_ROLE = "supervisor"
 
+    const val NOTIFICATION_TYPE_SHIFT_ASSIGNMENT = "Shift Assignment"
+
     private const val USER_REF = "UserData"
     private const val PROVINCE_REF = "Province Data"
     private const val STAFF_REF = "Staff Data"
