@@ -29,4 +29,10 @@
     <string name="necessary_info_title">Necessary Information</string>
     <string name="client_names_title">Client Names</string>
     <string name="shift_type_name">Select Shift Type Name</string>
+    <string name="no_shifts_assigned">No shifts assigned this  week</string>
+    <string name="assign_shift_title">assign</string>
+    <string name="assign_staff_shift_dialog_title">Assign Shift</string>
+    <string name="select_house_to_assign_placeholder">House to assign</string>
+    <string name="select_day_to_assign_placeholder">Pick day to assign</string>
+    <string name="select_shift_to_assign_placeholder">Shift to assign</string>
 </resources>

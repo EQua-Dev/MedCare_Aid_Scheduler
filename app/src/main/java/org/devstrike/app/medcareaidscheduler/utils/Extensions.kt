@@ -7,9 +7,11 @@
 package org.devstrike.app.medcareaidscheduler.utils
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 
 //toast function
 
@@ -55,3 +57,60 @@ fun calculateHoursBetweenTimes(lesserTime: String, greaterTime: String): Double?
 
     return null
 }
+
+fun isDateWithinThisWeek(millisTime: Long): Boolean {
+    // Convert milliseconds to a Date object.
+    val date = Date(millisTime)
+
+    val calendar = Calendar.getInstance()
+
+    // Get the week number of the current date.
+    val currentWeek = calendar.get(Calendar.WEEK_OF_YEAR)
+
+    // Get the week number of the date you want to check.
+    val checkedDateWeek = calendar.get(Calendar.WEEK_OF_YEAR)
+
+    return currentWeek == checkedDateWeek
+}
+
+fun isTimeInCurrentWeek(timeInMillis: Long): Boolean {
+    // Get the current time
+    val currentTime = Calendar.getInstance()
+
+    // Create a Calendar instance for the given time
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = timeInMillis
+
+    //Log.d(TAG, "isTimeInCurrentWeek: ")
+
+    // Get the week of the year for the current time
+    val currentWeek = currentTime.get(Calendar.WEEK_OF_YEAR)
+
+    val givenDateWeek = calendar.get(Calendar.WEEK_OF_YEAR)
+    Log.d("WeekTime", "isTimeInCurrentWeek: $currentWeek \ngivenWeek: $givenDateWeek")
+
+    return currentWeek == givenDateWeek
+
+}
+
+
+fun isTimeInCurrentMonth(timeInMillis: Long): Boolean {
+    // Get the current time
+    val currentTime = Calendar.getInstance()
+
+    // Create a Calendar instance for the given time
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = timeInMillis
+
+    //Log.d(TAG, "isTimeInCurrentWeek: ")
+
+    // Get the week of the year for the current time
+    val currentMonth = currentTime.get(Calendar.MONTH)
+
+    val givenDateMonth = calendar.get(Calendar.MONTH)
+    Log.d("MonthTime", "isTimeInCurrentMonth: $currentMonth \ngivenMonth: $givenDateMonth")
+
+    return currentMonth == givenDateMonth
+
+}
+
