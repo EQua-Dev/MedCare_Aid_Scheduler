@@ -340,107 +340,107 @@ fun SupervisorStaffDetail(staff: UserData) {
                         .clickable {
                             coroutineScope.launch {
                                 val houseList = mutableListOf<House>()
+                                Common.housesCollectionRef
+                                    .whereEqualTo(
+                                        "houseAddingSupervisor",
+                                        Common.auth.uid!!
+                                    )
+                                    .get()
+                                    .addOnCompleteListener { housesSnapshot ->
+                                        for (document in housesSnapshot.result) {
+                                            val item = document.toObject(House::class.java)
+                                            houseList.add(item)
+                                        }
 
-                                withContext(Dispatchers.IO) {
-                                    val querySnapshot =
-                                        Common.housesCollectionRef
-                                            .whereEqualTo(
-                                                "houseAddingSupervisor",
-                                                Common.auth.uid!!
-                                            )
-                                            .get()
-                                            .await()
-
-                                    for (document in querySnapshot) {
-                                        val item = document.toObject(House::class.java)
-                                        houseList.add(item)
-                                    }
-                                }
-                                availableHousesToAssign.value = houseList
-                            }
-
-                            coroutineScope.launch {
-                                val shiftTypeList = mutableListOf<ShiftType>()
+                                        availableHousesToAssign.value = houseList
 
 
-                                withContext(Dispatchers.IO) {
-                                    val querySnapshot =
+                                        val shiftTypeList = mutableListOf<ShiftType>()
+
                                         Common.shiftCollectionRef
                                             .whereEqualTo(
                                                 "shiftTypeOwnerProvinceID",
                                                 staff.userProvinceID
                                             )
                                             .get()
-                                            .await()
+                                            .addOnCompleteListener { shiftTypeSnapshot ->
+                                                for (document in shiftTypeSnapshot.result) {
+                                                    val item =
+                                                        document.toObject(ShiftType::class.java)
+                                                    shiftTypeList.add(item)
+                                                }
 
-                                    for (document in querySnapshot) {
-                                        val item = document.toObject(ShiftType::class.java)
-                                        shiftTypeList.add(item)
+                                                shiftTypes.value = shiftTypeList
+
+
+                                                val allShiftsList =
+                                                    mutableListOf<AssignedShift>()
+
+                                                Common.assignedShiftsCollectionRef
+                                                    .whereEqualTo(
+                                                        "assignedSupervisorID",
+                                                        auth.uid!!
+                                                    )
+                                                    .get()
+                                                    .addOnCompleteListener { assignedShiftsSnapshot ->
+                                                        for (document in assignedShiftsSnapshot.result) {
+                                                            val item = document.toObject(
+                                                                AssignedShift::class.java
+                                                            )
+
+                                                            if (isTimeInCurrentMonth(item.assignedShiftDate.toLong())) {
+                                                                //time is in current month
+                                                                allShiftsList.add(item)
+                                                                allStaffAssignedShifts.value =
+                                                                    allShiftsList
+                                                            }
+                                                        }
+
+
+                                                        /* check if the assigned shifts of the staff is up to 7 || he has been assigned for every day of the week ☑️
+                                                         if he has been for all, show toast or even disable the 'assign' button ☑️
+                                                         if he is free...
+                                                         show assign staff dialog
+
+
+                                                         when submitted...
+                                                      system will get the date of the assigned shift
+                                                      the system will then all assigned shifts where the date assigned is equal to the given date
+                                                      the system then gets the ID of that shift
+                                                      the system then checks the assigned shift ID (type) of this proposed shift
+                                                      if the same, it indicates that the shift has been assigned already
+                                                      if the supervisor proceeds to replace the currently assigned person to this new on...
+                                                      a. the existing one will be deleted from the assigned shifts table
+                                                      b. the previously assigned staff will be notified about the change
+
+
+
+                                                      the system checks the list of assigned shifts, if that shift has already been assigned to someone else and the staff is informed*/
+                                                        Log.d(
+                                                            TAG,
+                                                            "SupervisorStaffDetail staffAssignedShifts: ${staffAssignedShifts.value.size}"
+                                                        )
+                                                        if (staffAssignedShifts.value.size >6) {
+
+                                                            context.toast("SStaff has been assigned for all days this week")
+
+
+                                                        } else {
+                                                            //create the form dialog
+
+                                                            showCustomDialog = !showCustomDialog
+
+                                                            Log.d(
+                                                                TAG,
+                                                                "SupervisorStaffDetail: Staff has not been assigned for all days this week"
+                                                            )
+                                                        }
+                                                    }
+                                            }
                                     }
-                                }
-                                shiftTypes.value = shiftTypeList
-                            }
-
-                            coroutineScope.launch {
-                                val allShiftsList = mutableListOf<AssignedShift>()
-
-                                val querySnapshot =
-                                    Common.assignedShiftsCollectionRef
-                                        .whereEqualTo(
-                                            "assignedSupervisorID",
-                                            auth.uid!!
-                                        )
-                                        .get()
-                                        .await()
-
-                                for (document in querySnapshot) {
-                                    val item = document.toObject(AssignedShift::class.java)
-
-                                    if (isTimeInCurrentMonth(item.assignedShiftDate.toLong())) {
-                                        //time is in current month
-                                        allShiftsList.add(item)
-                                        allStaffAssignedShifts.value = allShiftsList
-                                    }
-                                }
-                            }
-
-                            /* check if the assigned shifts of the staff is up to 7 || he has been assigned for every day of the week ☑️
-                             if he has been for all, show toast or even disable the 'assign' button ☑️
-                             if he is free...
-                             show assign staff dialog
-
-
-                             when submitted...
-                          system will get the date of the assigned shift
-                          the system will then all assigned shifts where the date assigned is equal to the given date
-                          the system then gets the ID of that shift
-                          the system then checks the assigned shift ID (type) of this proposed shift
-                          if the same, it indicates that the shift has been assigned already
-                          if the supervisor proceeds to replace the currently assigned person to this new on...
-                          a. the existing one will be deleted from the assigned shifts table
-                          b. the previously assigned staff will be notified about the change
-
-
-
-                          the system checks the list of assigned shifts, if that shift has already been assigned to someone else and the staff is informed*/
-                            if (staffAssignedShifts.value.size == 7) {
-                                Log.d(
-                                    TAG,
-                                    "SupervisorStaffDetail: Staff has been assigned for all days this week"
-                                )
-                            } else {
-                                //create the form dialog
-
-                                showCustomDialog = !showCustomDialog
-
-                                Log.d(
-                                    TAG,
-                                    "SupervisorStaffDetail: Staff has not been assigned for all days this week"
-                                )
                             }
                         }
                 )
-
             }
 
 
@@ -892,29 +892,35 @@ fun AssignStaffShiftFormDialog(
                         enabled = selectedHouse.isNotBlank() && selectedAssignmentDay.isNotBlank() && selectedAssignmentType.isNotBlank(),
                         onClick = {
                             coroutineScope.launch {
-                                housesCollectionRef.whereEqualTo("houseProvince", staff.userProvinceID).get().addOnCompleteListener {
+                                housesCollectionRef.whereEqualTo(
+                                    "houseProvince",
+                                    staff.userProvinceID
+                                ).get().addOnCompleteListener {
                                     var selectedHouseID = ""
-                                    for (document in it.result){
+                                    for (document in it.result) {
                                         val item = document.toObject(House::class.java)
                                         if (item.houseName == selectedHouse)
                                             selectedHouseId = item.houseID
                                     }
 
-                                    staffAssignedShiftsList.forEach {staffShift ->
-                                        //val assignedHouseName = getHouse(it.assignedHouseID, context)!!.houseName
-                                        //check if the staff has been assigned to a house that day already
-                                        staffIsFreeThatDay = if (getDate(
-                                                staffShift.assignedShiftDate.toLong(),
-                                                "EEE, dd MMM, yyyy"
-                                            ) == getDate(
-                                                selectedAssignmentDay.toLong(),
-                                                "EEE, dd MMM, yyyy"
-                                            )
-                                        ) {
-                                            context.toast("Staff already assigned for this day")
-                                            false
-                                        } else {
-                                            true
+                                    for (staffShift in staffAssignedShiftsList) {
+                                        staffAssignedShiftsList.forEach { staffShift ->
+                                            //val assignedHouseName = getHouse(it.assignedHouseID, context)!!.houseName
+                                            //check if the staff has been assigned to a house that day already
+                                            staffIsFreeThatDay = if (getDate(
+                                                    staffShift.assignedShiftDate.toLong(),
+                                                    "EEE, dd MMM, yyyy"
+                                                ) != getDate(
+                                                    selectedAssignmentDay.toLong(),
+                                                    "EEE, dd MMM, yyyy"
+                                                )
+                                            ) {
+                                                true
+                                            } else {
+                                                context.toast("Staff already assigned for this day")
+                                                //false
+                                                return@addOnCompleteListener
+                                            }
                                         }
                                     }
                                     allMonthShifts.forEach { otherShift ->
@@ -932,12 +938,16 @@ fun AssignStaffShiftFormDialog(
                                             otherShift.assignedShiftTypeID,
                                             context
                                         )!!.shiftTypeName == selectedAssignmentType
-                                        shiftIsFreeForStaff = if (shiftHasBeenAssignedToOtherStaff) {
-                                            context.toast("shift has been assigned to another staff already")
-                                            false
-                                        } else {
-                                            true
-                                        }
+                                        shiftIsFreeForStaff =
+                                            if (!shiftHasBeenAssignedToOtherStaff) {
+
+                                                true
+                                            } else {
+                                                context.toast("shift has been assigned to another staff already")
+                                                //false
+                                                return@addOnCompleteListener
+
+                                            }
                                     }
                                     Log.d(
                                         TAG,
@@ -948,22 +958,28 @@ fun AssignStaffShiftFormDialog(
                                         //upload assigned shift
                                         //get title of shift type
                                         coroutineScope.launch {
-                                            shiftCollectionRef.whereEqualTo("shiftTypeOwnerProvinceID", staff.userProvinceID).get().addOnCompleteListener {
+                                            shiftCollectionRef.whereEqualTo(
+                                                "shiftTypeOwnerProvinceID",
+                                                staff.userProvinceID
+                                            ).get().addOnCompleteListener {
                                                 var selectedShiftTypeID = ""
-                                                for (document in it.result){
-                                                    val item = document.toObject(ShiftType::class.java)
+                                                for (document in it.result) {
+                                                    val item =
+                                                        document.toObject(ShiftType::class.java)
                                                     if (item.shiftTypeName == selectedAssignmentType)
                                                         selectedShiftTypeID = item.shiftTypeID
 
                                                 }
                                                 val assignedShift = AssignedShift(
-                                                    assignedShiftID = System.currentTimeMillis().toString(),
+                                                    assignedShiftID = System.currentTimeMillis()
+                                                        .toString(),
                                                     assignedHouseID = selectedHouseId,
                                                     assignedStaffID = staff.userID,
                                                     assignedSupervisorID = auth.uid!!,
                                                     assignedShiftTypeID = selectedShiftTypeID,
                                                     assignedShiftDate = selectedAssignmentDay,
-                                                    assignedShiftDateAdded = System.currentTimeMillis().toString(),
+                                                    assignedShiftDateAdded = System.currentTimeMillis()
+                                                        .toString(),
                                                     assignedShiftNecessaryInformation = assignmentNecessaryInfo,
                                                 )
                                                 coroutineScope.launch {
@@ -973,7 +989,8 @@ fun AssignStaffShiftFormDialog(
                                                     ).set(assignedShift).addOnCompleteListener {
                                                         //add notification
                                                         val notification = Notification(
-                                                            notificationID = System.currentTimeMillis().toString(),
+                                                            notificationID = System.currentTimeMillis()
+                                                                .toString(),
                                                             notificationType = NOTIFICATION_TYPE_SHIFT_ASSIGNMENT,
                                                             notificationSenderID = auth.uid!!,
                                                             notificationReceiverID = staff.userID,
