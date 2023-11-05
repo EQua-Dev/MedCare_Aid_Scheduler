@@ -4,7 +4,7 @@
  * Under the authority of Devstrike Digital Limited
  */
 
-package org.devstrike.app.medcareaidscheduler.ui.staff
+package org.devstrike.app.medcareaidscheduler.ui.staff.staff_payments
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

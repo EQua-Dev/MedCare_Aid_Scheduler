@@ -12,6 +12,7 @@ import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 //toast function
 
@@ -111,6 +112,17 @@ fun isTimeInCurrentMonth(timeInMillis: Long): Boolean {
     Log.d("MonthTime", "isTimeInCurrentMonth: $currentMonth \ngivenMonth: $givenDateMonth")
 
     return currentMonth == givenDateMonth
+
+}
+
+fun getCurrentDate(dateFormat: String): String{
+    val simpleDateFormat = SimpleDateFormat(dateFormat, Locale.ENGLISH)
+
+    // Get the current date.
+    val date = Date()
+
+    // Format the current date as "October, 2023".
+    return simpleDateFormat.format(date)
 
 }
 

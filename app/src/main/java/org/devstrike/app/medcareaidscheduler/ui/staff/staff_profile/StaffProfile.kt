@@ -4,7 +4,7 @@
  * Under the authority of Devstrike Digital Limited
  */
 
-package org.devstrike.app.medcareaidscheduler.ui.staff
+package org.devstrike.app.medcareaidscheduler.ui.staff.staff_profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,9 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 
 @Composable
-fun StaffShifts(navController: NavHostController) {
-    Box(modifier = Modifier.fillMaxSize().background(Color.Green), contentAlignment = Alignment.Center){
+fun StaffProfile(navController: NavHostController) {
+    Box(modifier = Modifier.fillMaxSize().background(Color.Blue), contentAlignment = Alignment.Center){
 
-        Text(text = "Staff Shifts")
+        Text(text = "Staff Profile")
     }
 }

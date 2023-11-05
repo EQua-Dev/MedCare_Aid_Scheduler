@@ -98,6 +98,7 @@ import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getHouse
 import org.devstrike.app.medcareaidscheduler.utils.getProvince
 import org.devstrike.app.medcareaidscheduler.utils.getShiftType
+import org.devstrike.app.medcareaidscheduler.utils.getUser
 import org.devstrike.app.medcareaidscheduler.utils.isTimeInCurrentMonth
 import org.devstrike.app.medcareaidscheduler.utils.isTimeInCurrentWeek
 import org.devstrike.app.medcareaidscheduler.utils.toast
@@ -420,7 +421,7 @@ fun SupervisorStaffDetail(staff: UserData) {
                                                             TAG,
                                                             "SupervisorStaffDetail staffAssignedShifts: ${staffAssignedShifts.value.size}"
                                                         )
-                                                        if (staffAssignedShifts.value.size >6) {
+                                                        if (staffAssignedShifts.value.size > 6) {
 
                                                             context.toast("SStaff has been assigned for all days this week")
 
@@ -464,7 +465,6 @@ fun SupervisorStaffDetail(staff: UserData) {
                     }
                 } else {
                     LazyColumn(
-                        modifier = Modifier.heightIn(max = 150.dp),
                         contentPadding = PaddingValues(4.dp)
                     ) {
                         items(
@@ -477,7 +477,7 @@ fun SupervisorStaffDetail(staff: UserData) {
                                         "EEE, dd MMM, yyyy"
                                     ), modifier = Modifier
                                         .padding(4.dp)
-                                        .fillMaxWidth(0.5F)
+                                        .fillMaxWidth(0.5F),
                                 )
                                 Text(
                                     text = getShiftType(
@@ -486,7 +486,9 @@ fun SupervisorStaffDetail(staff: UserData) {
                                     )!!.shiftTypeName,
                                     modifier = Modifier
                                         .padding(4.dp)
-                                        .fillMaxWidth(0.5F)
+                                        .fillMaxWidth(0.5F),
+                                    textAlign = TextAlign.Center
+
                                 )
                             }
                         }
@@ -994,7 +996,9 @@ fun AssignStaffShiftFormDialog(
                                                             notificationType = NOTIFICATION_TYPE_SHIFT_ASSIGNMENT,
                                                             notificationSenderID = auth.uid!!,
                                                             notificationReceiverID = staff.userID,
-                                                            notificationMessage = "New shift assignment!\n\nYou have been assigned to $selectedHouse on ${
+                                                            notificationTitle = "New shift assignment!",
+                                                            notificationProvinceID = getUser(auth.uid!!, context)!!.userProvinceID,
+                                                            notificationMessage = "You have been assigned to $selectedHouse on ${
                                                                 getDate(
                                                                     selectedAssignmentDay.toLong(),
                                                                     "EEE, dd MMM, yyyy"

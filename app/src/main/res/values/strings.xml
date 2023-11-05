@@ -37,4 +37,5 @@
     <string name="select_shift_to_assign_placeholder">Shift to assign</string>
     <string name="shift_this_week_title">Shifts (This Week)</string>
     <string name="new_shift_notification_message">New shift assigned!\n\nYou have been assigned to %s on %s for %s shift.</string>
+    <string name="staff_shift_screen_title">Showing all shifts for the month (%s)</string>
 </resources>

@@ -7,6 +7,8 @@
 package org.devstrike.app.medcareaidscheduler.utils
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import kotlinx.coroutines.CoroutineScope
@@ -95,4 +97,11 @@ import org.devstrike.app.medcareaidscheduler.data.UserData
     }
 
     return runBlocking { deferred.await() }
+}
+
+
+fun openDial(phoneNumber: String, context: Context){
+    val intent = Intent(Intent.ACTION_DIAL)
+    intent.data = Uri.parse("tel:$phoneNumber")
+    context.startActivity(intent)
 }

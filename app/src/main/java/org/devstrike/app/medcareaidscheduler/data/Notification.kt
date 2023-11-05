@@ -5,6 +5,8 @@ data class Notification(
     val notificationType: String = "",
     val notificationSenderID: String = "",
     val notificationReceiverID: String = "",
+    val notificationTitle: String = "",
     val notificationMessage: String = "",
     val notificationSentDate: String = "",
+    val notificationProvinceID: String = ""
 )
