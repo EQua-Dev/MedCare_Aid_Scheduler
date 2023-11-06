@@ -22,13 +22,16 @@ import androidx.compose.ui.unit.dp
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ButtonComponent(onClick: () -> Unit = {}, buttonText: String = "", modifier: Modifier = Modifier, enabled: Boolean = false) {
+fun ButtonComponent(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    buttonText: String = "",
+    enabled: Boolean = false
+) {
     Button(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier = modifier,
         shape = RoundedCornerShape(4.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,

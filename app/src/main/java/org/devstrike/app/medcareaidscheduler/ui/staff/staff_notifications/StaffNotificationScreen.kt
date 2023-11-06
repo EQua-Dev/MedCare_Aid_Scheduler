@@ -128,11 +128,17 @@ fun ShiftNotificationScreen(notificationTabType: String) {
         withContext(Dispatchers.IO) {
 
             val querySnapshot =
-                if (notificationTabType == PERSONAL_NOTIFICATION_TAG){
-                    Common.notificationsCollectionRef.whereEqualTo("notificationReceiverID", auth.uid!!)
+                if (notificationTabType == PERSONAL_NOTIFICATION_TAG) {
+                    Common.notificationsCollectionRef.whereEqualTo(
+                        "notificationReceiverID",
+                        auth.uid!!
+                    )
                         .get().await()
-                }else{
-                    Common.notificationsCollectionRef.whereEqualTo("notificationProvinceID", staffInfo.userProvinceID).whereEqualTo("notificationReceiverID", "")
+                } else {
+                    Common.notificationsCollectionRef.whereEqualTo(
+                        "notificationProvinceID",
+                        staffInfo.userProvinceID
+                    ).whereEqualTo("notificationReceiverID", "")
                         .get().await()
                 }
 
@@ -177,7 +183,10 @@ fun ShiftNotificationScreen(notificationTabType: String) {
                     getUser(notification.notificationSenderID, context)!!.userFirstName.contains(
                         searchQuery.value,
                         true
-                    ) || getUser(notification.notificationSenderID, context)!!.userLastName.contains(
+                    ) || getUser(
+                        notification.notificationSenderID,
+                        context
+                    )!!.userLastName.contains(
                         searchQuery.value,
                         true
                     ) || notification.notificationType.contains(searchQuery.value, true)
@@ -202,31 +211,13 @@ fun ShiftNotificationScreen(notificationTabType: String) {
 
 
         }
-        if (isSheetOpen) {
-            ModalBottomSheet(
-                sheetState = sheetState,
-                onDismissRequest = { isSheetOpen = false }) {
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    if (isItemClicked)
-                        NotificationDetailDialog(notificationData.value, onDismiss = {
-                            isItemClicked = false
-                            isSheetOpen = false
-                        })
-
-                }
-
-            }
+        if (isItemClicked)
+            NotificationDetailDialog(notificationData.value, onDismiss = {
+                isItemClicked = false
+                isSheetOpen = false
+            })
 
 
-        }
-
-
-        Text(text = if (notificationTabType == "personal") "Staff Personal Notification" else "Staff General Notification")
     }
 }
 
@@ -277,11 +268,17 @@ fun NotificationDetailDialog(
                 )
             }
 
-            Text(text = notification.notificationTitle, modifier = Modifier.padding(4.dp), fontWeight = FontWeight.Bold)
+            Text(
+                text = notification.notificationTitle,
+                modifier = Modifier.padding(4.dp),
+                fontWeight = FontWeight.Bold
+            )
             Text(text = notification.notificationMessage, modifier = Modifier.padding(4.dp))
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            ) {
                 Text(
                     text = getUser(notification.notificationSenderID, context)!!.userFirstName,
                     modifier = Modifier.fillMaxWidth(0.5f),
@@ -306,7 +303,12 @@ fun NotificationDetailDialog(
             }
             Spacer(modifier = Modifier.height(24.dp))
 
-            Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.fillMaxWidth().padding(4.dp)) {
+            Box(
+                contentAlignment = Alignment.CenterEnd,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            ) {
                 Text(text = "Okay", modifier = Modifier.clickable {
                     onDismiss()
                 })
