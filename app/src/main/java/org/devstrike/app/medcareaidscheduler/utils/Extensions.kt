@@ -115,10 +115,10 @@ fun isTimeInCurrentMonth(timeInMillis: Long): Boolean {
     return currentMonth == givenDateMonth
 
 }
-fun convertDateTimeToMillis(dateTime: String): Long {
-    val dateFormat = SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.ENGLISH)
+fun convertDateTimeToMillis(dateTime: String, dateFormat: String): Long {
+    val dateFormatType = SimpleDateFormat(dateFormat, Locale.ENGLISH)
     val date: Date? = try {
-        dateFormat.parse(dateTime)
+        dateFormatType.parse(dateTime)
     } catch (e: ParseException) {
         e.printStackTrace()
         null

@@ -41,7 +41,9 @@ import org.devstrike.app.medcareaidscheduler.components.FloatActionButton
 import org.devstrike.app.medcareaidscheduler.data.House
 import org.devstrike.app.medcareaidscheduler.data.ShiftType
 import org.devstrike.app.medcareaidscheduler.utils.Common
+import org.devstrike.app.medcareaidscheduler.utils.Common.TIME_FORMAT_HM
 import org.devstrike.app.medcareaidscheduler.utils.Common.auth
+import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getUser
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,7 +137,7 @@ fun SupervisorShifts(navController: NavHostController) {
                     items(listOfShiftTypes) { shiftType ->
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                             Text(text = shiftType.shiftTypeName, modifier = Modifier.fillMaxWidth(0.5F))
-                            Text(text = "${shiftType.shiftTypeStartTime} - ${shiftType.shiftTypeEndTime}", modifier = Modifier.fillMaxWidth(0.4F))
+                            Text(text = "${getDate(shiftType.shiftTypeStartTime.toLong(), TIME_FORMAT_HM) } - ${getDate( shiftType.shiftTypeEndTime.toLong(), TIME_FORMAT_HM)}", modifier = Modifier.fillMaxWidth(0.4F))
                             Text(text = "edit", modifier = Modifier.fillMaxWidth(0.1F))
                         }
 //                    StaffItemCard(staff = shiftType, onClick = {

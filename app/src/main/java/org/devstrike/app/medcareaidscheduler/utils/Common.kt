@@ -27,6 +27,10 @@ object Common {
     const val SHIFT_ACTIVE = "active"
     const val SHIFT_INACTIVE = "inactive"
 
+    const val TIME_FORMAT_EDMYHM = "EEE, dd MMM, yyyy hh:mm"
+    const val TIME_FORMAT_DMYHM = "dd-MMM-yyyy hh:mm"
+    const val TIME_FORMAT_HM = "hh:mm"
+
     private const val USER_REF = "UserData"
     private const val PROVINCE_REF = "Province Data"
     private const val STAFF_REF = "Staff Data"

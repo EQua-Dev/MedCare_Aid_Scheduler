@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -69,9 +70,11 @@ import org.devstrike.app.medcareaidscheduler.data.House
 import org.devstrike.app.medcareaidscheduler.data.ShiftType
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common
+import org.devstrike.app.medcareaidscheduler.utils.Common.TIME_FORMAT_HM
 import org.devstrike.app.medcareaidscheduler.utils.Common.auth
 import org.devstrike.app.medcareaidscheduler.utils.Common.shiftCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.calculateHoursBetweenTimes
+import org.devstrike.app.medcareaidscheduler.utils.convertDateTimeToMillis
 import org.devstrike.app.medcareaidscheduler.utils.getUser
 import org.devstrike.app.medcareaidscheduler.utils.toast
 import java.util.Calendar
@@ -119,6 +122,9 @@ fun SupervisorAddShiftType(addedShiftTypes: List<ShiftType>, onClose: () -> Unit
     var selectedDateText by remember { mutableStateOf("") }
     var selectedTimeText by remember { mutableStateOf("") }
 
+    var millisStartTime by remember { mutableLongStateOf(0L) }
+    var millisEndTime by remember { mutableLongStateOf(0L) }
+
 // Fetching current hour, and minute
     val hour = calendar[Calendar.HOUR_OF_DAY]
     val minute = calendar[Calendar.MINUTE]
@@ -128,9 +134,11 @@ fun SupervisorAddShiftType(addedShiftTypes: List<ShiftType>, onClose: () -> Unit
         { _, selectedHour: Int, selectedMinute: Int ->
             selectedTimeText = "$selectedHour:$selectedMinute"
             if (isPickingStartTime.value) {
+                millisStartTime = convertDateTimeToMillis(selectedTimeText, TIME_FORMAT_HM)
                 shiftTypeStartTime.value = selectedTimeText
                 isPickingStartTime.value = false
             } else if (isPickingEndTime.value) {
+                millisEndTime = convertDateTimeToMillis(selectedTimeText, TIME_FORMAT_HM)
                 shiftTypeEndTime.value = selectedTimeText
                 isPickingEndTime.value = false
             }
@@ -332,8 +340,8 @@ fun SupervisorAddShiftType(addedShiftTypes: List<ShiftType>, onClose: () -> Unit
                         shiftTypeName = shiftTypeName.value,
                         shiftTypeOwnerProvinceID = userInfo.userProvinceID,
                         shiftTypeSupervisorID = userInfo.userID,
-                        shiftTypeStartTime = shiftTypeStartTime.value,
-                        shiftTypeEndTime = shiftTypeEndTime.value,
+                        shiftTypeStartTime = millisStartTime.toString(),//shiftTypeStartTime.value,
+                        shiftTypeEndTime = millisEndTime.toString(),//shiftTypeEndTime.value,
                         shiftTypeNoOfHours = shiftTypeNoOfHours.value,
                     )
                     CoroutineScope(Dispatchers.IO).launch {

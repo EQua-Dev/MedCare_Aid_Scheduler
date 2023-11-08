@@ -146,13 +146,13 @@ fun StaffHouseDetail(house: House, upcomingShiftData: AssignedShift, onDismissed
                         Log.d(
                             TAG,
                             "current time: ${
-                                convertDateTimeToMillis(getCurrentDate("dd-MMM-yyyy hh:mm"))
+                                convertDateTimeToMillis(getCurrentDate("dd-MMM-yyyy hh:mm"), "dd-MMM-yyyy hh:mm")
                             }"
                         )
                         Log.d(
                             TAG,
                             "time difference: ${upcomingShiftData.assignedShiftDate} - ${System.currentTimeMillis()} \n${
-                                upcomingShiftData.assignedShiftDate.toLong() - convertDateTimeToMillis(getCurrentDate("dd-MMM-yyyy hh:mm"))
+                                upcomingShiftData.assignedShiftDate.toLong() - convertDateTimeToMillis(getCurrentDate("dd-MMM-yyyy hh:mm"), "dd-MMM-yyyy hh:mm")
                             }"
                         )
                         openDialog.value = true
