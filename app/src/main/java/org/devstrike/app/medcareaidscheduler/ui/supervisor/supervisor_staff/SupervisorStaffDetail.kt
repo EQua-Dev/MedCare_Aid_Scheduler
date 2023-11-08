@@ -103,6 +103,7 @@ import org.devstrike.app.medcareaidscheduler.utils.isTimeInCurrentMonth
 import org.devstrike.app.medcareaidscheduler.utils.isTimeInCurrentWeek
 import org.devstrike.app.medcareaidscheduler.utils.toast
 import java.util.Calendar
+import java.util.UUID
 
 @Composable
 fun SupervisorStaffDetail(staff: UserData) {
@@ -956,7 +957,7 @@ fun AssignStaffShiftFormDialog(
                                         "AssignStaffShiftFormDialog: staffIsFreeThatDay => $staffIsFreeThatDay\nshiftIsFreeForStaff => $shiftIsFreeForStaff"
                                     )
                                     if (staffIsFreeThatDay && shiftIsFreeForStaff) {
-
+                                        val shiftUID = UUID.randomUUID().toString()
                                         //upload assigned shift
                                         //get title of shift type
                                         coroutineScope.launch {
@@ -973,8 +974,7 @@ fun AssignStaffShiftFormDialog(
 
                                                 }
                                                 val assignedShift = AssignedShift(
-                                                    assignedShiftID = System.currentTimeMillis()
-                                                        .toString(),
+                                                    assignedShiftID = shiftUID,
                                                     assignedHouseID = selectedHouseId,
                                                     assignedStaffID = staff.userID,
                                                     assignedSupervisorID = auth.uid!!,
@@ -987,7 +987,7 @@ fun AssignStaffShiftFormDialog(
                                                 coroutineScope.launch {
                                                     isTaskRunning.value = true
                                                     assignedShiftsCollectionRef.document(
-                                                        System.currentTimeMillis().toString()
+                                                        shiftUID
                                                     ).set(assignedShift).addOnCompleteListener {
                                                         //add notification
                                                         val notification = Notification(

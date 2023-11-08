@@ -24,6 +24,9 @@ object Common {
     const val GENERAL_NOTIFICATION_TAG = "general"
     const val NOTIFICATION_TYPE_SHIFT_ASSIGNMENT = "Shift Assignment"
 
+    const val SHIFT_ACTIVE = "active"
+    const val SHIFT_INACTIVE = "inactive"
+
     private const val USER_REF = "UserData"
     private const val PROVINCE_REF = "Province Data"
     private const val STAFF_REF = "Staff Data"

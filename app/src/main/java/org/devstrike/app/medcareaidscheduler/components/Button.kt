@@ -26,7 +26,7 @@ fun ButtonComponent(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     buttonText: String = "",
-    enabled: Boolean = false
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,

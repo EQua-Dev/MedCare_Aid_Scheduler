@@ -9,6 +9,7 @@ package org.devstrike.app.medcareaidscheduler.utils
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -113,6 +114,17 @@ fun isTimeInCurrentMonth(timeInMillis: Long): Boolean {
 
     return currentMonth == givenDateMonth
 
+}
+fun convertDateTimeToMillis(dateTime: String): Long {
+    val dateFormat = SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.ENGLISH)
+    val date: Date? = try {
+        dateFormat.parse(dateTime)
+    } catch (e: ParseException) {
+        e.printStackTrace()
+        null
+    }
+
+    return date?.time ?: 0L
 }
 
 fun getCurrentDate(dateFormat: String): String{

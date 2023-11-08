@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -116,7 +117,9 @@ fun ShiftNotificationScreen(notificationTabType: String) {
     val notifications = remember { mutableStateOf(listOf<Notification>()) }
     val notificationData: MutableState<Notification> = remember { mutableStateOf(Notification()) }
 
-    var isItemClicked = false
+    var isItemClicked by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     val staffInfo = getUser(auth.uid!!, context)!!
 
@@ -155,10 +158,7 @@ fun ShiftNotificationScreen(notificationTabType: String) {
 
     Surface(modifier = Modifier.fillMaxSize()) {
 
-        val sheetState = rememberModalBottomSheetState()
-        var isSheetOpen by rememberSaveable {
-            mutableStateOf(false)
-        }
+
         Column(modifier = Modifier.padding(4.dp)) {
             //search bar
             TextFieldComponent(
@@ -195,7 +195,6 @@ fun ShiftNotificationScreen(notificationTabType: String) {
                 items(filteredList) { notification ->
                     NotificationItemCard(notification = notification, onClick = {
                         notificationData.value = notification
-                        isSheetOpen = true
                         isItemClicked = true
                     })
                 }
@@ -211,10 +210,91 @@ fun ShiftNotificationScreen(notificationTabType: String) {
 
 
         }
-        if (isItemClicked)
-            NotificationDetailDialog(notificationData.value, onDismiss = {
-                isItemClicked = false
-                isSheetOpen = false
+        if (isItemClicked) {
+            Dialog(onDismissRequest = { isItemClicked = false}) {
+                Card(
+                    //shape = MaterialTheme.shapes.medium,
+                    shape = RoundedCornerShape(10.dp),
+                    // modifier = modifier.size(280.dp, 240.dp)
+                    modifier = Modifier.padding(8.dp),
+                ) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                        Text(
+                            text = getDate(
+                                notificationData.value.notificationSentDate.toLong(),
+                                "EEE, dd MMM, yyyy"
+                            ),
+                            style = Typography.titleSmall,
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .fillMaxWidth(0.5f),
+
+                            )
+                        Text(
+                            text = notificationData.value.notificationType,
+                            fontStyle = FontStyle.Italic,
+                            style = Typography.titleSmall,
+                            modifier = Modifier.padding(4.dp),
+                            textAlign = TextAlign.End
+                        )
+                    }
+
+                    Text(
+                        text = notificationData.value.notificationTitle,
+                        modifier = Modifier.padding(4.dp),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(text = notificationData.value.notificationMessage, modifier = Modifier.padding(4.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = getUser(
+                                notificationData.value.notificationSenderID,
+                                context
+                            )!!.userFirstName,
+                            modifier = Modifier.fillMaxWidth(0.5f),
+                            textAlign = TextAlign.Start
+                        )
+                        Text(
+                            text = "call",
+                            textAlign = TextAlign.End,
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .clickable {
+                                    //openDial
+                                    openDial(
+                                        getUser(
+                                            notificationData.value.notificationSenderID,
+                                            context
+                                        )!!.userContactNumber, context
+                                    )
+                                }
+
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(64.dp))
+
+                    Box(
+                        contentAlignment = Alignment.CenterEnd,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Text(text = "Okay", modifier = Modifier.clickable {
+                            isItemClicked = false
+                        })
+                    }
+
+
+                }
+            }
+        }
+
+        NotificationDetailDialog(notificationData.value, onDismiss = {
+
             })
 
 
@@ -243,78 +323,4 @@ fun NotificationDetailDialog(
         isTaskRunning.value = false
     }
 
-    Dialog(onDismissRequest = { onDismiss() }) {
-        Card(
-            //shape = MaterialTheme.shapes.medium,
-            shape = RoundedCornerShape(10.dp),
-            // modifier = modifier.size(280.dp, 240.dp)
-            modifier = Modifier.padding(8.dp),
-        ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = getDate(notification.notificationSentDate.toLong(), "EEE, dd MMM, yyyy"),
-                    style = Typography.titleSmall,
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .fillMaxWidth(0.5f),
-
-                    )
-                Text(
-                    text = notification.notificationType,
-                    fontStyle = FontStyle.Italic,
-                    style = Typography.titleSmall,
-                    modifier = Modifier.padding(4.dp),
-                    textAlign = TextAlign.End
-                )
-            }
-
-            Text(
-                text = notification.notificationTitle,
-                modifier = Modifier.padding(4.dp),
-                fontWeight = FontWeight.Bold
-            )
-            Text(text = notification.notificationMessage, modifier = Modifier.padding(4.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-            ) {
-                Text(
-                    text = getUser(notification.notificationSenderID, context)!!.userFirstName,
-                    modifier = Modifier.fillMaxWidth(0.5f),
-                    textAlign = TextAlign.End
-                )
-                Text(
-                    text = "call",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .clickable {
-                            //openDial
-                            openDial(
-                                getUser(
-                                    notification.notificationSenderID,
-                                    context
-                                )!!.userContactNumber, context
-                            )
-                        }
-
-                )
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Box(
-                contentAlignment = Alignment.CenterEnd,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-            ) {
-                Text(text = "Okay", modifier = Modifier.clickable {
-                    onDismiss()
-                })
-            }
-
-
-        }
-    }
 }

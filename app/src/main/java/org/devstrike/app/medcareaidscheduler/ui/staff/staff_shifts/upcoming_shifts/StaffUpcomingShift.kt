@@ -8,16 +8,20 @@ package org.devstrike.app.medcareaidscheduler.ui.staff.staff_shifts.upcoming_shi
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Text
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,23 +35,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.firebase.firestore.MetadataChanges
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.components.TextFieldComponent
 import org.devstrike.app.medcareaidscheduler.data.AssignedShift
-import org.devstrike.app.medcareaidscheduler.data.Notification
-import org.devstrike.app.medcareaidscheduler.ui.staff.staff_components.NotificationItemCard
+import org.devstrike.app.medcareaidscheduler.data.House
 import org.devstrike.app.medcareaidscheduler.ui.staff.staff_components.UpcomingShiftItemCard
-import org.devstrike.app.medcareaidscheduler.ui.staff.staff_notifications.NotificationDetailDialog
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_houses.SupervisorHouseDetail
+import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common
+import org.devstrike.app.medcareaidscheduler.utils.Common.SHIFT_ACTIVE
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getHouse
 import org.devstrike.app.medcareaidscheduler.utils.getShiftType
@@ -66,10 +70,15 @@ fun StaffUpcomingShift() {
     val searchQuery: MutableState<String> = remember { mutableStateOf("") }
 
     // Get the list of items from Firestore
-    val upcomingShiftList = mutableListOf<AssignedShift>()
-    val upcomingShifts = remember { mutableStateOf(listOf<AssignedShift>()) }
-    var upcomingShiftData = AssignedShift()
+//    val upcomingShiftList = remember {
+//        mutableListOf<AssignedShift>()
+//    }
+    val upcomingShiftList = remember { mutableStateOf(listOf<AssignedShift>()) }
 
+    var upcomingShiftData = AssignedShift()
+    val activeShiftData: MutableState<AssignedShift> = remember {
+        mutableStateOf(AssignedShift())
+    }
     var isItemClicked = false
 
     val staffInfo = getUser(Common.auth.uid!!, context)!!
@@ -78,6 +87,7 @@ fun StaffUpcomingShift() {
 
 
     LaunchedEffect(Unit) {
+        val upcomingShiftsList = mutableListOf<AssignedShift>()
 
         withContext(Dispatchers.IO) {
 
@@ -93,18 +103,26 @@ fun StaffUpcomingShift() {
                     Log.d(TAG, "Listen Failed: ", e)
                     return@addSnapshotListener
                 }
-
+                upcomingShiftsList.clear()
                 for (document in snapshot!!) {
                     val item = document.toObject(AssignedShift::class.java)
-                    Log.d(TAG, "StaffUpcomingShift: $item")
-                    if (item.assignedShiftDate.toLong() >= System.currentTimeMillis())
-                        upcomingShiftList.add(item)
+                    Log.d(TAG, "StaffUpcomingShift item: $item")
+                    if (item.assignedShiftStatus == SHIFT_ACTIVE)
+                        activeShiftData.value = item
+                    if (item.assignedShiftDate.toLong() >= System.currentTimeMillis() && item.assignedShiftStatus != SHIFT_ACTIVE)
+                        upcomingShiftsList.add(item)
                     //also check for the current shift
                 }
-                Log.d(TAG, "StaffUpcomingShift: $upcomingShiftList")
+                Log.d(TAG, "active shift: $activeShiftData")
+                Log.d(TAG, "upcomingShiftsList: $upcomingShiftsList")
+                upcomingShiftList.value = upcomingShiftsList
+                Log.d(TAG, "StaffUpcomingShift Value: ${upcomingShiftList.value}")
 
             }
+
         }
+
+
     }
 
 
@@ -115,6 +133,31 @@ fun StaffUpcomingShift() {
             mutableStateOf(false)
         }
         Column(modifier = Modifier.padding(4.dp)) {
+
+            Text(
+                text = "Ongoing Shift",
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Bold,
+                style = Typography.titleSmall,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .offset(x = 16.dp)
+            )
+            if (activeShiftData.value.assignedShiftClockInTime.isNotBlank()) {
+                UpcomingShiftItemCard(assignedShift = activeShiftData.value, onClick = {
+                    upcomingShiftData = activeShiftData.value
+                    isSheetOpen = true
+                    isItemClicked = true
+                }, onContestClick = {
+                })
+            }else{
+                Text(text = "No active shift", fontStyle = FontStyle.Italic)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Divider(Modifier.padding(8.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             //search bar
             TextFieldComponent(
                 value = searchQuery.value,
@@ -131,8 +174,10 @@ fun StaffUpcomingShift() {
             //list of cards
 
             LazyColumn {
+                val listOfUpcomingShifts = upcomingShiftList.value
+                Log.d(TAG, "listOfUpcomingShifts: $listOfUpcomingShifts")
 
-                val filteredList = upcomingShiftList.filter { assignedShift ->
+                val filteredList = listOfUpcomingShifts.filter { assignedShift ->
                     val houseInfo = getHouse(assignedShift.assignedHouseID, context)!!
                     val shiftTypeInfo = getShiftType(assignedShift.assignedShiftTypeID, context)!!
 //                    val supervisorInfo = getUser(houseInfo.houseName, context)!!
@@ -149,7 +194,7 @@ fun StaffUpcomingShift() {
                             || shiftTypeInfo.shiftTypeName.contains(searchQuery.value, true)
                 }
 
-                Log.d(TAG, "StaffUpcomingShift: $filteredList")
+                Log.d(TAG, "filteredList: $filteredList")
                 items(filteredList) { assignedShift ->
                     UpcomingShiftItemCard(assignedShift = assignedShift, onClick = {
                         upcomingShiftData = assignedShift
@@ -183,12 +228,11 @@ fun StaffUpcomingShift() {
                 ) {
                     val houseInfo = getHouse(upcomingShiftData.assignedHouseID, context)!!
                     if (isItemClicked)
-                        SupervisorHouseDetail(
-                            houseInfo,
-                            /*onDismiss = {
-                                                       isItemClicked = false
-                                                       isSheetOpen = false
-                                                   }*/
+                        StaffHouseDetail(
+                            houseInfo, upcomingShiftData, onDismissed = {
+                                isItemClicked = false
+                                isSheetOpen = false
+                            }
                         )
 
                 }
