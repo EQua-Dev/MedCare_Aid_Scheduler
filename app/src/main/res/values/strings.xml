@@ -39,4 +39,12 @@
     <string name="new_shift_notification_message">New shift assigned!\n\nYou have been assigned to %s on %s for %s shift.</string>
     <string name="staff_shift_screen_title">Showing all shifts for the month (%s)</string>
     <string name="staff_contest_shift">Contest Shift</string>
+    <string name="staff_log_shifts_served">"Totals no of shifts served: "</string>
+    <string name="not_available">N/A</string>
+    <string name="staff_log_hours">Total no of hours</string>
+    <string name="staff_log_payable_hours">Total no of hours payable</string>
+    <string name="staff_shifts_payable_hours">%s: %s,</string>
+    <string name="staff_log_payable_amount">Total amount payable</string>
+    <string name="edit_text">Edit</string>
+    <string name="submit_text">Submit</string>
 </resources>

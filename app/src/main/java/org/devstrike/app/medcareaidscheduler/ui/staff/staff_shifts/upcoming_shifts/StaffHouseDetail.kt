@@ -53,10 +53,12 @@ import org.devstrike.app.medcareaidscheduler.data.House
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.Common.SHIFT_ACTIVE
+import org.devstrike.app.medcareaidscheduler.utils.Common.TIME_FORMAT_HM
 import org.devstrike.app.medcareaidscheduler.utils.convertDateTimeToMillis
 import org.devstrike.app.medcareaidscheduler.utils.getCurrentDate
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getProvince
+import org.devstrike.app.medcareaidscheduler.utils.getShiftType
 import org.devstrike.app.medcareaidscheduler.utils.openDial
 import org.devstrike.app.medcareaidscheduler.utils.toast
 
@@ -205,6 +207,23 @@ fun StaffHouseDetail(house: House, upcomingShiftData: AssignedShift, onDismissed
                 ButtonComponent(
                     buttonText = "clock out",
                     onClick = {
+                        /*
+                        * if the current time is earlier than the current shift end time, it will not agree
+                        * */
+                        val currentHourMinute = getDate(System.currentTimeMillis(), TIME_FORMAT_HM)
+                        val currentMillisTime = convertDateTimeToMillis(currentHourMinute, TIME_FORMAT_HM)
+                        val shiftEndTime = getShiftType(upcomingShiftData.assignedShiftTypeID, context)!!.shiftTypeEndTime.toLong()
+                        val shiftHourMinute = getDate(shiftEndTime, TIME_FORMAT_HM)
+
+                        Log.d(TAG, "currentHourMinute: $currentHourMinute")
+                        Log.d(TAG, "currentMillisTime: $currentMillisTime")
+                        Log.d(TAG, "shiftEndTime: $shiftEndTime")
+                        Log.d(TAG, "shiftHourMinute: $shiftHourMinute")
+
+                        if (currentMillisTime < shiftEndTime)
+                            Log.d(TAG, "StaffHouseDetail: Too early")
+
+
                         context.toast("will clock out")
                     },
                     enabled = upcomingShiftData.assignedShiftClockInTime.isNotBlank() && upcomingShiftData.assignedShiftClockOutTime.isBlank()
