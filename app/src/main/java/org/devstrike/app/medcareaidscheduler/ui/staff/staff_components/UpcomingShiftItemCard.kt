@@ -77,14 +77,14 @@ fun UpcomingShiftItemCard(assignedShift: AssignedShift, onClick: () -> Unit, onC
                     style = Typography.titleSmall,
                     modifier = Modifier
                         .padding(4.dp)
-                        .fillMaxWidth(0.5f),
+                        .weight(0.5f),
 
                     )
                 Text(
                     text = shiftTypeInfo.shiftTypeName,
                     fontStyle = FontStyle.Italic,
                     style = Typography.titleSmall,
-                    modifier = Modifier.padding(4.dp),
+                    modifier = Modifier.padding(4.dp).weight(0.5F),
                     textAlign = TextAlign.End
                 )
             }

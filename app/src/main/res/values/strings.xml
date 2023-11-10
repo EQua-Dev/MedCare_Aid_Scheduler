@@ -47,4 +47,5 @@
     <string name="staff_log_payable_amount">Total amount payable</string>
     <string name="edit_text">Edit</string>
     <string name="submit_text">Submit</string>
+    <string name="euro_currency">€ %s</string>
 </resources>
