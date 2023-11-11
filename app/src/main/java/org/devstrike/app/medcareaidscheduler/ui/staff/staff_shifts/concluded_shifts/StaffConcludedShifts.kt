@@ -6,7 +6,10 @@
 
 package org.devstrike.app.medcareaidscheduler.ui.staff.staff_shifts.concluded_shifts
 
+import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +18,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -32,16 +39,20 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.google.firebase.firestore.MetadataChanges
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,11 +61,14 @@ import kotlinx.coroutines.withContext
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.components.ButtonComponent
 import org.devstrike.app.medcareaidscheduler.components.TextFieldComponent
+import org.devstrike.app.medcareaidscheduler.components.custom_slider.CustomSlider
 import org.devstrike.app.medcareaidscheduler.data.AssignedShift
+import org.devstrike.app.medcareaidscheduler.data.ReportLog
 import org.devstrike.app.medcareaidscheduler.ui.staff.staff_components.UpcomingShiftItemCard
 import org.devstrike.app.medcareaidscheduler.ui.staff.staff_shifts.upcoming_shifts.StaffHouseDetail
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common
+import org.devstrike.app.medcareaidscheduler.utils.Common.SHIFT_HOURLY_PAY
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getHouse
 import org.devstrike.app.medcareaidscheduler.utils.getShiftType
@@ -78,8 +92,9 @@ fun StaffConcludedShifts() {
         mutableMapOf()
     }
 
+    val coroutineScope = rememberCoroutineScope()
 
-    val shiftPerHour = 2.00
+
     val listOfHoursPayable = mutableListOf<String>()
     for (item in staffWeekShiftTypeHours.keys) {
         listOfHoursPayable.add("$item:${staffWeekShiftTypeHours[item]},")
@@ -210,6 +225,10 @@ fun StaffConcludedShifts() {
         var isSheetOpen by rememberSaveable {
             mutableStateOf(false)
         }
+        var isEditClicked by rememberSaveable {
+            mutableStateOf(false)
+        }
+
         Column(modifier = Modifier.padding(4.dp)) {
 
             Text(
@@ -323,7 +342,7 @@ fun StaffConcludedShifts() {
                 Log.d(TAG, "totalHours: $totalHours")
 
                 staffWeekPayableAmount.value =
-                    totalHours.toDouble().times(shiftPerHour.toDouble())
+                    totalHours.toDouble().times(SHIFT_HOURLY_PAY.toDouble())
 
                 Text(
                     text = stringResource(
@@ -343,6 +362,7 @@ fun StaffConcludedShifts() {
                 ButtonComponent(
                     buttonText = stringResource(id = R.string.edit_text), onClick = {
                         context.toast("will edit log")
+                        isEditClicked = true
                     }, modifier = Modifier
                         .weight(0.5F)
                         .padding(4.dp)
@@ -455,7 +475,233 @@ fun StaffConcludedShifts() {
 
 
         }
+        if (isEditClicked) {
+
+            EditWeekLogDialog(
+                onDismiss = { isEditClicked = false },
+                coroutineScope = coroutineScope,
+                staffWeekShiftTypeHours = staffWeekShiftTypeHours,
+                context = context
+            )
+        }
 
     }
 
 }
+
+@Composable
+fun EditWeekLogDialog(
+    onDismiss: () -> Unit,
+    coroutineScope: CoroutineScope,
+    staffWeekShiftTypeHours: MutableMap<String, Int>,
+    context: Context
+) {
+
+    Log.d("EditWeekLogDialog", "SleepOver: ${staffWeekShiftTypeHours["SleepOver"]}")
+    val isTaskRunning = remember { mutableStateOf(false) }
+    // Show the progress bar while the task is running
+
+
+    // Perform the task
+    LaunchedEffect(Unit) {
+        isTaskRunning.value = true
+
+        // Do something
+
+        isTaskRunning.value = false
+    }
+
+    var morningSliderPosition by remember { mutableStateOf(staffWeekShiftTypeHours["Morning"]) }
+    val highestMorningHours = staffWeekShiftTypeHours["Morning"]?.toFloat()
+
+    var nightSliderPosition by remember { mutableStateOf(staffWeekShiftTypeHours["Night"]) }
+    val highestNightHours = staffWeekShiftTypeHours["Night"]?.toFloat()
+
+    var sleepOverSliderPosition by remember { mutableStateOf(staffWeekShiftTypeHours["SleepOver"]) }
+    val highestSleepOverHours = staffWeekShiftTypeHours["SleepOver"]?.toFloat()
+
+    var totalMorningPay by remember { mutableDoubleStateOf(morningSliderPosition?.toDouble()?.times(SHIFT_HOURLY_PAY) ?: 0.0) }
+    var totalNightPay by remember { mutableDoubleStateOf(nightSliderPosition?.toDouble()?.times(SHIFT_HOURLY_PAY) ?: 0.0) }
+    var totalSleepOverPay by remember { mutableDoubleStateOf(sleepOverSliderPosition?.toDouble()?.times(SHIFT_HOURLY_PAY) ?: 0.0) }
+    var totalPay by remember { mutableDoubleStateOf(totalMorningPay.plus(totalNightPay).plus(totalSleepOverPay)) }
+
+
+    Dialog(onDismissRequest = { onDismiss() }) {
+        Card(
+            //shape = MaterialTheme.shapes.medium,
+            shape = RoundedCornerShape(10.dp),
+            // modifier = modifier.size(280.dp, 240.dp)
+            modifier = Modifier.padding(8.dp),
+        ) {
+            Box(modifier = Modifier.padding(4.dp), contentAlignment = Alignment.Center) {
+                if (isTaskRunning.value) {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .background(Color.Transparent) //will later be converted to background color
+                ) {
+
+                    Text(
+                        text = stringResource(id = R.string.staff_adjust_hours_dialog_title),
+                        modifier = Modifier.padding(8.dp),
+                        fontSize = 20.sp
+                    )
+                    totalMorningPay = highestMorningHours?.times(SHIFT_HOURLY_PAY)!!
+                    totalNightPay = highestNightHours?.times(SHIFT_HOURLY_PAY)!!
+//                    totalSleepOverPay = highestSleepOverHours?.times(SHIFT_HOURLY_PAY)!!
+
+                    if (morningSliderPosition != null) {
+                        Text(
+                            text = stringResource(id = R.string.morning_text),
+                            style = Typography.bodyLarge,
+                            modifier = Modifier
+                                .offset(x = 8.dp)
+                                .padding(4.dp)
+                        )
+                        CustomSlider(
+                            value = morningSliderPosition!!.toFloat(),
+                            onValueChange = {
+                                /*
+                                * if the previous value is greater than the current value, add to total, else, subtract
+                                *
+                                * steps:
+                                * 1. save the previous morning pay
+                                * 2. create a new morning pay
+                                * 3. subtract the previous morning pay from the total pay and add the new morning payu
+                                * */
+                                val previousValue = morningSliderPosition
+                                morningSliderPosition = it.toInt()
+                                val previousTotalMorningPay = previousValue!!.toDouble().times(
+                                    SHIFT_HOURLY_PAY)
+                                totalMorningPay =
+                                    morningSliderPosition!!.toDouble().times(SHIFT_HOURLY_PAY)
+
+                                totalPay = totalPay.minus(previousTotalMorningPay).plus(totalMorningPay)
+                            },
+                            valueRange = 0f..highestMorningHours,
+                            showLabel = true,
+                            showIndicator = true
+                        ) {
+                            context.toast(it.toString())
+                        }
+
+                        Spacer(modifier = Modifier.height(48.dp))
+                    }
+                    if (nightSliderPosition != null) {
+                        Text(
+                            text = stringResource(id = R.string.night_text),
+                            style = Typography.bodyLarge,
+                            modifier = Modifier
+                                .offset(x = 8.dp)
+                                .padding(4.dp)
+                        )
+                        CustomSlider(
+                            value = nightSliderPosition!!.toFloat(),
+                            onValueChange = {
+                                val previousValue = nightSliderPosition
+                                nightSliderPosition = it.toInt()
+                                val previousTotalNightPay = previousValue!!.toDouble().times(
+                                    SHIFT_HOURLY_PAY)
+                                totalNightPay =
+                                    nightSliderPosition!!.toDouble().times(SHIFT_HOURLY_PAY)
+                                totalPay = totalPay.minus(previousTotalNightPay).plus(totalNightPay)
+
+
+                            },
+                            valueRange = 0f..highestNightHours!!,
+                            showLabel = true,
+                            showIndicator = true
+                        ) {
+                            context.toast(it.toString())
+                        }
+
+                        Spacer(modifier = Modifier.height(48.dp))
+                    }
+
+                    if (sleepOverSliderPosition != null) {
+                        Text(
+                            text = stringResource(id = R.string.sleep_over_text),
+                            style = Typography.bodyLarge,
+                            modifier = Modifier
+                                .offset(x = 8.dp)
+                                .padding(4.dp)
+                        )
+                        CustomSlider(
+                            value = sleepOverSliderPosition!!.toFloat(),
+                            onValueChange = {
+                                val previousValue = sleepOverSliderPosition
+                                sleepOverSliderPosition = it.toInt()
+                                val previousTotalSleepOverPay = previousValue!!.toDouble().times(
+                                    SHIFT_HOURLY_PAY)
+                                totalSleepOverPay = sleepOverSliderPosition!!.toDouble()
+                                    .times(SHIFT_HOURLY_PAY)
+                                totalPay = totalPay.minus(previousTotalSleepOverPay).plus(totalSleepOverPay)
+
+                            },
+                            valueRange = 0f..highestSleepOverHours!!,
+                            showLabel = true,
+                            showIndicator = true
+                        ) {
+                            context.toast(it.toString())
+                        }
+
+                        Spacer(modifier = Modifier.height(48.dp))
+                    }
+
+//                    Slider(value = sliderPosition, onValueChange = {sliderPosition = it}, valueRange = 0f..noOfMorningHours, steps = noOfMorningHours.toInt())
+//                    totalPay = totalMorningPay + totalNightPay + totalSleepOverPay
+//                    if (totalPay > newTotalPay)
+//                        totalPay = totalPay.minus(newTotalPay)
+
+
+                    Text(
+                        text = stringResource(id = R.string.total_pay_text, totalPay),
+                        fontWeight = FontWeight.Bold,
+                        style = Typography.titleMedium,
+                        modifier = Modifier.padding(4.dp)
+                    )
+
+
+                    ButtonComponent(
+                        buttonText = stringResource(id = R.string.submit_text),
+//                        enabled = selectedHouse.isNotBlank() && selectedAssignmentDay.isNotBlank() && selectedAssignmentType.isNotBlank(),
+                        onClick = {
+                            Log.d(
+                                "EditWeekLogDialog",
+                                "morning: ${morningSliderPosition?.toInt()} \nnight: ${nightSliderPosition?.toInt()}\nsleepover: ${sleepOverSliderPosition?.toInt()}"
+                            )
+                            coroutineScope.launch {
+                                val reportLog = ReportLog(
+
+                                )
+
+                            }
+
+                            /*ensure that the staff has not already been assigned a shift on that day ☑️
+                            * ensure that no other staff has been assigned that particular day and time, to the same house ☑️*/
+                        }
+                    )
+
+
+                }
+            }
+
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -48,4 +48,9 @@
     <string name="edit_text">Edit</string>
     <string name="submit_text">Submit</string>
     <string name="euro_currency">€ %s</string>
+    <string name="morning_text">Morning</string>
+    <string name="sleep_over_text">Sleep Over</string>
+    <string name="night_text">Night</string>
+    <string name="staff_adjust_hours_dialog_title">Edit Payable Hours</string>
+    <string name="total_pay_text">Total Pay: €%s</string>
 </resources>

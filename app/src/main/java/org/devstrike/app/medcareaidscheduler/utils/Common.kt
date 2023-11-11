@@ -31,6 +31,8 @@ object Common {
     const val TIME_FORMAT_DMYHM = "dd-MMM-yyyy hh:mm"
     const val TIME_FORMAT_HM = "hh:mm"
 
+    const val SHIFT_HOURLY_PAY = 2.00
+
     private const val USER_REF = "UserData"
     private const val PROVINCE_REF = "Province Data"
     private const val STAFF_REF = "Staff Data"
