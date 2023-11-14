@@ -68,13 +68,17 @@ import org.devstrike.app.medcareaidscheduler.ui.staff.staff_components.UpcomingS
 import org.devstrike.app.medcareaidscheduler.ui.staff.staff_shifts.upcoming_shifts.StaffHouseDetail
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common
+import org.devstrike.app.medcareaidscheduler.utils.Common.LOG_REPORT_SUBMITTED_STATUS
 import org.devstrike.app.medcareaidscheduler.utils.Common.SHIFT_HOURLY_PAY
+import org.devstrike.app.medcareaidscheduler.utils.Common.auth
+import org.devstrike.app.medcareaidscheduler.utils.Common.weeklyShiftsReportLogCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getHouse
 import org.devstrike.app.medcareaidscheduler.utils.getShiftType
 import org.devstrike.app.medcareaidscheduler.utils.getUser
 import org.devstrike.app.medcareaidscheduler.utils.isDateWithinThisWeek
 import org.devstrike.app.medcareaidscheduler.utils.toast
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,6 +110,7 @@ fun StaffConcludedShifts() {
 //    }
     val concludedShiftList = remember { mutableStateOf(listOf<AssignedShift>()) }
     val concludedWeekShiftList = remember { mutableListOf<AssignedShift>() }
+    val allWeekShiftList = remember { mutableListOf<AssignedShift>() }
 
     var concludedShiftData = AssignedShift()
     val activeShiftData: MutableState<AssignedShift> = remember {
@@ -142,7 +147,6 @@ fun StaffConcludedShifts() {
                     if (item.assignedShiftDate.toLong() < System.currentTimeMillis() && item.assignedShiftStatus != Common.SHIFT_ACTIVE)
                         concludedShiftsList.add(item)
                 }
-                var entriesLoopCount = 0
                 concludedShiftList.value = concludedShiftsList
                 for (shift in concludedShiftList.value) {
                     if (isDateWithinThisWeek(shift.assignedShiftDate.toLong()) && shift.assignedShiftClockOutTime.isNotBlank()) {
@@ -159,10 +163,10 @@ fun StaffConcludedShifts() {
 //                                staffShiftType.shiftTypeNoOfHours.toDouble().toInt()
                         /*
                         **the key is being replaced instead of adding the hours to the value of the keys**
-                         * todo: 1. loop through the keys of the map
-                         * todo: 2. check if the key already exists
-                         * todo: 3. if exists, then add the hours to the value of that key
-                         * todo: 4. else write to the new key
+                         *  1. loop through the keys of the map
+                         *  2. check if the key already exists
+                         *  3. if exists, then add the hours to the value of that key and stop the check
+                         *  4. else write to the new key
                          *
                          * */
                         if (staffWeekShiftTypeHours.entries.isEmpty()) {
@@ -178,7 +182,6 @@ fun StaffConcludedShifts() {
                                 "StaffConcludedShifts: ${staffWeekShiftTypeHours.entries} is  not empty"
                             )
                             for (shiftHours in staffWeekShiftTypeHours.entries) {
-                                Log.d(TAG, "shiftHoursCount: ${entriesLoopCount++}")
                                 Log.d(TAG, "shiftHours: $shiftHours")
                                 Log.d(TAG, "shiftHoursEntries: ${staffWeekShiftTypeHours.entries}")
 //                            for (shiftName in shiftHours.key){
@@ -209,6 +212,9 @@ fun StaffConcludedShifts() {
                             }
                         }
                         Log.d(TAG, "staffShiftsServedEntries: ${staffWeekShiftTypeHours.entries}")
+                    }
+                    if (isDateWithinThisWeek(shift.assignedShiftDate.toLong())) {
+                        allWeekShiftList.add(shift)
                     }
                 }
 
@@ -438,55 +444,48 @@ fun StaffConcludedShifts() {
 
                     })
                 }
-//                    listOfHouses.forEach { house ->
-//                        Log.d(TAG, "SupervisorHouses List: $house")
-////                        HouseItemCard(house = house)
-//                        HouseItemCard(house)
-//                    }
+
             }
-//                val houses =
-//                    housesCollectionRef.whereEqualTo("houseAddingSupervisor", auth.uid!!).get()
-            // Iterate over the list of items and display each item using the ItemComposable composable function
+            if (isSheetOpen) {
+                ModalBottomSheet(
+                    sheetState = sheetState,
+                    onDismissRequest = { isSheetOpen = false }) {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        val houseInfo = getHouse(concludedShiftData.assignedHouseID, context)!!
+                        if (isItemClicked)
+                            StaffHouseDetail(
+                                houseInfo, concludedShiftData, onDismissed = {
+                                    isItemClicked = false
+                                    isSheetOpen = false
+                                }
+                            )
 
-
-        }
-        if (isSheetOpen) {
-            ModalBottomSheet(
-                sheetState = sheetState,
-                onDismissRequest = { isSheetOpen = false }) {
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val houseInfo = getHouse(concludedShiftData.assignedHouseID, context)!!
-                    if (isItemClicked)
-                        StaffHouseDetail(
-                            houseInfo, concludedShiftData, onDismissed = {
-                                isItemClicked = false
-                                isSheetOpen = false
-                            }
-                        )
+                    }
 
                 }
 
+
+            }
+            if (isEditClicked) {
+
+                EditWeekLogDialog(
+                    onDismiss = { isEditClicked = false },
+                    coroutineScope = coroutineScope,
+                    staffWeekShiftTypeHours = staffWeekShiftTypeHours,
+                    context = context,
+                    staffShifts = concludedWeekShiftList,
+                    allWeekShiftList = allWeekShiftList
+                )
             }
 
-
-        }
-        if (isEditClicked) {
-
-            EditWeekLogDialog(
-                onDismiss = { isEditClicked = false },
-                coroutineScope = coroutineScope,
-                staffWeekShiftTypeHours = staffWeekShiftTypeHours,
-                context = context
-            )
         }
 
     }
-
 }
 
 @Composable
@@ -494,7 +493,9 @@ fun EditWeekLogDialog(
     onDismiss: () -> Unit,
     coroutineScope: CoroutineScope,
     staffWeekShiftTypeHours: MutableMap<String, Int>,
-    context: Context
+    context: Context,
+    staffShifts: List<AssignedShift>,
+    allWeekShiftList: List<AssignedShift>
 ) {
 
     Log.d("EditWeekLogDialog", "SleepOver: ${staffWeekShiftTypeHours["SleepOver"]}")
@@ -512,18 +513,34 @@ fun EditWeekLogDialog(
     }
 
     var morningSliderPosition by remember { mutableStateOf(staffWeekShiftTypeHours["Morning"]) }
-    val highestMorningHours = staffWeekShiftTypeHours["Morning"]?.toFloat()
+    val highestMorningHours = staffWeekShiftTypeHours["Morning"]?.toFloat() ?: 0f
 
     var nightSliderPosition by remember { mutableStateOf(staffWeekShiftTypeHours["Night"]) }
-    val highestNightHours = staffWeekShiftTypeHours["Night"]?.toFloat()
+    val highestNightHours = staffWeekShiftTypeHours["Night"]?.toFloat() ?: 0f
 
     var sleepOverSliderPosition by remember { mutableStateOf(staffWeekShiftTypeHours["SleepOver"]) }
-    val highestSleepOverHours = staffWeekShiftTypeHours["SleepOver"]?.toFloat()
+    val highestSleepOverHours = staffWeekShiftTypeHours["SleepOver"]?.toFloat() ?: 0f
 
-    var totalMorningPay by remember { mutableDoubleStateOf(morningSliderPosition?.toDouble()?.times(SHIFT_HOURLY_PAY) ?: 0.0) }
-    var totalNightPay by remember { mutableDoubleStateOf(nightSliderPosition?.toDouble()?.times(SHIFT_HOURLY_PAY) ?: 0.0) }
-    var totalSleepOverPay by remember { mutableDoubleStateOf(sleepOverSliderPosition?.toDouble()?.times(SHIFT_HOURLY_PAY) ?: 0.0) }
-    var totalPay by remember { mutableDoubleStateOf(totalMorningPay.plus(totalNightPay).plus(totalSleepOverPay)) }
+    var totalMorningPay by remember {
+        mutableDoubleStateOf(
+            morningSliderPosition?.toDouble()?.times(SHIFT_HOURLY_PAY) ?: 0.0
+        )
+    }
+    var totalNightPay by remember {
+        mutableDoubleStateOf(
+            nightSliderPosition?.toDouble()?.times(SHIFT_HOURLY_PAY) ?: 0.0
+        )
+    }
+    var totalSleepOverPay by remember {
+        mutableDoubleStateOf(
+            sleepOverSliderPosition?.toDouble()?.times(SHIFT_HOURLY_PAY) ?: 0.0
+        )
+    }
+    var totalPay by remember {
+        mutableDoubleStateOf(
+            totalMorningPay.plus(totalNightPay).plus(totalSleepOverPay)
+        )
+    }
 
 
     Dialog(onDismissRequest = { onDismiss() }) {
@@ -565,21 +582,23 @@ fun EditWeekLogDialog(
                             value = morningSliderPosition!!.toFloat(),
                             onValueChange = {
                                 /*
-                                * if the previous value is greater than the current value, add to total, else, subtract
-                                *
-                                * steps:
-                                * 1. save the previous morning pay
-                                * 2. create a new morning pay
-                                * 3. subtract the previous morning pay from the total pay and add the new morning payu
-                                * */
+                            * if the previous value is greater than the current value, add to total, else, subtract
+                            *
+                            * steps:
+                            * 1. save the previous morning pay
+                            * 2. create a new morning pay
+                            * 3. subtract the previous morning pay from the total pay and add the new morning payu
+                            * */
                                 val previousValue = morningSliderPosition
                                 morningSliderPosition = it.toInt()
                                 val previousTotalMorningPay = previousValue!!.toDouble().times(
-                                    SHIFT_HOURLY_PAY)
+                                    SHIFT_HOURLY_PAY
+                                )
                                 totalMorningPay =
                                     morningSliderPosition!!.toDouble().times(SHIFT_HOURLY_PAY)
 
-                                totalPay = totalPay.minus(previousTotalMorningPay).plus(totalMorningPay)
+                                totalPay = totalPay.minus(previousTotalMorningPay)
+                                    .plus(totalMorningPay)
                             },
                             valueRange = 0f..highestMorningHours,
                             showLabel = true,
@@ -604,10 +623,12 @@ fun EditWeekLogDialog(
                                 val previousValue = nightSliderPosition
                                 nightSliderPosition = it.toInt()
                                 val previousTotalNightPay = previousValue!!.toDouble().times(
-                                    SHIFT_HOURLY_PAY)
+                                    SHIFT_HOURLY_PAY
+                                )
                                 totalNightPay =
                                     nightSliderPosition!!.toDouble().times(SHIFT_HOURLY_PAY)
-                                totalPay = totalPay.minus(previousTotalNightPay).plus(totalNightPay)
+                                totalPay =
+                                    totalPay.minus(previousTotalNightPay).plus(totalNightPay)
 
 
                             },
@@ -634,19 +655,20 @@ fun EditWeekLogDialog(
                             onValueChange = {
                                 val previousValue = sleepOverSliderPosition
                                 sleepOverSliderPosition = it.toInt()
-                                val previousTotalSleepOverPay = previousValue!!.toDouble().times(
-                                    SHIFT_HOURLY_PAY)
+                                val previousTotalSleepOverPay =
+                                    previousValue!!.toDouble().times(
+                                        SHIFT_HOURLY_PAY
+                                    )
                                 totalSleepOverPay = sleepOverSliderPosition!!.toDouble()
                                     .times(SHIFT_HOURLY_PAY)
-                                totalPay = totalPay.minus(previousTotalSleepOverPay).plus(totalSleepOverPay)
+                                totalPay = totalPay.minus(previousTotalSleepOverPay)
+                                    .plus(totalSleepOverPay)
 
                             },
                             valueRange = 0f..highestSleepOverHours!!,
                             showLabel = true,
                             showIndicator = true
-                        ) {
-                            context.toast(it.toString())
-                        }
+                        )
 
                         Spacer(modifier = Modifier.height(48.dp))
                     }
@@ -673,19 +695,70 @@ fun EditWeekLogDialog(
                                 "EditWeekLogDialog",
                                 "morning: ${morningSliderPosition?.toInt()} \nnight: ${nightSliderPosition?.toInt()}\nsleepover: ${sleepOverSliderPosition?.toInt()}"
                             )
+                            isTaskRunning.value = true
                             coroutineScope.launch {
-                                val reportLog = ReportLog(
+                                var earliestShiftDate: Long? = null
+                                var latestShiftDate: Long? = null
+                                for (shift in staffShifts) {
+                                    if (earliestShiftDate == null)
+                                        earliestShiftDate = shift.assignedShiftDate.toLong()
+                                    if (latestShiftDate == null)
+                                        latestShiftDate = shift.assignedShiftDate.toLong()
+                                    if (shift.assignedShiftDate.toLong() < earliestShiftDate)
+                                        earliestShiftDate = shift.assignedShiftDate.toLong()
+                                    if (shift.assignedShiftDate.toLong() > latestShiftDate)
+                                        latestShiftDate = shift.assignedShiftDate.toLong()
+                                }
 
+                                val totalShiftsServed =
+                                    highestMorningHours.toInt().plus(highestNightHours.toInt())
+                                        .plus(highestSleepOverHours.toInt())
+                                val totalAmountPayable =
+                                    totalShiftsServed.toDouble().times(SHIFT_HOURLY_PAY)
+                                // TODO: fix the flaw in this calculation
+                                val totalMissedShifts =
+                                    allWeekShiftList.size.minus(staffShifts.size)
+
+                                val logReportID = UUID.randomUUID().toString()
+                                val reportLog = ReportLog(
+                                    reportLogID = logReportID,
+                                    reportLogDateSubmitted = System.currentTimeMillis().toString(),
+                                    reportLogOwnerID = auth.uid!!,
+                                    reportLogStatus = LOG_REPORT_SUBMITTED_STATUS,
+                                    reportLogDuration = "${allWeekShiftList.size} days",//number of days accounted for in the log
+                                    reportLogStartDate = earliestShiftDate.toString(),//the date of the user's first shift of the week
+                                    reportLogEndDate = latestShiftDate.toString(),//the date of the user's last shift of the week
+                                    reportLogNoOfTotalWeekShift = totalShiftsServed.toString(),
+                                    reportLogNoOfTotalShiftsServed = totalShiftsServed.toString(),
+                                    reportLogNoOfTotalShiftsPending = totalMissedShifts.toString(),
+                                    reportLogTotalPayableDaysHours = morningSliderPosition.toString(),
+                                    reportLogTotalPayableNightsHours = nightSliderPosition.toString(),
+                                    reportLogDailyShiftDetails = staffShifts,//mapping of the day of the week to the day's assigned shift
+                                    reportLogTotalPayableSleepOversHours = sleepOverSliderPosition.toString(),
+                                    reportLogTotalAmountPayable = totalAmountPayable.toString(),
+                                    reportLogTotalAmountToPay = totalPay.toString()
                                 )
 
-                            }
+                                weeklyShiftsReportLogCollectionRef.document(logReportID)
+                                    .set(reportLog).addOnCompleteListener {
+                                    if (it.isSuccessful) {
+                                        isTaskRunning.value = false
+                                        context.toast("Report Submitted")
+                                        onDismiss()
+                                    } else {
+                                        isTaskRunning.value = false
+                                        context.toast(
+                                            it.exception?.localizedMessage ?: "Some error occurred"
+                                        )
+                                    }
+                                }.addOnFailureListener { e ->
+                                    isTaskRunning.value = false
+                                    context.toast(e.localizedMessage ?: "Some error occurred")
+                                }
 
-                            /*ensure that the staff has not already been assigned a shift on that day ☑️
-                            * ensure that no other staff has been assigned that particular day and time, to the same house ☑️*/
+                            }
                         }
                     )
-
-
                 }
             }
 

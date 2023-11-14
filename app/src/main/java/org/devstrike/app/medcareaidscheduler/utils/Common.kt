@@ -26,6 +26,7 @@ object Common {
 
     const val SHIFT_ACTIVE = "active"
     const val SHIFT_INACTIVE = "inactive"
+    const val LOG_REPORT_SUBMITTED_STATUS = "submitted"
 
     const val TIME_FORMAT_EDMYHM = "EEE, dd MMM, yyyy hh:mm"
     const val TIME_FORMAT_DMYHM = "dd-MMM-yyyy hh:mm"
@@ -41,6 +42,7 @@ object Common {
     private const val PAYMENTS_REF = "Payments Data"
     private const val NOTIFICATION_REF = "Notifications Data"
     private const val ASSIGNED_SHIFT_REF = "Assigned Shifts Data"
+    private const val SHIFT_REPORT_LOG_REF = "Organisation Of Working Time Sheet"
 
 
     val userCollectionRef = Firebase.firestore.collection(USER_REF)
@@ -51,4 +53,5 @@ object Common {
     val paymentsCollectionRef = Firebase.firestore.collection(PAYMENTS_REF)
     val notificationsCollectionRef = Firebase.firestore.collection(NOTIFICATION_REF)
     val assignedShiftsCollectionRef = Firebase.firestore.collection(ASSIGNED_SHIFT_REF)
+    val weeklyShiftsReportLogCollectionRef = Firebase.firestore.collection(SHIFT_REPORT_LOG_REF)
 }

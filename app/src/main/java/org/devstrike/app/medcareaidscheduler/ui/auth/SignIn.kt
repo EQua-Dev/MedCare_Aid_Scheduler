@@ -6,8 +6,10 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Patterns
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -130,24 +132,27 @@ fun SignIn(navController: NavHostController) {
             modifier = Modifier.padding(8.dp)
 
         )
-        Text(
-            text = stringResource(id = R.string.forgot_password_text),
-            color = MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.End,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .clickable {
-                    //nav to forgot password
-                    context.toast("Nav To Forgot Password")
-                    navController.navigate(Screen.ForgotPassword.route)
+        Row (verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End){
 
-                },
-            fontWeight = FontWeight.Bold
-        )
+            Text(
+                text = stringResource(id = R.string.forgot_password_text),
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .clickable {
+                        //nav to forgot password
+                        context.toast("Nav To Forgot Password")
+                        navController.navigate(Screen.ForgotPassword.route)
+
+                    },
+                fontWeight = FontWeight.Bold
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
-        ButtonComponent(enabled = email.value.isNotBlank() && password.value.isNotBlank(), onClick = {
+        ButtonComponent(modifier = Modifier.fillMaxWidth().padding(16.dp),enabled = email.value.isNotBlank() && password.value.isNotBlank(), onClick = {
             signInUser(email.value, password.value, context, onSuccess = {
                 isTaskRunning.value = false
                 CoroutineScope(Dispatchers.IO).launch {

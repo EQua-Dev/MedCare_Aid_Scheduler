@@ -138,3 +138,22 @@ fun getCurrentDate(dateFormat: String): String{
 
 }
 
+fun categorizeDatesByWeekInMonth(dates: List<Date>): Map<Int, List<Date>> {
+    val calendar = Calendar.getInstance()
+
+    val groupedDates = mutableMapOf<Int, MutableList<Date>>()
+
+    for (date in dates) {
+        calendar.time = date
+        val weekNumber = calendar.get(Calendar.WEEK_OF_MONTH)
+
+        if (groupedDates.containsKey(weekNumber)) {
+            groupedDates[weekNumber]?.add(date)
+        } else {
+            groupedDates[weekNumber] = mutableListOf(date)
+        }
+    }
+
+    return groupedDates.toMap()
+}
+
