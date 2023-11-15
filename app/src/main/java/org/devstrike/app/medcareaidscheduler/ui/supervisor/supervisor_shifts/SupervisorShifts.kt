@@ -14,13 +14,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -49,6 +52,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -123,6 +127,18 @@ fun SupervisorShifts(navController: NavHostController) {
         "Week 4" to listOf(AssignedShift()),
         "Week 5" to listOf(AssignedShift()),
     )
+    val isTaskRunning = remember { mutableStateOf(false) }
+    // Show the progress bar while the task is running
+
+
+    // Perform the task
+    LaunchedEffect(Unit) {
+        isTaskRunning.value = true
+
+        // Do something
+
+        isTaskRunning.value = false
+    }
 
     LaunchedEffect(Unit) {
         val shiftTypeList = mutableListOf<ShiftType>()
@@ -174,6 +190,11 @@ fun SupervisorShifts(navController: NavHostController) {
         val sheetState = rememberModalBottomSheetState()
         var isSheetOpen by rememberSaveable {
             mutableStateOf(false)
+        }
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            if (isTaskRunning.value) {
+                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+            }
         }
         Column(modifier = Modifier.padding(it)) {
             //search bar
@@ -264,10 +285,12 @@ fun SupervisorShifts(navController: NavHostController) {
                     if (week1Expanded) {
                         //when expanded show another expandable card
                         //card of days
+                        isTaskRunning.value = true
                         Log.d(
                             TAG,
                             "SupervisorHouseShiftDetail allAssignments: ${houseShiftList.value}"
                         )
+
                         for (shift in houseShiftList.value) {
                             /*
                             * Get all the shifts in the same week and add to a map with the key as the week number
@@ -328,6 +351,7 @@ fun SupervisorShifts(navController: NavHostController) {
                                 }
                             }
                         }
+                        isTaskRunning.value = false
                         houseShiftsByWeek["Week 1"] = weekAssignments
                         Log.d(TAG, "SupervisorShifts: ${houseShiftsByWeek["Week 1"]}")
 
@@ -339,15 +363,17 @@ fun SupervisorShifts(navController: NavHostController) {
                                         CardItem(assignment = shift)
                                     }
                                 }
+                            }else{
+                                Text(
+                                    text = "No assigned shifts for week 1",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    fontStyle = FontStyle.Italic
+                                )
                             }
 
                         }
-
-                        Text(
-                            text = "Content Sample for Display on Expansion of Card",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(8.dp)
-                        )
                     }
 
                     Row(
@@ -366,21 +392,7 @@ fun SupervisorShifts(navController: NavHostController) {
                         IconButton(
                             onClick = {
                                 week2Expanded = !week2Expanded
-                                /*when(week){
-                                    "Week 1" -> {
 
-                                    }
-                                    "Week 2" -> {
-                                        week2Expanded = !week2Expanded
-                                    }
-                                    "Week 3" -> {
-                                        week3Expanded = !week3Expanded
-                                    }
-                                    "Week 4" -> {
-                                        week4Expanded = !week4Expanded
-                                    }
-                                }
-        */
                             },
                             modifier = Modifier
                                 .weight(0.2f)
@@ -398,6 +410,8 @@ fun SupervisorShifts(navController: NavHostController) {
                     if (week2Expanded) {
                         //when expanded show another expandable card
                         //card of days
+                        isTaskRunning.value = true
+
                         Log.d(
                             TAG,
                             "SupervisorHouseShiftDetail allAssignments: ${houseShiftList.value}"
@@ -464,7 +478,7 @@ fun SupervisorShifts(navController: NavHostController) {
                         }
                         houseShiftsByWeek["Week 2"] = weekAssignments
                         Log.d(TAG, "SupervisorShifts: ${houseShiftsByWeek["Week 2"]}")
-
+                        isTaskRunning.value = false
                         Column() {
                             val week1Shifts = houseShiftsByWeek["Week 2"]
                             if (week1Shifts?.isNotEmpty() == true) {
@@ -473,234 +487,275 @@ fun SupervisorShifts(navController: NavHostController) {
                                         CardItem(assignment = shift)
                                     }
                                 }
+                            }else{
+                                Text(
+                                    text = "No assigned shifts for week 2",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    fontStyle = FontStyle.Italic
+                                )
                             }
 
                         }
 
-                        /*                                    2 -> {
-                                                                val weekAssignments: MutableList<AssignedShift> =
-                                                                    mutableListOf()
-                                                                for (shift in allAssignments) {
-                                                                    groupedDates[2]?.forEach {
-                                                                        if (it.toString().isNotEmpty()){
-                                                                            Log.d(TAG, "SupervisorHouseShiftDetail: 2 $it")
-
-                                                                            if (getDate(
-                                                                                    shift.assignedShiftDate.toLong(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                ).toLong() == convertDateTimeToMillis(
-                                                                                    it.toString(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                )
-                                                                            ) {
-                                                                                weekAssignments.add(shift)
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                                houseShiftsByWeek["Week 2"] = weekAssignments
-                                                                if (week == "Week 2"){
-                                                                    Column {
-                                                                        CardItem(text = "Week 2")
-                                                                        Text(
-                                                                            text = getDate(
-                                                                                houseShiftsByWeek["Week 2"]?.get(0)?.assignedShiftDate?.toLong(),
-                                                                                "EEE"
-                                                                            ) ?: "Not Assigned"
-                                                                        )
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            3 -> {
-                                                                val weekAssignments: MutableList<AssignedShift> =
-                                                                    mutableListOf()
-                                                                for (shift in allAssignments) {
-                                                                    groupedDates[3]?.forEach {
-                                                                        if (it.toString().isNotEmpty()) {
-                                                                            Log.d(TAG, "SupervisorHouseShiftDetail: 3 $it")
-
-                                                                            if (getDate(
-                                                                                    shift.assignedShiftDate.toLong(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                ).toLong() == convertDateTimeToMillis(
-                                                                                    it.toString(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                )
-                                                                            ) {
-                                                                                weekAssignments.add(shift)
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                                houseShiftsByWeek["Week 3"] = weekAssignments
-                                                                if (week == "Week 3") {
-                                                                    Column {
-                                                                        CardItem(text = "Week 3")
-                                                                        Text(
-                                                                            text = getDate(
-                                                                                houseShiftsByWeek["Week 3"]?.get(0)?.assignedShiftDate?.toLong(),
-                                                                                "EEE"
-                                                                            ) ?: "Not Assigned"
-                                                                        )
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            4 -> {
-                                                                val weekAssignments: MutableList<AssignedShift> =
-                                                                    mutableListOf()
-                                                                for (shift in allAssignments) {
-                                                                    groupedDates[4]?.forEach {
-                                                                        if (it.toString().isNotEmpty()) {
-                                                                            Log.d(TAG, "SupervisorHouseShiftDetail: 4 $it")
-
-                                                                            if (getDate(
-                                                                                    shift.assignedShiftDate.toLong(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                ).toLong() == convertDateTimeToMillis(
-                                                                                    it.toString(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                )
-                                                                            ) {
-                                                                                weekAssignments.add(shift)
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                                houseShiftsByWeek["Week 4"] = weekAssignments
-                                                                if (week == "Week 4") {
-                                                                    Column {
-                                                                        CardItem(text = "Week 4")
-                                                                        Text(
-                                                                            text = getDate(
-                                                                                houseShiftsByWeek["Week 4"]?.get(0)?.assignedShiftDate?.toLong(),
-                                                                                "EEE"
-                                                                            ) ?: "Not Assigned"
-                                                                        )
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            5 -> {
-                                                                val weekAssignments: MutableList<AssignedShift> =
-                                                                    mutableListOf()
-                                                                for (shift in allAssignments) {
-                                                                    groupedDates[1]?.forEach {
-                                                                        if (it.toString().isNotEmpty()) {
-                                                                            Log.d(TAG, "SupervisorHouseShiftDetail: 5 $it")
-
-                                                                            if (getDate(
-                                                                                    shift.assignedShiftDate.toLong(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                ).toLong() == convertDateTimeToMillis(
-                                                                                    it.toString(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                )
-                                                                            ) {
-                                                                                weekAssignments.add(shift)
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                                houseShiftsByWeek["Week 5"] = weekAssignments
-                                                                if (week == "Week 5") {
-                                                                    Column {
-                                                                        CardItem(text = "Week 5")
-                                                                        Text(
-                                                                            text = getDate(
-                                                                                houseShiftsByWeek["Week 5"]?.get(0)?.assignedShiftDate?.toLong(),
-                                                                                "EEE"
-                                                                            ) ?: "Not Assigned"
-                                                                        )
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            6 -> {
-
-                                                                val weekAssignments: MutableList<AssignedShift> =
-                                                                    mutableListOf()
-                                                                for (shift in allAssignments) {
-                                                                    groupedDates[6]?.forEach {
-                                                                        if (it.toString().isNotEmpty()) {
-                                                                            Log.d(TAG, "SupervisorHouseShiftDetail: 6 $it")
-
-                                                                            if (getDate(
-                                                                                    shift.assignedShiftDate.toLong(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                ).toLong() == convertDateTimeToMillis(
-                                                                                    it.toString(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                )
-                                                                            ) {
-                                                                                weekAssignments.add(shift)
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                                houseShiftsByWeek["Week 6"] = weekAssignments
-                                                                if (week == "Week 6") {
-                                                                    Column {
-                                                                        CardItem(text = "Week 6")
-                                                                        Text(
-                                                                            text = getDate(
-                                                                                houseShiftsByWeek["Week 6"]?.get(0)?.assignedShiftDate?.toLong(),
-                                                                                "EEE"
-                                                                            ) ?: "Not Assigned"
-                                                                        )
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            7 -> {
-                                                                val weekAssignments: MutableList<AssignedShift> =
-                                                                    mutableListOf()
-                                                                for (shift in allAssignments) {
-                                                                    groupedDates[7]?.forEach {
-                                                                        if (it.toString().isNotEmpty()) {
-                                                                            Log.d(TAG, "SupervisorHouseShiftDetail: 7 $it")
-
-                                                                            if (getDate(
-                                                                                    shift.assignedShiftDate.toLong(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                ).toLong() == convertDateTimeToMillis(
-                                                                                    it.toString(),
-                                                                                    "yyyy-MMM-dd"
-                                                                                )
-                                                                            ) {
-                                                                                weekAssignments.add(shift)
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                                houseShiftsByWeek["Week 7"] = weekAssignments
-                                                                if (week == "Week 7") {
-                                                                    Column {
-                                                                        CardItem(text = "Week 7")
-                                                                        Text(
-                                                                            text = getDate(
-                                                                                houseShiftsByWeek["Week 7"]?.get(0)?.assignedShiftDate?.toLong(),
-                                                                                "EEE"
-                                                                            ) ?: "Not Assigned"
-                                                                        )
-                                                                    }
-                                                                }
-                                                            }*/
-
-                        //}
-
-
-                        Text(
-                            text = "Content Sample for Display on Expansion of Card",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(8.dp)
-                        )
                     }
 
                     //WEEK 2 ENDS
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(width = 0.3.dp, MaterialTheme.colorScheme.primary),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Week 3",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .weight(0.8f)
+                        )
+                        IconButton(
+                            onClick = {
+
+                                week3Expanded = !week3Expanded
+                            },
+                            modifier = Modifier
+                                .weight(0.2f)
+                                .padding(4.dp)
+                        ) {
+                            Image(
+                                painter = if (week3Expanded) painterResource(R.drawable.ic_arrow_up) else painterResource(
+                                    R.drawable.ic_arrow_down
+                                ),
+                                contentDescription = "Toggle Password Visibility",
+                            )
+                        }
+                    }
+
+                    if (week3Expanded) {
+                        //when expanded show another expandable card
+                        //card of days
+                        Log.d(
+                            TAG,
+                            "SupervisorHouseShiftDetail allAssignments: ${houseShiftList.value}"
+                        )
+                        isTaskRunning.value = true
+                        for (shift in houseShiftList.value) {
+                            /*
+                            * Get all the shifts in the same week and add to a map with the key as the week number
+                            * Display the list of keys in a lazy column
+                            * When each key card is clicked, all days of the week from Monday to Sunday is displayed
+                            * When each day is clicked, the Day, Night and SleepOver is displayed in a list and the assigned staff beside them
+                            * If the assigned staff is empty or null, it shows indication to assign
+                            *
+                            * */
+
+                            val mapKey =
+                                getDate(shift.assignedShiftDate.toLong(), "yyyy-MMM-dd")
+                            val list = listOfDates.getOrDefault(mapKey, mutableListOf())
+                                .toMutableList()
+
+                            list.add(shift) // Add the new value to the list
+
+                            listOfDates[mapKey] = list
+
+
+                        }
+                        val dateFormat = SimpleDateFormat("yyyy-MMM-dd", Locale.ENGLISH)
+
+                        val dates = listOfDates.map { dateFormat.parse(it.key) ?: Date() }
+
+                        val groupedDates = categorizeDatesByWeekInMonth(dates)
+                        Log.d(TAG, "Grouped Dates: $groupedDates")
+
+                        val weekAssignments: MutableList<AssignedShift> =
+                            mutableListOf()
+                        for (shift in houseShiftList.value) {
+                            groupedDates[3]?.forEach {
+                                if (it.toString().isNotEmpty()) {
+                                    Log.d(TAG, "SupervisorHouseShiftDetail: 1 $it")
+                                    Log.d(
+                                        TAG,
+                                        "SupervisorHouseShiftDetail: assignedShiftDate ${shift.assignedShiftDate}"
+                                    )
+                                    val shiftDate = getDate(
+                                        shift.assignedShiftDate.toLong(),
+                                        "yyyy-MMM-dd"
+                                    )
+                                    val weekDate = convertDateTimeToMillis(
+                                        it.toString(),
+                                        "EEE MMM dd HH:mm:ss 'GMT'Z yyyy"
+                                    ).toString()
+                                    Log.d(TAG, "weekDate: $shiftDate")
+                                    Log.d(TAG, "weekDate: $weekDate")
+                                    if (shiftDate
+                                        == getDate(weekDate.toLong(), "yyyy-MMM-dd")
+                                    ) {
+                                        weekAssignments.add(shift)
+                                        Log.d(
+                                            TAG,
+                                            "SupervisorShifts weekAssignments: $weekAssignments"
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        houseShiftsByWeek["Week 3"] = weekAssignments
+                        Log.d(TAG, "SupervisorShifts: ${houseShiftsByWeek["Week 3"]}")
+
+                        isTaskRunning.value = false
+
+                        Column() {
+                            val week1Shifts = houseShiftsByWeek["Week 3"]
+                            if (week1Shifts?.isNotEmpty() == true) {
+                                LazyColumn(modifier = Modifier.heightIn(240.dp)) {
+                                    items(week1Shifts) { shift ->
+                                        CardItem(assignment = shift)
+                                    }
+                                }
+                            }else{
+                                Text(
+                                    text = "No assigned shifts for week 3",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    fontStyle = FontStyle.Italic
+                                )
+                            }
+
+                        }
+                    }
+                    //WEEK 3 ENDS
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(width = 0.3.dp, MaterialTheme.colorScheme.primary),
+                        verticalAlignment = Alignment.CenterVertically
+                    )
+                    {
+                        Text(
+                            text = "Week 4",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .weight(0.8f)
+                        )
+                        IconButton(
+                            onClick = {
+                                week4Expanded = !week4Expanded
+                            },
+                            modifier = Modifier
+                                .weight(0.2f)
+                                .padding(4.dp)
+                        ) {
+                            Image(
+                                painter = if (week4Expanded) painterResource(R.drawable.ic_arrow_up) else painterResource(
+                                    R.drawable.ic_arrow_down
+                                ),
+                                contentDescription = "Toggle Password Visibility",
+                            )
+                        }
+                    }
+
+                    if (week4Expanded) {
+                        //when expanded show another expandable card
+                        //card of days
+                        isTaskRunning.value = true
+
+                        Log.d(
+                            TAG,
+                            "SupervisorHouseShiftDetail allAssignments: ${houseShiftList.value}"
+                        )
+                        for (shift in houseShiftList.value) {
+                            /*
+                            * Get all the shifts in the same week and add to a map with the key as the week number
+                            * Display the list of keys in a lazy column
+                            * When each key card is clicked, all days of the week from Monday to Sunday is displayed
+                            * When each day is clicked, the Day, Night and SleepOver is displayed in a list and the assigned staff beside them
+                            * If the assigned staff is empty or null, it shows indication to assign
+                            *
+                            * */
+
+                            val mapKey =
+                                getDate(shift.assignedShiftDate.toLong(), "yyyy-MMM-dd")
+                            val list = listOfDates.getOrDefault(mapKey, mutableListOf())
+                                .toMutableList()
+
+                            list.add(shift) // Add the new value to the list
+
+                            listOfDates[mapKey] = list
+
+
+                        }
+                        val dateFormat = SimpleDateFormat("yyyy-MMM-dd", Locale.ENGLISH)
+
+                        val dates = listOfDates.map { dateFormat.parse(it.key) ?: Date() }
+
+                        val groupedDates = categorizeDatesByWeekInMonth(dates)
+                        Log.d(TAG, "Grouped Dates: $groupedDates")
+
+                        val weekAssignments: MutableList<AssignedShift> =
+                            mutableListOf()
+                        for (shift in houseShiftList.value) {
+                            groupedDates[4]?.forEach {
+                                if (it.toString().isNotEmpty()) {
+                                    Log.d(TAG, "SupervisorHouseShiftDetail: 4 $it")
+                                    Log.d(
+                                        TAG,
+                                        "SupervisorHouseShiftDetail: assignedShiftDate ${shift.assignedShiftDate}"
+                                    )
+                                    val shiftDate = getDate(
+                                        shift.assignedShiftDate.toLong(),
+                                        "yyyy-MMM-dd"
+                                    )
+                                    val weekDate = convertDateTimeToMillis(
+                                        it.toString(),
+                                        "EEE MMM dd HH:mm:ss 'GMT'Z yyyy"
+                                    ).toString()
+                                    Log.d(TAG, "weekDate: $shiftDate")
+                                    Log.d(TAG, "weekDate: $weekDate")
+                                    if (shiftDate
+                                        == getDate(weekDate.toLong(), "yyyy-MMM-dd")
+                                    ) {
+                                        weekAssignments.add(shift)
+                                        Log.d(
+                                            TAG,
+                                            "SupervisorShifts weekAssignments: $weekAssignments"
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        houseShiftsByWeek["Week 4"] = weekAssignments
+                        Log.d(TAG, "SupervisorShifts: ${houseShiftsByWeek["Week 4"]}")
+                        isTaskRunning.value = false
+                        Column() {
+                            val week1Shifts = houseShiftsByWeek["Week 4"]
+                            if (week1Shifts?.isNotEmpty() == true) {
+                                LazyColumn(modifier = Modifier.heightIn(240.dp)) {
+                                    items(week1Shifts) { shift ->
+                                        CardItem(assignment = shift)
+                                    }
+                                }
+                            }else{
+                                Text(
+                                    text = "No assigned shifts for week 4",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    fontStyle = FontStyle.Italic
+                                )
+                            }
+
+                        }
+
+
+                    }
+
+                    //WEEK 4 ENDS
+
                 }
 
 
