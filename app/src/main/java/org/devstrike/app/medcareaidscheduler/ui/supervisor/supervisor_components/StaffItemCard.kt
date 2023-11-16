@@ -51,6 +51,8 @@ fun StaffItemCard(staff: UserData, onClick: () -> Unit = {}) {
 //    }
 
 
+
+
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -78,8 +80,11 @@ fun StaffItemCard(staff: UserData, onClick: () -> Unit = {}) {
                 )
 
                 //house assigned
-
-                val houseAssigned = staff.userAssignedHouse.ifBlank { "N/A" }
+                val houseAssigned = if (staff.userAssignedHouse.isNotBlank()){
+                     "N/A"
+                }else{
+                    staff.userAssignedHouse
+                }
 
 
 

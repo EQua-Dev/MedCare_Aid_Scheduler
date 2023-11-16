@@ -78,7 +78,7 @@ fun StaffShifts(navController: NavHostController) {
                 text = stringResource(
                     id = R.string.staff_shift_screen_title,
                     getCurrentDate("MMMM, yyyy")
-                ), fontStyle = FontStyle.Italic
+                ), fontStyle = FontStyle.Italic, modifier = Modifier.padding(8.dp)
             )
             // on the below line we are specifying the top app bar
             // and specifying background color for it.

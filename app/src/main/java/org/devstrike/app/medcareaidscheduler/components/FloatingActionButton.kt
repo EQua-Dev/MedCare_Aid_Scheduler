@@ -71,7 +71,7 @@ fun FloatActionButton(
 //            showModal = true
 //            isNewHouseClicked = true
 
-        }, modifier = Modifier.offset(y = (-88).dp)
+        }
     ) {
         Icon(Icons.Default.Add, contentDescription = null)
         Text(text = fabText)

@@ -21,8 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -170,11 +172,11 @@ fun StaffConcludedShifts() {
                          *
                          * */
                         if (staffWeekShiftTypeHours.entries.isEmpty()) {
-                            staffWeekShiftTypeHours[staffShiftType.shiftTypeName] =
+                            staffWeekShiftTypeHours[staffShiftType.shiftTypeAliasName] =
                                 staffShiftType.shiftTypeNoOfHours.toDouble().toInt()
                             Log.d(
                                 TAG,
-                                "StaffConcludedShifts: ${staffWeekShiftTypeHours.entries} is empty adding ${staffShiftType.shiftTypeName}"
+                                "StaffConcludedShifts: ${staffWeekShiftTypeHours.entries} is empty adding ${staffShiftType.shiftTypeAliasName}"
                             )
                         } else {
                             Log.d(
@@ -185,10 +187,10 @@ fun StaffConcludedShifts() {
                                 Log.d(TAG, "shiftHours: $shiftHours")
                                 Log.d(TAG, "shiftHoursEntries: ${staffWeekShiftTypeHours.entries}")
 //                            for (shiftName in shiftHours.key){
-                                if (shiftHours.key == staffShiftType.shiftTypeName) {
+                                if (shiftHours.key == staffShiftType.shiftTypeAliasName) {
                                     Log.d(
                                         TAG,
-                                        "StaffConcludedShifts: ${shiftHours.key} is  equal to ${staffShiftType.shiftTypeName} adding ${shiftHours.value} to ${
+                                        "StaffConcludedShifts: ${shiftHours.key} is  equal to ${staffShiftType.shiftTypeAliasName} adding ${shiftHours.value} to ${
                                             staffShiftType.shiftTypeNoOfHours.toDouble().toInt()
                                         } which is equal to ${
                                             shiftHours.value.plus(
@@ -203,9 +205,9 @@ fun StaffConcludedShifts() {
                                 } else {
                                     Log.d(
                                         TAG,
-                                        "StaffConcludedShifts: ${shiftHours.key} is  not equal to ${staffShiftType.shiftTypeName}, writing ${shiftHours.value} to $staffWeekShiftTypeHours"
+                                        "StaffConcludedShifts: ${shiftHours.key} is  not equal to ${staffShiftType.shiftTypeAliasName}, writing ${shiftHours.value} to $staffWeekShiftTypeHours"
                                     )
-                                    staffWeekShiftTypeHours[staffShiftType.shiftTypeName] =
+                                    staffWeekShiftTypeHours[staffShiftType.shiftTypeAliasName] =
                                         staffShiftType.shiftTypeNoOfHours.toDouble().toInt()
                                 }
 //                            }
@@ -235,217 +237,223 @@ fun StaffConcludedShifts() {
             mutableStateOf(false)
         }
 
-        Column(modifier = Modifier.padding(4.dp)) {
+                //list of cards
 
-            Text(
-                text = "End of Week Log",
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Bold,
-                style = Typography.titleSmall,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .offset(x = 16.dp)
-            )
-            Row(
-                modifier = Modifier.padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.staff_log_shifts_served),
-                    modifier = Modifier
-                        .weight(0.5F)
-                        .padding(4.dp)
-                )
+                LazyColumn {
+                    item {
+                        Column(modifier = Modifier.padding(4.dp)) {
 
-                /*
-                ~ check the list of assigned shifts for the ones with the staff ID which is "concluded shift list .value"
-                ~ check the shifts that are within this week
-                ~ then check for the shifts that have clock out time || check the ones that have a status of 'served'
-                */
+                            Text(
+                                text = "End of Week Log",
+                                fontStyle = FontStyle.Italic,
+                                fontWeight = FontWeight.Bold,
+                                style = Typography.titleSmall,
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .offset(x = 16.dp)
+                            )
+                            Row(
+                                modifier = Modifier.padding(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.staff_log_shifts_served),
+                                    modifier = Modifier
+                                        .weight(0.7F)
+                                        .padding(4.dp)
+                                )
 
-                Text(
-                    text = staffShiftsServed.value.toString(),
-                    modifier = Modifier
-                        .weight(0.5F)
-                        .padding(4.dp)
-                )
-            }
-            Row(
-                modifier = Modifier.padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.staff_log_hours),
-                    modifier = Modifier
-                        .weight(0.5F)
-                        .padding(4.dp)
-                )
+                                /*
+                                ~ check the list of assigned shifts for the ones with the staff ID which is "concluded shift list .value"
+                                ~ check the shifts that are within this week
+                                ~ then check for the shifts that have clock out time || check the ones that have a status of 'served'
+                                */
 
-                /*
-                ~ check the list of assigned shifts for the ones with the staff ID
-                ~ check the shifts that are within this week
-                ~ check for the shifts that have clock out time || check the ones that have a status of 'served'
-                ~ then for each of the shifts, get the shift type ID and get the number of hours in those shift types
-                ~ then have a variable that will be increasing its value by adding every shift hour found
-                */
+                                Text(
+                                    text = staffShiftsServed.value.toString(),
+                                    modifier = Modifier
+                                        .weight(0.3F)
+                                        .padding(4.dp)
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.padding(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.staff_log_hours),
+                                    modifier = Modifier
+                                        .weight(0.7F)
+                                        .padding(4.dp)
+                                )
 
-
-                Text(
-                    text = staffWeekHours.value.toString(),
-                    modifier = Modifier
-                        .weight(0.5F)
-                        .padding(4.dp)
-                )
-            }
-            Row(
-                modifier = Modifier.padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.staff_log_payable_hours),
-                    modifier = Modifier
-                        .weight(0.5F)
-                        .padding(4.dp)
-                )
-
-                /*
-                ~ check the list of assigned shifts for the ones with the staff ID
-                ~ check the shifts that are within this week
-                ~ check for the shifts that have clock out time || check the ones that have a status of 'served'
-                ~ have three variables for each of the shift types {for each distinct shift type, there will be a map containing the type name and its hours total value}
-                ~ then for each of the items in the map, populate its alias name and its hours total
-                */
-
-                val hoursPayable =
-                    staffWeekShiftTypeHours.entries.joinToString(", ") { (key, value) -> "$key: $value" }
-
-                Text(
-                    text =
-                    hoursPayable,
-                    modifier = Modifier
-                        .weight(0.5F)
-                        .padding(4.dp)
-                )
-            }
-            Row(
-                modifier = Modifier.padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.staff_log_payable_amount),
-                    modifier = Modifier
-                        .weight(0.5F)
-                        .padding(4.dp)
-                )
-
-                /*
-                ~ check the map of hours payable
-                ~ get all the values and add them, then multiply the cost of 1 shift by the sum
-
-                */
-
-                val totalHours = staffWeekShiftTypeHours.values.sum()
-                Log.d(TAG, "totalHours: $totalHours")
-
-                staffWeekPayableAmount.value =
-                    totalHours.toDouble().times(SHIFT_HOURLY_PAY.toDouble())
-
-                Text(
-                    text = stringResource(
-                        id = R.string.euro_currency,
-                        staffWeekPayableAmount.value.toString()
-                    ),
-                    modifier = Modifier
-                        .weight(0.5F)
-                        .padding(4.dp)
-                )
-            }
-
-            Row(
-                modifier = Modifier.padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ButtonComponent(
-                    buttonText = stringResource(id = R.string.edit_text), onClick = {
-                        context.toast("will edit log")
-                        isEditClicked = true
-                    }, modifier = Modifier
-                        .weight(0.5F)
-                        .padding(4.dp)
-                )
-                ButtonComponent(
-                    buttonText = stringResource(id = R.string.submit_text), onClick = {
-                        context.toast("will submit log")
-                    }, modifier = Modifier
-                        .weight(0.5F)
-                        .padding(4.dp)
-                )
-            }
+                                /*
+                                ~ check the list of assigned shifts for the ones with the staff ID
+                                ~ check the shifts that are within this week
+                                ~ check for the shifts that have clock out time || check the ones that have a status of 'served'
+                                ~ then for each of the shifts, get the shift type ID and get the number of hours in those shift types
+                                ~ then have a variable that will be increasing its value by adding every shift hour found
+                                */
 
 
-            Spacer(modifier = Modifier.height(24.dp))
+                                Text(
+                                    text = staffWeekHours.value.toString(),
+                                    modifier = Modifier
+                                        .weight(0.3F)
+                                        .padding(4.dp)
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.padding(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.staff_log_payable_hours),
+                                    modifier = Modifier
+                                        .weight(0.7F)
+                                        .padding(4.dp)
+                                )
 
-            Divider(Modifier.padding(8.dp))
-            Spacer(modifier = Modifier.height(12.dp))
-            //search bar
-            TextFieldComponent(
-                value = searchQuery.value,
-                onValueChange = { searchQuery.value = it },
-                label = "Search",
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    autoCorrect = false,
-                ),
-                inputType = "Search",
-                leadingIcon = R.drawable.ic_search,
-                modifier = Modifier.padding(16.dp)
+                                /*
+                                ~ check the list of assigned shifts for the ones with the staff ID
+                                ~ check the shifts that are within this week
+                                ~ check for the shifts that have clock out time || check the ones that have a status of 'served'
+                                ~ have three variables for each of the shift types {for each distinct shift type, there will be a map containing the type name and its hours total value}
+                                ~ then for each of the items in the map, populate its alias name and its hours total
+                                */
 
-            )
-            Text(
-                text = "Shifts",
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Bold,
-                style = Typography.titleSmall,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .offset(x = 16.dp)
-            )
+                                val hoursPayable =
+                                    staffWeekShiftTypeHours.entries.joinToString(", ") { (key, value) -> "$key: $value" }
 
-            //list of cards
+                                Text(
+                                    text =
+                                    hoursPayable,
+                                    modifier = Modifier
+                                        .weight(0.3F)
+                                        .padding(4.dp)
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.padding(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.staff_log_payable_amount),
+                                    modifier = Modifier
+                                        .weight(0.7F)
+                                        .padding(4.dp)
+                                )
 
-            LazyColumn {
-                val listOfUpcomingShifts = concludedShiftList.value
-                Log.d(TAG, "listOfUpcomingShifts: $listOfUpcomingShifts")
+                                /*
+                                ~ check the map of hours payable
+                                ~ get all the values and add them, then multiply the cost of 1 shift by the sum
 
-                val filteredList = listOfUpcomingShifts.filter { assignedShift ->
-                    val houseInfo = getHouse(assignedShift.assignedHouseID, context)!!
-                    val shiftTypeInfo =
-                        getShiftType(assignedShift.assignedShiftTypeID, context)!!
+                                */
+
+                                val totalHours = staffWeekShiftTypeHours.values.sum()
+                                Log.d(TAG, "totalHours: $totalHours")
+
+                                staffWeekPayableAmount.value =
+                                    totalHours.toDouble().times(SHIFT_HOURLY_PAY.toDouble())
+
+                                Text(
+                                    text = stringResource(
+                                        id = R.string.euro_currency,
+                                        staffWeekPayableAmount.value.toString()
+                                    ),
+                                    modifier = Modifier
+                                        .weight(0.3F)
+                                        .padding(4.dp)
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier.padding(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                ButtonComponent(
+                                    buttonText = stringResource(id = R.string.edit_text), onClick = {
+                                        context.toast("will edit log")
+                                        isEditClicked = true
+                                    }, modifier = Modifier
+                                        .weight(0.5F)
+                                        .padding(4.dp)
+                                )
+                                ButtonComponent(
+                                    buttonText = stringResource(id = R.string.submit_text), onClick = {
+                                        context.toast("will submit log")
+                                    }, modifier = Modifier
+                                        .weight(0.5F)
+                                        .padding(4.dp)
+                                )
+                            }
+
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Divider(Modifier.padding(8.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
+                            //search bar
+
+
+                            TextFieldComponent(
+                                value = searchQuery.value,
+                                onValueChange = { searchQuery.value = it },
+                                label = "Search",
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    autoCorrect = false,
+                                ),
+                                inputType = "Search",
+                                leadingIcon = R.drawable.ic_search,
+                                modifier = Modifier.padding(8.dp)
+
+                            )
+                            Text(
+                                text = "Shifts",
+                                fontStyle = FontStyle.Italic,
+                                fontWeight = FontWeight.Bold,
+                                style = Typography.titleSmall,
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .offset(x = 16.dp)
+                            )
+                        }
+
+                    }
+                    val listOfUpcomingShifts = concludedShiftList.value
+                    Log.d(TAG, "listOfUpcomingShifts: $listOfUpcomingShifts")
+
+                    val filteredList = listOfUpcomingShifts.filter { assignedShift ->
+                        val houseInfo = getHouse(assignedShift.assignedHouseID, context)!!
+                        val shiftTypeInfo =
+                            getShiftType(assignedShift.assignedShiftTypeID, context)!!
 //                    val supervisorInfo = getUser(houseInfo.houseName, context)!!
-                    houseInfo.houseName.contains(
-                        searchQuery.value,
-                        true
-                    ) || houseInfo.houseAddress.contains(
-                        searchQuery.value,
-                        true
-                    ) || getDate(
-                        assignedShift.assignedShiftDate.toLong(),
-                        "EEE, dd MMM, yyyy"
-                    ).contains(searchQuery.value, true)
-                            || shiftTypeInfo.shiftTypeName.contains(searchQuery.value, true)
+                        houseInfo.houseName.contains(
+                            searchQuery.value,
+                            true
+                        ) || houseInfo.houseAddress.contains(
+                            searchQuery.value,
+                            true
+                        ) || getDate(
+                            assignedShift.assignedShiftDate.toLong(),
+                            "EEE, dd MMM, yyyy"
+                        ).contains(searchQuery.value, true)
+                                || shiftTypeInfo.shiftTypeName.contains(searchQuery.value, true)
+                    }
+
+                    Log.d(TAG, "filteredList: $filteredList")
+                    items(filteredList) { assignedShift ->
+                        UpcomingShiftItemCard(assignedShift = assignedShift, onClick = {
+                            concludedShiftData = assignedShift
+                            isSheetOpen = true
+                            isItemClicked = true
+                        }, onContestClick = {
+
+                        })
+                    }
+
                 }
 
-                Log.d(TAG, "filteredList: $filteredList")
-                items(filteredList) { assignedShift ->
-                    UpcomingShiftItemCard(assignedShift = assignedShift, onClick = {
-                        concludedShiftData = assignedShift
-                        isSheetOpen = true
-                        isItemClicked = true
-                    }, onContestClick = {
-
-                    })
-                }
-
-            }
             if (isSheetOpen) {
                 ModalBottomSheet(
                     sheetState = sheetState,
@@ -483,7 +491,7 @@ fun StaffConcludedShifts() {
                 )
             }
 
-        }
+
 
     }
 }
@@ -741,20 +749,21 @@ fun EditWeekLogDialog(
 
                                 weeklyShiftsReportLogCollectionRef.document(logReportID)
                                     .set(reportLog).addOnCompleteListener {
-                                    if (it.isSuccessful) {
+                                        if (it.isSuccessful) {
+                                            isTaskRunning.value = false
+                                            context.toast("Report Submitted")
+                                            onDismiss()
+                                        } else {
+                                            isTaskRunning.value = false
+                                            context.toast(
+                                                it.exception?.localizedMessage
+                                                    ?: "Some error occurred"
+                                            )
+                                        }
+                                    }.addOnFailureListener { e ->
                                         isTaskRunning.value = false
-                                        context.toast("Report Submitted")
-                                        onDismiss()
-                                    } else {
-                                        isTaskRunning.value = false
-                                        context.toast(
-                                            it.exception?.localizedMessage ?: "Some error occurred"
-                                        )
+                                        context.toast(e.localizedMessage ?: "Some error occurred")
                                     }
-                                }.addOnFailureListener { e ->
-                                    isTaskRunning.value = false
-                                    context.toast(e.localizedMessage ?: "Some error occurred")
-                                }
 
                             }
                         }

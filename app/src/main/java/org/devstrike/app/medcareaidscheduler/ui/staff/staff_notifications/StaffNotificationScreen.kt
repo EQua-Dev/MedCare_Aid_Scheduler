@@ -39,6 +39,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -216,9 +217,9 @@ fun ShiftNotificationScreen(notificationTabType: String) {
                     //shape = MaterialTheme.shapes.medium,
                     shape = RoundedCornerShape(10.dp),
                     // modifier = modifier.size(280.dp, 240.dp)
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(12.dp),
                 ) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Row(modifier = Modifier.fillMaxWidth().padding(4.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                         Text(
                             text = getDate(
                                 notificationData.value.notificationSentDate.toLong(),
@@ -227,14 +228,16 @@ fun ShiftNotificationScreen(notificationTabType: String) {
                             style = Typography.titleSmall,
                             modifier = Modifier
                                 .padding(4.dp)
-                                .fillMaxWidth(0.5f),
+                                .weight(0.5f),
 
                             )
                         Text(
                             text = notificationData.value.notificationType,
                             fontStyle = FontStyle.Italic,
                             style = Typography.titleSmall,
-                            modifier = Modifier.padding(4.dp),
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .weight(0.5f),
                             textAlign = TextAlign.End
                         )
                     }
@@ -258,34 +261,36 @@ fun ShiftNotificationScreen(notificationTabType: String) {
                             modifier = Modifier.fillMaxWidth(0.5f),
                             textAlign = TextAlign.Start
                         )
-                        Text(
-                            text = "call",
-                            textAlign = TextAlign.End,
-                            modifier = Modifier
-                                .fillMaxWidth(0.5f)
-                                .clickable {
-                                    //openDial
-                                    openDial(
-                                        getUser(
-                                            notificationData.value.notificationSenderID,
-                                            context
-                                        )!!.userContactNumber, context
-                                    )
-                                }
+                        TextButton(onClick = { //openDial
+                            openDial(
+                                getUser(
+                                    notificationData.value.notificationSenderID,
+                                    context
+                                )!!.userContactNumber, context
+                            ) }) {
 
-                        )
+                            Text(
+                                text = "call",
+                                textAlign = TextAlign.End,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .weight(0.5f)
+
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.height(64.dp))
+                    Spacer(modifier = Modifier.height(48.dp))
 
                     Box(
                         contentAlignment = Alignment.CenterEnd,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
+                            .padding(16.dp)
                     ) {
-                        Text(text = "Okay", modifier = Modifier.clickable {
-                            isItemClicked = false
-                        })
+                        TextButton(onClick = { isItemClicked = false }) {
+                            Text(text = "Okay", modifier = Modifier.padding(4.dp) )
+                        }
+
                     }
 
 

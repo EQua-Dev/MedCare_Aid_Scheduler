@@ -29,12 +29,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.navigation.Screen
+import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 
 //@Preview(showSystemUi = true, showBackground = true)
 @Composable
@@ -65,9 +68,11 @@ fun AnimatedSplashScreen(alpha: Float) {
 
         Text(
             text = stringResource(id = R.string.app_name),
+            style = Typography.displayMedium,
             modifier = Modifier
-                .size(240.dp)
-                .alpha(alpha),
+                .alpha(alpha)
+                .fillMaxSize(),
+            textAlign = TextAlign.Center
         )
 
     }

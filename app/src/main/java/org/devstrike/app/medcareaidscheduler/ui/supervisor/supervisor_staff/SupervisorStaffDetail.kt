@@ -12,6 +12,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -150,11 +152,11 @@ fun SupervisorStaffDetail(staff: UserData) {
                 Log.d(
                     TAG,
                     "SupervisorStaffDetail Is current week?: ${
-                        isTimeInCurrentWeek(item.assignedShiftDate.toLong())
+                        isTimeInCurrentMonth(item.assignedShiftDate.toLong())
                     }"
                 )
 
-                if (isTimeInCurrentWeek(item.assignedShiftDate.toLong())) {
+                if (isTimeInCurrentMonth(item.assignedShiftDate.toLong())) {
                     //time is in current week
                     staffAssignedShiftsList.add(item)
                     staffAssignedShifts.value = staffAssignedShiftsList
@@ -162,7 +164,7 @@ fun SupervisorStaffDetail(staff: UserData) {
                     Log.d(
                         TAG,
                         "SupervisorStaffDetail Is current week?: ${
-                            isTimeInCurrentWeek(item.assignedShiftDate.toLong())
+                            isTimeInCurrentMonth(item.assignedShiftDate.toLong())
                         }"
                     )
                 }
@@ -222,108 +224,106 @@ fun SupervisorStaffDetail(staff: UserData) {
 
 
         Column(
-            modifier = Modifier.verticalScroll(
-                rememberScrollState()
-            )
+            modifier = Modifier.scrollable(rememberScrollState(), Orientation.Vertical)
         ) {
-            Row {
-                Text(
-                    text = stringResource(id = R.string.contact_title),
-                    fontWeight = FontWeight.Light,
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .weight(0.8F)
-                )
-                Icon(imageVector = Icons.Default.Phone,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .weight(0.1F)
-                        .clickable {
+                Row {
+                    Text(
+                        text = stringResource(id = R.string.contact_title),
+                        fontWeight = FontWeight.Light,
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .weight(0.8F)
+                    )
+                    Icon(imageVector = Icons.Default.Phone,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .weight(0.1F)
+                            .clickable {
 
-                        })
-                Icon(imageVector = Icons.Default.Chat,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .weight(0.1F)
-                        .clickable {
+                            })
+                    Icon(imageVector = Icons.Default.Chat,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .weight(0.1F)
+                            .clickable {
 
-                        })
-            }
+                            })
+                }
 //            Spacer(modifier = Modifier.height(24.dp))
 
 
-            Card(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.secondary),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp
-                )
-
-            ) {
-
-
-                Text(
-                    text = stringResource(id = R.string.contact_address_title),
-                    style = Typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-
-                Text(
-                    text = staff.userAddress,
-                    style = Typography.bodyLarge,
+                Card(
                     modifier = Modifier
-                        .offset(x = 8.dp)
-                        .padding(4.dp)
-                )
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.secondary),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 8.dp
+                    )
 
-                Text(
-                    text = stringResource(id = R.string.district_province_title),
-                    style = Typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-                val staffProvince =
-                    getProvince(provinceId = staff.userProvinceID, context = context)!!
-                val staffDistrictAndProvince =
-                    "${staff.userDistrictID}, ${staffProvince.provinceName}"
+                ) {
 
-                Text(
-                    text = staffDistrictAndProvince,
-                    style = Typography.bodyLarge,
-                    modifier = Modifier
-                        .offset(x = 8.dp)
-                        .padding(4.dp)
-                )
 
-                Text(
-                    text = stringResource(id = R.string.email_title),
-                    style = Typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
+                    Text(
+                        text = stringResource(id = R.string.contact_address_title),
+                        style = Typography.bodySmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
 
-                Text(
-                    text = staff.userEmail,
-                    style = Typography.bodyLarge,
-                    modifier = Modifier
-                        .offset(x = 8.dp)
-                        .padding(4.dp)
-                )
+                    Text(
+                        text = staff.userAddress,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .offset(x = 8.dp)
+                            .padding(4.dp)
+                    )
 
-                Text(
-                    text = stringResource(id = R.string.phone_number_title),
-                    style = Typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
+                    Text(
+                        text = stringResource(id = R.string.district_province_title),
+                        style = Typography.bodySmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                    val staffProvince =
+                        getProvince(provinceId = staff.userProvinceID, context = context)!!
+                    val staffDistrictAndProvince =
+                        "${staff.userDistrictID}, ${staffProvince.provinceName}"
 
-                Text(
-                    text = staff.userContactNumber,
-                    style = Typography.bodyLarge,
-                    modifier = Modifier
-                        .offset(x = 8.dp)
-                        .padding(4.dp)
-                )
-            }
+                    Text(
+                        text = staffDistrictAndProvince,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .offset(x = 8.dp)
+                            .padding(4.dp)
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.email_title),
+                        style = Typography.bodySmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
+
+                    Text(
+                        text = staff.userEmail,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .offset(x = 8.dp)
+                            .padding(4.dp)
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.phone_number_title),
+                        style = Typography.bodySmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
+
+                    Text(
+                        text = staff.userContactNumber,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .offset(x = 8.dp)
+                            .padding(4.dp)
+                    )
+                }
 
             Row {
                 Text(
@@ -657,7 +657,7 @@ fun AssignStaffShiftFormDialog(
             // modifier = modifier.size(280.dp, 240.dp)
             modifier = Modifier.padding(8.dp),
         ) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 if (isTaskRunning.value) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 }
