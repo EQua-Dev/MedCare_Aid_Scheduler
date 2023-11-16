@@ -120,8 +120,6 @@ fun SupervisorHouses(navController: NavHostController) {
             mutableStateOf(false)
         }
         Column(modifier = Modifier.padding(innerPadding)) {
-            Text(text = "Supervisor Houses", style = Typography.titleLarge)
-
             //search bar
             TextFieldComponent(
                 value = searchQuery.value,

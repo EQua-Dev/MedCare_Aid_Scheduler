@@ -16,6 +16,7 @@ import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_houses.Sup
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_profile.SupervisorProfile
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_shifts.SupervisorShifts
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_staff.SupervisorStaff
+import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_weekly_logs.SupervisorWeekLogs
 
 @Composable
 fun SupervisorBottomNavigationGraph(navController: NavHostController) {
@@ -56,6 +57,11 @@ fun SupervisorBottomNavigationGraph(navController: NavHostController) {
             route = BottomBarScreen.SupervisorShifts.route
         ) {
             SupervisorShifts(navController = navController)
+        }
+        composable(
+            route = BottomBarScreen.SupervisorWeekLogs.route
+        ) {
+            SupervisorWeekLogs(navController = navController)
         }
         composable(
             route = BottomBarScreen.SupervisorProfile.route

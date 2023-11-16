@@ -20,9 +20,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -61,6 +63,7 @@ import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getProvince
 import org.devstrike.app.medcareaidscheduler.utils.getShiftType
+import org.devstrike.app.medcareaidscheduler.utils.getUser
 import org.devstrike.app.medcareaidscheduler.utils.isTimeInCurrentMonth
 import org.devstrike.app.medcareaidscheduler.utils.isTimeInCurrentWeek
 import org.devstrike.app.medcareaidscheduler.utils.toast
@@ -120,287 +123,351 @@ fun SupervisorHouseDetail(house: House) {
     }
 
 
-    Column {
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Surface(
-                shape = CircleShape,
-                modifier = Modifier
-                    .size(64.dp)
-                    .fillMaxWidth(),
-                color = MaterialTheme.colorScheme.secondary
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+
+
+    LazyColumn() {
+        item {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Surface(
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.secondary
                 ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
 //                    Text(
 //                        text = house.houseName.first().toString(),
 //                        fontWeight = FontWeight.Bold,
 //                        style = Typography.displaySmall
 //                    )
-                    Text(
-                        text = house.houseName.substring(0, 1).toString(),
-                        fontWeight = FontWeight.Bold,
-                        style = Typography.displaySmall
-                    )
+                        Text(
+                            text = house.houseName.substring(0, 1).toString(),
+                            fontWeight = FontWeight.Bold,
+                            style = Typography.displaySmall
+                        )
+                    }
                 }
+
             }
 
-        }
-
-//        val staffName = "${house.houseName} ${house.userLastName}"
-        val dateJoined = getDate(house.houseDateAdded.toLong(), "dd MMM, yyyy")
-        Text(
-            text = house.houseName,
-            style = Typography.titleLarge,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
-        Text(
-            text = "Added $dateJoined",
-            style = Typography.titleSmall,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-
-        Column(
-            modifier = Modifier.scrollable(rememberScrollState(), Orientation.Vertical)
-
-        ) {
-
-            Row {
-                Text(
-                    text = stringResource(id = R.string.contact_title),
-                    fontWeight = FontWeight.Light,
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .weight(0.9F)
-                )
-                Icon(imageVector = Icons.Default.Phone,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .weight(0.1F)
-                        .clickable {
-
-                        })
-            }
-
-            Card(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.secondary),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp
-                )
-
-            ) {
-
-
-                Text(
-                    text = stringResource(id = R.string.contact_address_title),
-                    style = Typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-
-                Text(
-                    text = house.houseAddress,
-                    style = Typography.bodyLarge,
-                    modifier = Modifier
-                        .offset(x = 8.dp)
-                        .padding(4.dp)
-                )
-
-                Text(
-                    text = stringResource(id = R.string.district_province_title),
-                    style = Typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-                val houseProvince =
-                    getProvince(provinceId = house.houseProvince, context = context)!!
-                val houseDistrictAndProvince =
-                    "${house.houseDistrict}, ${houseProvince.provinceName}"
-
-                Text(
-                    text = houseDistrictAndProvince,
-                    style = Typography.bodyLarge,
-                    modifier = Modifier
-                        .offset(x = 8.dp)
-                        .padding(4.dp)
-                )
-
-                Text(
-                    text = stringResource(id = R.string.contact_person_title),
-                    style = Typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-
-                Text(
-                    text = house.houseContactPerson,
-                    style = Typography.bodyLarge,
-                    modifier = Modifier
-                        .offset(x = 8.dp)
-                        .padding(4.dp)
-                )
-
-                Text(
-                    text = stringResource(id = R.string.phone_number_title),
-                    style = Typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-
-                Text(
-                    text = house.houseContactNumber,
-                    style = Typography.bodyLarge,
-                    modifier = Modifier
-                        .offset(x = 8.dp)
-                        .padding(4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
+            val dateJoined = getDate(house.houseDateAdded.toLong(), "dd MMM, yyyy")
             Text(
-                text = stringResource(id = R.string.service_title),
-                fontWeight = FontWeight.Light,
-                modifier = Modifier
-                    .padding(4.dp)
-                    .weight(0.9F)
+                text = house.houseName,
+                style = Typography.titleLarge,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = "Added $dateJoined",
+                style = Typography.titleSmall,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
 
-            Card(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.secondary),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp
-                )
+            Spacer(modifier = Modifier.height(24.dp))
 
+            Column(
             ) {
 
-
-                Text(
-                    text = stringResource(id = R.string.no_of_patients_title),
-                    style = Typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-
-                Text(
-                    text = house.houseNoOfClients,
-                    style = Typography.bodyLarge,
-                    modifier = Modifier
-                        .offset(x = 8.dp)
-                        .padding(4.dp)
-                )
-
-                Text(
-                    text = stringResource(id = R.string.necessary_info_title),
-                    style = Typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-                Text(
-                    text = house.houseNecessaryInformation.ifBlank { "N/A" },
-                    style = Typography.bodyLarge,
-                    modifier = Modifier
-                        .offset(x = 8.dp)
-                        .padding(4.dp)
-                )
-
-                if (house.houseNameOfPatients.isNotEmpty()) {
+                Row {
                     Text(
-                        text = stringResource(id = R.string.client_names_title),
+                        text = stringResource(id = R.string.contact_title),
+                        fontWeight = FontWeight.Light,
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .weight(0.9F)
+                    )
+                    Icon(imageVector = Icons.Default.Phone,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .weight(0.1F)
+                            .clickable {
+
+                            })
+                }
+
+                Card(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 8.dp
+                    )
+
+                ) {
+
+
+                    Text(
+                        text = stringResource(id = R.string.contact_address_title),
                         style = Typography.bodySmall,
                         modifier = Modifier.padding(4.dp)
                     )
-                    LazyRow {
-                        items(house.houseNameOfPatients) { patientName ->
-                            Text(
-                                text = patientName,
-                                modifier = Modifier.padding(4.dp),
-                                style = Typography.bodyMedium
-                            )
 
-                        }
-                    }
+                    Text(
+                        text = house.houseAddress,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .offset(x = 8.dp)
+                            .padding(4.dp)
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.district_province_title),
+                        style = Typography.bodySmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                    val houseProvince =
+                        getProvince(provinceId = house.houseProvince, context = context)!!
+                    val houseDistrictAndProvince =
+                        "${house.houseDistrict}, ${houseProvince.provinceName}"
+
+                    Text(
+                        text = houseDistrictAndProvince,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .offset(x = 8.dp)
+                            .padding(4.dp)
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.contact_person_title),
+                        style = Typography.bodySmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
+
+                    Text(
+                        text = house.houseContactPerson,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .offset(x = 8.dp)
+                            .padding(4.dp)
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.phone_number_title),
+                        style = Typography.bodySmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
+
+                    Text(
+                        text = house.houseContactNumber,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .offset(x = 8.dp)
+                            .padding(4.dp)
+                    )
                 }
-            }
 
-            Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-            Text(
-                text = stringResource(id = R.string.shift_this_week_title),
-                fontWeight = FontWeight.Light,
-                modifier = Modifier
-                    .padding(4.dp)
-                    .weight(0.9F)
-            )
+                Row {
+                    Text(
+                        text = stringResource(id = R.string.service_title),
+                        fontWeight = FontWeight.Light,
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .weight(0.9F)
+                    )
+                }
 
-            Card(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.secondary),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp
-                )
 
-            ) {
+                Card(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 8.dp
+                    )
 
-                if (houseAssignedShifts.value.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                ) {
+
+
+                    Text(
+                        text = stringResource(id = R.string.no_of_patients_title),
+                        style = Typography.bodySmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
+
+                    Text(
+                        text = house.houseNoOfClients,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .offset(x = 8.dp)
+                            .padding(4.dp)
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.necessary_info_title),
+                        style = Typography.bodySmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                    Text(
+                        text = house.houseNecessaryInformation.ifBlank { "N/A" },
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .offset(x = 8.dp)
+                            .padding(4.dp)
+                    )
+
+                    if (house.houseNameOfPatients.isNotEmpty()) {
                         Text(
-                            text = stringResource(id = R.string.no_shifts_assigned),
-                            fontStyle = FontStyle.Italic
+                            text = stringResource(id = R.string.client_names_title),
+                            style = Typography.bodySmall,
+                            modifier = Modifier.padding(4.dp)
                         )
-                    }
-                } else {
-                    LazyColumn(
-                        contentPadding = PaddingValues(4.dp)
-                    ) {
-                        items(
-                            houseAssignedShifts.value
-                        ) { shift ->
-                            Row(modifier = Modifier.padding(4.dp)) {
-                                Text(
-                                    text = getDate(
-                                        shift.assignedShiftDate.toLong(),
-                                        "EEE, dd MMM, yyyy"
-                                    ),
-                                    modifier = Modifier
-                                        .padding(4.dp)
-                                        .fillMaxWidth(0.5F),
-                                )
-                                Text(
-                                    text = getShiftType(
-                                        shift.assignedShiftTypeID,
-                                        context
-                                    )!!.shiftTypeName,
-                                    modifier = Modifier
-                                        .padding(4.dp)
-                                        .fillMaxWidth(0.5F),
-                                    textAlign = TextAlign.Center
+                        LazyRow(
+                            modifier = Modifier.offset(x = 8.dp)
+                        ) {
+                            items(house.houseNameOfPatients) { patientName ->
+                                Card() {
+                                    Text(
+                                        text = patientName,
+                                        modifier = Modifier.padding(4.dp),
+                                        style = Typography.bodyMedium
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(4.dp))
 
-                                )
                             }
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Row {
+                    Text(
+                        text = stringResource(id = R.string.shift_this_week_title),
+                        fontWeight = FontWeight.Light,
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .weight(0.9F)
+                    )
+                }
+
+
             }
+        }
+
+        items(houseAssignedShifts.value.sortedBy { assignedShift -> assignedShift.assignedShiftDate }) { shift ->
+            Row(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = getDate(
+                        shift.assignedShiftDate.toLong(),
+                        "EEE, dd MMM, yyyy"
+                    ),
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .weight(0.4F),
+                )
+                Text(
+                    text = getShiftType(
+                        shift.assignedShiftTypeID,
+                        context
+                    )!!.shiftTypeName,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .weight(0.2F),
+                    textAlign = TextAlign.Center
+
+                )
+                Text(
+                    text = getUser(
+                        shift.assignedStaffID,
+                        context
+                    )!!.userFirstName,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .weight(0.4F),
+                    textAlign = TextAlign.Center
+
+                )
+            }
+
+
+            /* Card(
+                 modifier = Modifier
+                     .padding(8.dp)
+                     .fillMaxWidth()
+                     .heightIn(240.dp)
+                     .background(MaterialTheme.colorScheme.secondary),
+                 elevation = CardDefaults.cardElevation(
+                     defaultElevation = 8.dp
+                 )
+
+             ) {
+
+                 if (houseAssignedShifts.value.isEmpty()) {
+                     Box(
+                         modifier = Modifier.fillMaxSize(),
+                         contentAlignment = Alignment.Center
+                     ) {
+                         Text(
+                             text = stringResource(id = R.string.no_shifts_assigned),
+                             fontStyle = FontStyle.Italic
+                         )
+                     }
+                 } else {
+                     LazyColumn(
+                         contentPadding = PaddingValues(4.dp)
+                     ) {
+                         items(
+                             houseAssignedShifts.value
+                         ) { shift ->
+
+                         }
+                         //}
+                     }
+                 }
+                 Spacer(modifier = Modifier.height(32.dp))
+
+          //            ButtonComponent(
+          //                buttonText = stringResource(
+          //                    id = R.string.edit_house_btn_text,
+          //                    house.houseName
+          //                ), onClick = {
+          //                    context.toast("Editing ${house.houseName}")
+          //                }, modifier = Modifier.padding(8.dp).fillMaxWidth())
+
+                 ButtonComponent(
+                     buttonText = stringResource(
+                         id = R.string.delete_house_btn_text,
+                         house.houseName
+                     ), onClick = {
+                         context.toast("Deleting ${house.houseName}")
+                     }, modifier = Modifier
+                         .padding(8.dp)
+                         .fillMaxWidth()
+                 )
+
+                 Spacer(modifier = Modifier.height(24.dp))
+
+
+             }*/
+        }
+        item {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-//            ButtonComponent(
-//                buttonText = stringResource(
-//                    id = R.string.edit_house_btn_text,
-//                    house.houseName
-//                ), onClick = {
-//                    context.toast("Editing ${house.houseName}")
-//                }, modifier = Modifier.padding(8.dp).fillMaxWidth())
+            ButtonComponent(
+                buttonText = stringResource(
+                    id = R.string.edit_house_btn_text,
+                    house.houseName
+                ), onClick = {
+                    context.toast("Editing ${house.houseName}")
+                }, modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            )
 
             ButtonComponent(
                 buttonText = stringResource(
@@ -412,13 +479,8 @@ fun SupervisorHouseDetail(house: House) {
                     .padding(8.dp)
                     .fillMaxWidth()
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-
         }
 
 
     }
-
 }

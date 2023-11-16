@@ -4,6 +4,7 @@ data class ReportLog(
     val reportLogID: String = "",
     val reportLogDateSubmitted: String = "",
     val reportLogOwnerID: String = "",
+    val reportLogOwnerProvinceID: String = "",
     val reportLogStatus: String = "", //submitted or draft
     val reportLogDuration: String = "", //number of days accounted for in the log
     val reportLogStartDate: String = "", //the date of the user's first shift of the week

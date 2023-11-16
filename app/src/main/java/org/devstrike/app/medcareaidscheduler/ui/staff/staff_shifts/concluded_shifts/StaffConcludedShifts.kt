@@ -732,6 +732,7 @@ fun EditWeekLogDialog(
                                     reportLogID = logReportID,
                                     reportLogDateSubmitted = System.currentTimeMillis().toString(),
                                     reportLogOwnerID = auth.uid!!,
+                                    reportLogOwnerProvinceID = getUser(auth.uid!!, context)!!.userProvinceID,
                                     reportLogStatus = LOG_REPORT_SUBMITTED_STATUS,
                                     reportLogDuration = "${allWeekShiftList.size} days",//number of days accounted for in the log
                                     reportLogStartDate = earliestShiftDate.toString(),//the date of the user's first shift of the week
@@ -739,10 +740,10 @@ fun EditWeekLogDialog(
                                     reportLogNoOfTotalWeekShift = totalShiftsServed.toString(),
                                     reportLogNoOfTotalShiftsServed = totalShiftsServed.toString(),
                                     reportLogNoOfTotalShiftsPending = totalMissedShifts.toString(),
-                                    reportLogTotalPayableDaysHours = morningSliderPosition.toString(),
-                                    reportLogTotalPayableNightsHours = nightSliderPosition.toString(),
+                                    reportLogTotalPayableDaysHours = morningSliderPosition?.toString() ?: "0",
+                                    reportLogTotalPayableNightsHours = nightSliderPosition?.toString() ?: "0",
                                     reportLogDailyShiftDetails = staffShifts,//mapping of the day of the week to the day's assigned shift
-                                    reportLogTotalPayableSleepOversHours = sleepOverSliderPosition.toString(),
+                                    reportLogTotalPayableSleepOversHours = sleepOverSliderPosition?.toString() ?: "0",
                                     reportLogTotalAmountPayable = totalAmountPayable.toString(),
                                     reportLogTotalAmountToPay = totalPay.toString()
                                 )

@@ -7,6 +7,7 @@
 package org.devstrike.app.medcareaidscheduler.data
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.MarkChatUnread
@@ -42,6 +43,11 @@ sealed class BottomBarScreen(
         title = "Shifts",
         icon = Icons.Default.Schedule,
         route = "supervisor_shifts"
+    )
+    object SupervisorWeekLogs: BottomBarScreen(
+        title = "Reports",
+        icon = Icons.Default.Assessment,
+        route = "supervisor_logs"
     )
     object SupervisorProfile: BottomBarScreen(
         title = "Profile",

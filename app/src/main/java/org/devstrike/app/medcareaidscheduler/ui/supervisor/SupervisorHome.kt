@@ -146,6 +146,7 @@ fun BottomBar(navController: NavHostController) {
         BottomBarScreen.SupervisorHouses,
         BottomBarScreen.SupervisorStaff,
         BottomBarScreen.SupervisorShifts,
+        BottomBarScreen.SupervisorWeekLogs,
         BottomBarScreen.SupervisorProfile,
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
