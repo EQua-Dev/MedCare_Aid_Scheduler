@@ -54,4 +54,8 @@
     <string name="staff_adjust_hours_dialog_title">Edit Payable Hours</string>
     <string name="total_pay_text">Total Pay: €%s</string>
     <string name="okay_button">Okay</string>
+    <string name="reject_log_text">Reject Log Report</string>
+    <string name="approve_log_text">Approve Log Payment</string>
+    <string name="view_details_text">view</string>
+    <string name="log_shift_report">Log Shift Detail</string>
 </resources>

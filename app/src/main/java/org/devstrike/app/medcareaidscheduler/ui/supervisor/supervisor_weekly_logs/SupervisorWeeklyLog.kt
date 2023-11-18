@@ -9,13 +9,17 @@ package org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_weekly_lo
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -39,6 +43,7 @@ import org.devstrike.app.medcareaidscheduler.components.TextFieldComponent
 import org.devstrike.app.medcareaidscheduler.data.ReportLog
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_components.HouseItemCard
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_components.ReportItemCard
+import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_houses.SupervisorHouseDetail
 import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.Common.auth
 import org.devstrike.app.medcareaidscheduler.utils.getUser
@@ -75,7 +80,10 @@ fun SupervisorWeekLogs(navController: NavHostController) {
 
         withContext(Dispatchers.IO) {
             val querySnapshot =
-                Common.weeklyShiftsReportLogCollectionRef.whereEqualTo("reportLogOwnerProvinceID", userDetails.userProvinceID)
+                Common.weeklyShiftsReportLogCollectionRef.whereEqualTo(
+                    "reportLogOwnerProvinceID",
+                    userDetails.userProvinceID
+                )
                     .get().await()
 
             Log.d(TAG, "SupervisorWeekLogs: $querySnapshot")
@@ -92,41 +100,64 @@ fun SupervisorWeekLogs(navController: NavHostController) {
 
     }
 
-    LazyColumn {
+    Surface {
+        LazyColumn {
 
-        item {
-            TextFieldComponent(
-                value = searchQuery.value,
-                onValueChange = { searchQuery.value = it },
-                label = "Search",
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    autoCorrect = false,
-                ),
-                inputType = "Search",
-                leadingIcon = R.drawable.ic_search,
-                modifier = Modifier.padding(16.dp)
+            item {
+                TextFieldComponent(
+                    value = searchQuery.value,
+                    onValueChange = { searchQuery.value = it },
+                    label = "Search",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        autoCorrect = false,
+                    ),
+                    inputType = "Search",
+                    leadingIcon = R.drawable.ic_search,
+                    modifier = Modifier.padding(16.dp)
 
-            )
+                )
+            }
+
+            val listOfWeeklyLogs = weeklyLogs.value
+            val filteredList = listOfWeeklyLogs.filter { reportLog ->
+                val staffDetails = getUser(reportLog.reportLogOwnerID, context)!!
+                staffDetails.userFirstName.contains(
+                    searchQuery.value,
+                    true
+                ) || staffDetails.userLastName.contains(
+                    searchQuery.value,
+                    true
+                )
+            }
+            items(filteredList) { report ->
+                ReportItemCard(report = report, onClick = {
+                    weeklyLogsData.value = report
+                    isSheetOpen = true
+                    isItemClicked = true
+                })
+            }
         }
 
-        val listOfWeeklyLogs = weeklyLogs.value
-        val filteredList = listOfWeeklyLogs.filter { reportLog ->
-            val staffDetails = getUser(reportLog.reportLogOwnerID, context)!!
-            staffDetails.userFirstName.contains(
-                searchQuery.value,
-                true
-            ) || staffDetails.userLastName.contains(
-                searchQuery.value,
-                true
-            )
+        if (isSheetOpen) {
+            ModalBottomSheet(
+                sheetState = sheetState,
+                onDismissRequest = { isSheetOpen = false }) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (isItemClicked)
+                        SupervisorLogDetail(weeklyLogsData.value)
+
+                }
+
+            }
+
+
         }
-        items(filteredList) { report ->
-            ReportItemCard(report = report, onClick = {
-                weeklyLogsData.value = report
-                isSheetOpen = true
-                isItemClicked = true
-            })
-        }
+
     }
 
 

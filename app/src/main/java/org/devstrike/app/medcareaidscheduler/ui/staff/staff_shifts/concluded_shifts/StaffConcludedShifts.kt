@@ -771,7 +771,6 @@ fun EditWeekLogDialog(
                     )
                 }
             }
-
         }
     }
 }

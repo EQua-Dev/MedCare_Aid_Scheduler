@@ -27,8 +27,11 @@ object Common {
     const val SHIFT_ACTIVE = "active"
     const val SHIFT_INACTIVE = "inactive"
     const val LOG_REPORT_SUBMITTED_STATUS = "submitted"
+    const val LOG_REPORT_APPROVED_STATUS = "approved"
+    const val LOG_REPORT_REJECTED_STATUS = "rejected"
 
     const val TIME_FORMAT_EDMYHM = "EEE, dd MMM, yyyy hh:mm"
+    const val TIME_FORMAT_EDMY = "EEE, dd MMM, yyyy"
     const val TIME_FORMAT_DMYHM = "dd-MMM-yyyy hh:mm"
     const val TIME_FORMAT_HM = "hh:mm"
 
