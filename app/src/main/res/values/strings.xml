@@ -58,4 +58,5 @@
     <string name="approve_log_text">Approve Log Payment</string>
     <string name="view_details_text">view</string>
     <string name="log_shift_report">Log Shift Detail</string>
+    <string name="reject_shift_report_title">Reject Log Report</string>
 </resources>

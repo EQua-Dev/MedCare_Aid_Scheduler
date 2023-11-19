@@ -178,7 +178,7 @@ fun ShiftNotificationScreen(notificationTabType: String) {
 
             LazyColumn {
 
-                val listOfNotifications = notifications.value
+                val listOfNotifications = notifications.value.sortedByDescending { notification -> notification.notificationSentDate }
                 val filteredList = listOfNotifications.filter { notification ->
                     val supervisorInfo = getUser(notification.notificationSenderID, context)!!
                     getUser(notification.notificationSenderID, context)!!.userFirstName.contains(

@@ -23,6 +23,8 @@ object Common {
     const val PERSONAL_NOTIFICATION_TAG = "personal"
     const val GENERAL_NOTIFICATION_TAG = "general"
     const val NOTIFICATION_TYPE_SHIFT_ASSIGNMENT = "Shift Assignment"
+    const val NOTIFICATION_TYPE_PAYMENT_APPROVAL = "Payment Approval"
+    const val NOTIFICATION_TYPE_LOG_REPORT_REJECTION = "Log Report Rejection"
 
     const val SHIFT_ACTIVE = "active"
     const val SHIFT_INACTIVE = "inactive"

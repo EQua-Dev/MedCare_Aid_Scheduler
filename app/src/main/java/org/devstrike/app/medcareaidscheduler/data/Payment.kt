@@ -6,5 +6,8 @@ data class Payment(
     val paymentDate: String = "",
     val paymentAmount: String = "",
     val paymentNoOfHoursPaid: String = "",
+    val paymentStatus: String = "",
+    val paymentApprovingSupervisorID: String = "",
+    val paymentDateApproved: String = ""
 
 )
