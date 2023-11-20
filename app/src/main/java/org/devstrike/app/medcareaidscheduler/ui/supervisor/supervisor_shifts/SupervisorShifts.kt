@@ -200,7 +200,7 @@ fun SupervisorShifts(navController: NavHostController) {
             //search bar
             //list of cards
 
-            Text(text = "Shift Types")
+            Text(text = "Shift Types", modifier = Modifier.padding(8.dp))
 
             if (shiftTypes.value.isEmpty()) {
                 Box(contentAlignment = Alignment.Center) {
@@ -210,7 +210,7 @@ fun SupervisorShifts(navController: NavHostController) {
                     )
                 }
             } else {
-                LazyColumn {
+                LazyColumn(modifier = Modifier.padding(8.dp)) {
 
                     val listOfShiftTypes = shiftTypes.value
 
@@ -247,7 +247,7 @@ fun SupervisorShifts(navController: NavHostController) {
                     text = stringResource(
                         id = R.string.staff_shift_screen_title,
                         getCurrentDate("MMMM, yyyy")
-                    ), fontStyle = FontStyle.Italic
+                    ), fontStyle = FontStyle.Italic, modifier = Modifier.padding(8.dp)
                 )
                 Column {
                     val listOfDates: MutableMap<String, List<AssignedShift>> = mutableMapOf()
@@ -255,6 +255,7 @@ fun SupervisorShifts(navController: NavHostController) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(8.dp)
                             .border(width = 0.3.dp, MaterialTheme.colorScheme.primary),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -355,7 +356,7 @@ fun SupervisorShifts(navController: NavHostController) {
                         houseShiftsByWeek["Week 1"] = weekAssignments
                         Log.d(TAG, "SupervisorShifts: ${houseShiftsByWeek["Week 1"]}")
 
-                        Column(modifier = Modifier.height(240.dp)) {
+                        Column(modifier = Modifier.padding(8.dp)) {
                             val week1Shifts = houseShiftsByWeek["Week 1"]
                             if (week1Shifts?.isNotEmpty() == true) {
                                 LazyColumn() {
@@ -363,11 +364,13 @@ fun SupervisorShifts(navController: NavHostController) {
                                         CardItem(assignment = shift)
                                     }
                                 }
-                            }else{
+                            } else {
                                 Text(
                                     text = "No assigned shifts for week 1",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth(),
                                     textAlign = TextAlign.Center,
                                     fontStyle = FontStyle.Italic
                                 )
@@ -379,6 +382,7 @@ fun SupervisorShifts(navController: NavHostController) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(8.dp)
                             .border(width = 0.3.dp, MaterialTheme.colorScheme.primary),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -482,16 +486,18 @@ fun SupervisorShifts(navController: NavHostController) {
                         Column() {
                             val week1Shifts = houseShiftsByWeek["Week 2"]
                             if (week1Shifts?.isNotEmpty() == true) {
-                                LazyColumn(modifier = Modifier.heightIn(240.dp)) {
+                                LazyColumn(modifier = Modifier.padding(8.dp)) {
                                     items(week1Shifts) { shift ->
                                         CardItem(assignment = shift)
                                     }
                                 }
-                            }else{
+                            } else {
                                 Text(
                                     text = "No assigned shifts for week 2",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth(),
                                     textAlign = TextAlign.Center,
                                     fontStyle = FontStyle.Italic
                                 )
@@ -505,6 +511,7 @@ fun SupervisorShifts(navController: NavHostController) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(8.dp)
                             .border(width = 0.3.dp, MaterialTheme.colorScheme.primary),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -609,16 +616,18 @@ fun SupervisorShifts(navController: NavHostController) {
                         Column() {
                             val week1Shifts = houseShiftsByWeek["Week 3"]
                             if (week1Shifts?.isNotEmpty() == true) {
-                                LazyColumn(modifier = Modifier.heightIn(240.dp)) {
+                                LazyColumn(modifier = Modifier.padding(8.dp)) {
                                     items(week1Shifts) { shift ->
                                         CardItem(assignment = shift)
                                     }
                                 }
-                            }else{
+                            } else {
                                 Text(
                                     text = "No assigned shifts for week 3",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth(),
                                     textAlign = TextAlign.Center,
                                     fontStyle = FontStyle.Italic
                                 )
@@ -631,6 +640,7 @@ fun SupervisorShifts(navController: NavHostController) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(8.dp)
                             .border(width = 0.3.dp, MaterialTheme.colorScheme.primary),
                         verticalAlignment = Alignment.CenterVertically
                     )
@@ -734,16 +744,18 @@ fun SupervisorShifts(navController: NavHostController) {
                         Column() {
                             val week1Shifts = houseShiftsByWeek["Week 4"]
                             if (week1Shifts?.isNotEmpty() == true) {
-                                LazyColumn(modifier = Modifier.heightIn(240.dp)) {
+                                LazyColumn(modifier = Modifier.padding(8.dp)) {
                                     items(week1Shifts) { shift ->
                                         CardItem(assignment = shift)
                                     }
                                 }
-                            }else{
+                            } else {
                                 Text(
                                     text = "No assigned shifts for week 4",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth(),
                                     textAlign = TextAlign.Center,
                                     fontStyle = FontStyle.Italic
                                 )

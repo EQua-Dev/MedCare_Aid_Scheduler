@@ -125,7 +125,6 @@ fun SupervisorStaff(navController: NavHostController) {
             //search bar
             //list of cards
 
-            Text(text = "Supervisor Staff")
 
             //search bar
             TextFieldComponent(
@@ -143,8 +142,12 @@ fun SupervisorStaff(navController: NavHostController) {
             //list of cards
 
             LazyColumn {
-
                 val listOfStaff = staff.value
+
+                item {
+                    Text(text = "Total Staff in Province: ${listOfStaff.size}", modifier = Modifier.padding(8.dp))
+                }
+
                 val filteredList = listOfStaff.filter { staffItem ->
                     staffItem.userFirstName.contains(
                         searchQuery.value,

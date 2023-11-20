@@ -88,6 +88,7 @@ import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_components
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_houses.SupervisorHouseDetail
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_staff.DropDownListItem
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_staff.isDateSelectable
+import org.devstrike.app.medcareaidscheduler.ui.theme.Balsamiq
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.Common.PERSONAL_NOTIFICATION_TAG
@@ -160,66 +161,63 @@ fun ShiftNotificationScreen(notificationTabType: String) {
     Surface(modifier = Modifier.fillMaxSize()) {
 
 
-        Column(modifier = Modifier.padding(4.dp)) {
-            //search bar
-            TextFieldComponent(
-                value = searchQuery.value,
-                onValueChange = { searchQuery.value = it },
-                label = "Search",
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    autoCorrect = false,
-                ),
-                inputType = "Search",
-                leadingIcon = R.drawable.ic_search,
-                modifier = Modifier.padding(16.dp)
+        //search bar
 
-            )
-            //list of cards
+        //list of cards
 
-            LazyColumn {
+        LazyColumn {
+            item {
+                TextFieldComponent(
+                    value = searchQuery.value,
+                    onValueChange = { searchQuery.value = it },
+                    label = "Search",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        autoCorrect = false,
+                    ),
+                    inputType = "Search",
+                    leadingIcon = R.drawable.ic_search,
+                    modifier = Modifier.padding(16.dp)
 
-                val listOfNotifications = notifications.value.sortedByDescending { notification -> notification.notificationSentDate }
-                val filteredList = listOfNotifications.filter { notification ->
-                    val supervisorInfo = getUser(notification.notificationSenderID, context)!!
-                    getUser(notification.notificationSenderID, context)!!.userFirstName.contains(
-                        searchQuery.value,
-                        true
-                    ) || getUser(
-                        notification.notificationSenderID,
-                        context
-                    )!!.userLastName.contains(
-                        searchQuery.value,
-                        true
-                    ) || notification.notificationType.contains(searchQuery.value, true)
-                            || notification.notificationMessage.contains(searchQuery.value, true)
-                }
-                items(filteredList) { notification ->
-                    NotificationItemCard(notification = notification, onClick = {
-                        notificationData.value = notification
-                        isItemClicked = true
-                    })
-                }
-//                    listOfHouses.forEach { house ->
-//                        Log.d(TAG, "SupervisorHouses List: $house")
-////                        HouseItemCard(house = house)
-//                        HouseItemCard(house)
-//                    }
+                )
             }
-//                val houses =
-//                    housesCollectionRef.whereEqualTo("houseAddingSupervisor", auth.uid!!).get()
-            // Iterate over the list of items and display each item using the ItemComposable composable function
 
+            val listOfNotifications =
+                notifications.value.sortedByDescending { notification -> notification.notificationSentDate }
+            val filteredList = listOfNotifications.filter { notification ->
+                val supervisorInfo = getUser(notification.notificationSenderID, context)!!
+                getUser(notification.notificationSenderID, context)!!.userFirstName.contains(
+                    searchQuery.value,
+                    true
+                ) || getUser(
+                    notification.notificationSenderID,
+                    context
+                )!!.userLastName.contains(
+                    searchQuery.value,
+                    true
+                ) || notification.notificationType.contains(searchQuery.value, true)
+                        || notification.notificationMessage.contains(searchQuery.value, true)
+            }
+            items(filteredList) { notification ->
+                NotificationItemCard(notification = notification, onClick = {
+                    notificationData.value = notification
+                    isItemClicked = true
+                })
+            }
 
         }
         if (isItemClicked) {
-            Dialog(onDismissRequest = { isItemClicked = false}) {
+            Dialog(onDismissRequest = { isItemClicked = false }) {
                 Card(
                     //shape = MaterialTheme.shapes.medium,
                     shape = RoundedCornerShape(10.dp),
                     // modifier = modifier.size(280.dp, 240.dp)
                     modifier = Modifier.padding(12.dp),
                 ) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(4.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp), horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
                         Text(
                             text = getDate(
                                 notificationData.value.notificationSentDate.toLong(),
@@ -244,20 +242,29 @@ fun ShiftNotificationScreen(notificationTabType: String) {
 
                     Text(
                         text = notificationData.value.notificationTitle,
-                        modifier = Modifier.padding(4.dp),
-                        fontWeight = FontWeight.Bold
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .fillMaxWidth(),
+                        fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
                     )
-                    Text(text = notificationData.value.notificationMessage, modifier = Modifier.padding(4.dp))
+                    Text(
+                        text = notificationData.value.notificationMessage,
+                        modifier = Modifier.padding(4.dp)
+                    )
+
+                    Spacer(modifier = Modifier.padding(8.dp))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
+                             .padding(8.dp), verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = getUser(
-                                notificationData.value.notificationSenderID,
-                                context
-                            )!!.userFirstName,
+                            text = "Sender: ${
+                                getUser(
+                                    notificationData.value.notificationSenderID,
+                                    context
+                                )!!.userFirstName
+                            }",
                             modifier = Modifier.fillMaxWidth(0.5f),
                             textAlign = TextAlign.Start
                         )
@@ -267,7 +274,8 @@ fun ShiftNotificationScreen(notificationTabType: String) {
                                     notificationData.value.notificationSenderID,
                                     context
                                 )!!.userContactNumber, context
-                            ) }) {
+                            )
+                        }) {
 
                             Text(
                                 text = "call",
@@ -279,16 +287,21 @@ fun ShiftNotificationScreen(notificationTabType: String) {
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(48.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Box(
-                        contentAlignment = Alignment.CenterEnd,
+                        contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
                         TextButton(onClick = { isItemClicked = false }) {
-                            Text(text = "Okay", modifier = Modifier.padding(4.dp) )
+                            Text(
+                                text = "OKAY",
+                                modifier = Modifier.padding(4.dp),
+                                fontFamily = Balsamiq,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
 
                     }
@@ -297,12 +310,6 @@ fun ShiftNotificationScreen(notificationTabType: String) {
                 }
             }
         }
-
-        NotificationDetailDialog(notificationData.value, onDismiss = {
-
-            })
-
-
     }
 }
 
