@@ -255,8 +255,7 @@ fun SupervisorStaffDetail(staff: UserData) {
                 Card(
                     modifier = Modifier
                         .padding(8.dp)
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.secondary),
+                        .fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(
                         defaultElevation = 8.dp
                     )
@@ -449,8 +448,7 @@ fun SupervisorStaffDetail(staff: UserData) {
             Card(
                 modifier = Modifier
                     .padding(8.dp)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.secondary),
+                    .fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 8.dp
                 )

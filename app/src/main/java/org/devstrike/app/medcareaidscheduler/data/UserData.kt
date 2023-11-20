@@ -9,6 +9,7 @@ data class UserData(
     val userContactNumber: String = "",
     val userEmail: String = "",
     val userBankName: String = "",
+    val userBankAccountHolder: String = "",
     val userBankAccountNumber: String = "",
     val userAddress: String = "",
     val userGender: String = "",

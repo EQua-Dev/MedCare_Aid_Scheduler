@@ -59,4 +59,11 @@
     <string name="view_details_text">view</string>
     <string name="log_shift_report">Log Shift Detail</string>
     <string name="reject_shift_report_title">Reject Log Report</string>
+    <string name="gender_title">Gender</string>
+    <string name="account_details_title">Account Details</string>
+    <string name="iban_title">International Bank Account Number (IBAN)</string>
+    <string name="bank_name_title">Bank Name</string>
+    <string name="account_holder_name_title">Account Holder Name</string>
+    <string name="reset_password_text_button">Reset Password</string>
+    <string name="request_province_switch_text">Request Province Switch</string>
 </resources>
