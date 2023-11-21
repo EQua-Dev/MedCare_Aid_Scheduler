@@ -25,6 +25,7 @@ object Common {
     const val NOTIFICATION_TYPE_SHIFT_ASSIGNMENT = "Shift Assignment"
     const val NOTIFICATION_TYPE_PAYMENT_APPROVAL = "Payment Approval"
     const val NOTIFICATION_TYPE_LOG_REPORT_REJECTION = "Log Report Rejection"
+    const val NOTIFICATION_TYPE_OTHER = "Other"
 
     const val SHIFT_ACTIVE = "active"
     const val SHIFT_INACTIVE = "inactive"
