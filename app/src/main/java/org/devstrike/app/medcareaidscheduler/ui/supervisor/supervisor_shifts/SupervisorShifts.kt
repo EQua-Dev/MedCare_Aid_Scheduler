@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -200,45 +202,56 @@ fun SupervisorShifts(navController: NavHostController) {
             //search bar
             //list of cards
 
-            Text(text = "Shift Types", modifier = Modifier.padding(8.dp))
+            Card(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+                    .height(100.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 8.dp
+                ), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
+                Text(text = "Shift Types", modifier = Modifier.padding(8.dp))
 
-            if (shiftTypes.value.isEmpty()) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "Click the add button to add shift types for your province",
-                        fontStyle = FontStyle.Italic
-                    )
-                }
-            } else {
-                LazyColumn(modifier = Modifier.padding(8.dp)) {
+                if (shiftTypes.value.isEmpty()) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "Click the add button to add shift types for your province",
+                            fontStyle = FontStyle.Italic
+                        )
+                    }
+                } else {
+                    LazyColumn(modifier = Modifier.padding(8.dp)) {
 
-                    val listOfShiftTypes = shiftTypes.value
+                        val listOfShiftTypes = shiftTypes.value
 
-                    items(listOfShiftTypes) { shiftType ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(text = shiftType.shiftTypeName, modifier = Modifier.weight(0.5F))
-                            Text(
-                                text = "${
-                                    getDate(
-                                        shiftType.shiftTypeStartTime.toLong(),
-                                        TIME_FORMAT_HM
-                                    )
-                                } - ${
-                                    getDate(
-                                        shiftType.shiftTypeEndTime.toLong(),
-                                        TIME_FORMAT_HM
-                                    )
-                                }",
-                                modifier = Modifier.weight(0.4F)
-                            )
-                            Text(text = "edit", modifier = Modifier.weight(0.1F))
+                        items(listOfShiftTypes) { shiftType ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = shiftType.shiftTypeName, modifier = Modifier.weight(0.5F))
+                                Text(
+                                    text = "${
+                                        getDate(
+                                            shiftType.shiftTypeStartTime.toLong(),
+                                            TIME_FORMAT_HM
+                                        )
+                                    } - ${
+                                        getDate(
+                                            shiftType.shiftTypeEndTime.toLong(),
+                                            TIME_FORMAT_HM
+                                        )
+                                    }",
+                                    modifier = Modifier.weight(0.4F)
+                                )
+                                Text(text = "edit", modifier = Modifier.weight(0.1F))
+                            }
                         }
                     }
                 }
             }
+
 
             Divider(modifier = Modifier.padding(8.dp))
             //show thw months

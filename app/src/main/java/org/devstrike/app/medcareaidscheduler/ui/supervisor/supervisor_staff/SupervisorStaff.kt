@@ -35,7 +35,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -58,6 +60,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -263,12 +266,13 @@ fun SupervisorStaff(navController: NavHostController) {
                     //shape = MaterialTheme.shapes.medium,
                     shape = RoundedCornerShape(10.dp),
                     // modifier = modifier.size(280.dp, 240.dp)
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(12.dp).fillMaxWidth(),
                 ) {
 
                     Text(
-                        text = stringResource(id = R.string.send_notification_dialog_title),
-                        style = Typography.titleMedium,
+                        text = stringResource(id = R.string.send_notification_dialog_title), color = MaterialTheme.colorScheme.primary,
+                        style = Typography.displaySmall,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(8.dp)
                     )
 
@@ -286,7 +290,43 @@ fun SupervisorStaff(navController: NavHostController) {
                         Text(text = "Message all staff")
                     }
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        TextField(modifier = Modifier
+
+                        OutlinedTextField(
+                            value = messageReceiver.value,
+                            onValueChange = {
+                                messageReceiver.value = it
+                                staffListExpanded = true
+                            },
+                            enabled = !messageAllStaff.value,
+                            singleLine = true,
+                            placeholder = { Text(text = stringResource(id = R.string.select_staff_to_message_placeholder)) },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                autoCorrect = true,
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            ),
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                                .height(heightTextFields)
+                                .onGloballyPositioned { coordinates ->
+                                    textFieldsSize = coordinates.size.toSize()
+                                },
+                            shape = RoundedCornerShape(8.dp),
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = { staffListExpanded = !staffListExpanded },
+                                    enabled = !messageAllStaff.value
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.ArrowDropDown,
+                                        contentDescription = "arrow"
+                                    )
+                                }
+                            }
+                        )
+
+                      /*  TextField(modifier = Modifier
                             .fillMaxWidth()
                             .height(heightTextFields)
                             .padding(8.dp)
@@ -328,7 +368,7 @@ fun SupervisorStaff(navController: NavHostController) {
                                     )
                                 }
                             }
-                        )
+                        )*/
                     }
 
                     AnimatedVisibility(visible = staffListExpanded) {
@@ -367,15 +407,11 @@ fun SupervisorStaff(navController: NavHostController) {
 
                     // message title
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        TextField(
+                        OutlinedTextField(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(4.dp)
-                                .border(
-                                    width = 1.8.dp,
-                                    color = Color.Black,
-                                    shape = RoundedCornerShape(15.dp)
-                                ),
+                              ,
                             placeholder = { Text(text = stringResource(id = R.string.notification_title_title)) },
                             value = messageTitle.value,
                             onValueChange = {
@@ -390,16 +426,12 @@ fun SupervisorStaff(navController: NavHostController) {
 
                     //message body
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        TextField(
+                        OutlinedTextField(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(heightTextFields.times(2))
                                 .padding(4.dp)
-                                .border(
-                                    width = 1.8.dp,
-                                    color = Color.Black,
-                                    shape = RoundedCornerShape(15.dp)
-                                ),
+                                ,
                             placeholder = { Text(text = stringResource(id = R.string.notification_body_title)) },
                             value = messageBody.value,
                             onValueChange = {
