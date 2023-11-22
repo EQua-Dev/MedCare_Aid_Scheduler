@@ -101,13 +101,12 @@ fun SupervisorHouses(navController: NavHostController) {
         floatingActionButton = {
             FloatActionButton(
                 modifier = Modifier.clickable {
-//                isNewHouseClicked = true
-                    context.toast("Add House Clicked!")
+                isNewHouseClicked = true
                 },
                 fabText = "Add House", onClick = {
-                    navController.navigate(Screen.AddNewHouse.route)
-//                    showModal = true
-//                    isNewHouseClicked = true
+//                    navController.navigate(Screen.AddNewHouse.route)
+                    showModal = true
+                    isNewHouseClicked = true
                 }
             )
             /*addScreen = SupervisorAddHouseSheet(), showSheet = isNewHouseClicked*/
@@ -185,8 +184,27 @@ fun SupervisorHouses(navController: NavHostController) {
                 }
 
             }
+        }
+        if (showModal) {
+            ModalBottomSheet(
+                sheetState = sheetState,
+                onDismissRequest = { showModal = false }) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (isNewHouseClicked)
+                        SupervisorAddHouseSheet(onClose = {
+                            showModal = false
+                            isNewHouseClicked = false
+                        })
 
 
+                }
+
+            }
         }
     }
 

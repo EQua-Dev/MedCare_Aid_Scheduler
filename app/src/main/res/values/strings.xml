@@ -71,4 +71,21 @@
     <string name="notification_body_title">Message Body</string>
     <string name="send_text">SEND</string>
     <string name="send_notification_dialog_title">Message Staff</string>
+    <string name="new_house_name_title">Enter House Name</string>
+    <string name="new_house_name_placeholder">House Name</string>
+    <string name="new_house_address_title">Enter House Address</string>
+    <string name="new_house_address_placeholder">House Address</string>
+    <string name="new_house_district_title">Enter House District</string>
+    <string name="new_house_district_placeholder">House District</string>
+    <string name="new_house_special_care_type_title">Enter Special Care Type</string>
+    <string name="new_house_special_care_type_placeholder">House Special Care Type</string>
+    <string name="new_house_contact_person_name_title">Enter House Contact Person Name</string>
+    <string name="new_house_contact_person_name_placeholder">House Contact Person Name</string>
+    <string name="new_house_contact_number_title">Enter House Contact Number</string>
+    <string name="new_house_contact_number_placeholder">House Contact Number</string>
+    <string name="new_house_patient_names_title">Enter Patient Names</string>
+    <string name="new_house_patient_names_placeholder">Patient Name</string>
+    <string name="new_house_necessary_info_title">Enter House Necessary Information</string>
+    <string name="new_house_necessary_info_placeholder">House Necessary Info</string>
+    <string name="add_text">Add</string>
 </resources>

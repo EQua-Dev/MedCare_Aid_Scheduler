@@ -133,13 +133,11 @@ fun SignIn(navController: NavHostController) {
 
         )
         Row (verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End){
-
             Text(
                 text = stringResource(id = R.string.forgot_password_text),
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.End,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(8.dp)
                     .clickable {
                         //nav to forgot password

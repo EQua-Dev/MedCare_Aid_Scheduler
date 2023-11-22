@@ -45,8 +45,8 @@ fun SetupNavGraph(navController: NavHostController) {
         ){
             StaffHome(baseNavHostController = navController)
         }
-        composable(route = Screen.AddNewHouse.route){
+        /*composable(route = Screen.AddNewHouse.route){
             SupervisorAddHouseSheet(navController = navController)
-        }
+        }*/
     }
 }

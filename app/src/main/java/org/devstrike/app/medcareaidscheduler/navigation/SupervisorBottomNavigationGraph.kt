@@ -68,9 +68,9 @@ fun SupervisorBottomNavigationGraph(navController: NavHostController) {
         ) {
             SupervisorProfile(navController = navController)
         }
-     composable(route = Screen.AddNewHouse.route){
+     /*composable(route = Screen.AddNewHouse.route){
          SupervisorAddHouseSheet(navController = navController)
-     }
+     }*/
     }
 
 }

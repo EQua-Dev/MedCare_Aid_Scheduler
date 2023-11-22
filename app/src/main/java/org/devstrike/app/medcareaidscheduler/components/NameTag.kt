@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -33,16 +34,27 @@ fun NameTag(name: String, onDeleteClick: () -> Unit = {}) {
 
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(4.dp)
             .height(24.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
         ), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = name, color = Color.White, fontWeight = FontWeight.Bold, style = Typography.bodySmall)
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp)) {
+            Text(
+                text = name,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                style = Typography.bodySmall
+            )
             IconButton(onClick = { onDeleteClick() }) {
-                Icon(Icons.Default.Close, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)            }
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 }
