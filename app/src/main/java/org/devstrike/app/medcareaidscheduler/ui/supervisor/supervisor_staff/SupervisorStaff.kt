@@ -157,7 +157,8 @@ fun SupervisorStaff(navController: NavHostController) {
 
             for (document in querySnapshot) {
                 val item = document.toObject(UserData::class.java)
-                staffList.add(item)
+                if (item.userChangedPassword)
+                    staffList.add(item)
             }
         }
         staff.value = staffList

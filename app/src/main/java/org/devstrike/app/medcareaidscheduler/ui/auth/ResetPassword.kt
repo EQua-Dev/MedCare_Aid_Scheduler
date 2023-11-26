@@ -107,7 +107,7 @@ fun ResetPassword(navController: NavHostController, userEmail: String? = null) {
                                         // Password reset email sent successfully
                                         context.toast("Password reset email sent")
                                         navController.navigate(Screen.SignIn.route)
-                                        navController.popBackStack()
+                                        //navController.popBackStack()
 
 
                                     }.addOnFailureListener { e ->

@@ -60,6 +60,7 @@ import org.devstrike.app.medcareaidscheduler.components.NameTag
 import org.devstrike.app.medcareaidscheduler.components.PlainFloatActionButton
 import org.devstrike.app.medcareaidscheduler.components.TextFieldComponent
 import org.devstrike.app.medcareaidscheduler.data.House
+import org.devstrike.app.medcareaidscheduler.data.PatientData
 import org.devstrike.app.medcareaidscheduler.utils.Common.auth
 import org.devstrike.app.medcareaidscheduler.utils.toast
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
@@ -93,6 +94,10 @@ fun SupervisorAddHouseSheet(
     val houseDateAdded: MutableState<String> = remember { mutableStateOf("") }
     val houseAddingSupervisor: MutableState<String> = remember { mutableStateOf("") }
     val currentPatientName: MutableState<String> = remember { mutableStateOf("") }
+    val currentPatientAge: MutableState<String> = remember { mutableStateOf("") }
+    val listOfPatientData: MutableState<MutableList<PatientData>> = remember { mutableStateOf(mutableListOf())  }
+    val houseClientsToSubmit: MutableList<String> = remember { mutableListOf() }
+
 
     val isTaskRunning = remember { mutableStateOf(false) }
     // Show the progress bar while the task is running
@@ -330,7 +335,7 @@ fun SupervisorAddHouseSheet(
                         onCheckedChange = { isChecked -> houseIsSpecialCare.value = isChecked },
                         modifier = Modifier.clip(RoundedCornerShape(8.dp))
                     )
-                    Text(text = "Is Special Care")
+                    Text(text = stringResource(id = R.string.is_special_care_text))
                 }
 
 
@@ -417,14 +422,21 @@ fun SupervisorAddHouseSheet(
 
                 FlowRow(
                     modifier = Modifier.padding(1.dp),
-                    horizontalArrangement = Arrangement.spacedBy(1.dp),
+                    horizontalArrangement = Arrangement.spacedBy(1.dp), verticalArrangement = Arrangement.Center,
                 ) {
-                    houseNameOfPatients.forEach { patientName ->
-                        NameTag(name = patientName, onDeleteClick = {
-                            houseNameOfPatients.remove(patientName)
+                    for (patient in listOfPatientData.value){
+                        NameTag(name = patient.patientName, age = patient.patientAge, onDeleteClick = {
+                            listOfPatientData.value.remove(patient)
+                        })
+                    }
+
+
+                    /*listOfPatientData.value.forEach { patient ->
+                        NameTag(name = patient.patientName, age = patient.patientAge, onDeleteClick = {
+                            listOfPatientData.value.remove(patient)
                         })
 
-                    }
+                    }*/
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -447,14 +459,41 @@ fun SupervisorAddHouseSheet(
                         ),
                         modifier = Modifier
                             .padding(8.dp)
-                            .weight(0.7f),
+                            .weight(0.55f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    OutlinedTextField(
+                        value = currentPatientAge.value,
+                        onValueChange = {
+                            currentPatientAge.value = it
+                        },
+                        enabled = !houseIs3rdParty.value,
+                        singleLine = true,
+
+                        label = { Text(text = stringResource(id = R.string.new_house_patient_age_title)) },
+                        placeholder = { Text(text = stringResource(id = R.string.new_house_patient_age_placeholder)) },
+
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            autoCorrect = true,
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .weight(0.25f),
                         shape = RoundedCornerShape(8.dp)
                     )
 
-                    TextButton(enabled = !houseIs3rdParty.value, modifier = Modifier.weight(0.3F), onClick = {
+                    TextButton(enabled = !houseIs3rdParty.value, modifier = Modifier.weight(0.2F), onClick = {
                         if (currentPatientName.value.isNotBlank()) {
+                            val patientData = PatientData(
+                                patientName = currentPatientName.value,
+                                patientAge = currentPatientAge.value
+                            )
+                            listOfPatientData.value.add(patientData)
                             houseNameOfPatients.add(currentPatientName.value)
                             currentPatientName.value = ""
+                            currentPatientAge.value = ""
                         } else {
                             context.toast("House is 3rd party")
                         }
@@ -479,9 +518,6 @@ fun SupervisorAddHouseSheet(
                     onValueChange = {
                         houseNecessaryInformation.value = it
                     },
-                    enabled = !houseIs3rdParty.value,
-                    singleLine = true,
-
                     label = { Text(text = stringResource(id = R.string.new_house_necessary_info_title)) },
                     placeholder = { Text(text = stringResource(id = R.string.new_house_necessary_info_placeholder)) },
 
@@ -497,7 +533,9 @@ fun SupervisorAddHouseSheet(
                     shape = RoundedCornerShape(8.dp)
                 )
 
-                ButtonComponent(buttonText = "Add House", modifier = Modifier.fillMaxWidth().padding(8.dp), onClick = {
+                ButtonComponent(buttonText = "Add House", modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp), onClick = {
                     for (nameOfHouse in houseNames.value){
                         if(houseName.value == nameOfHouse){
                             context.toast("House name already exists")
@@ -521,6 +559,9 @@ fun SupervisorAddHouseSheet(
                     if (houseContactNumber.value.length != 10) {
                         context.toast("Enter a valid phone number")
                     } else {
+                        listOfPatientData.value.forEach { patient ->
+                            houseClientsToSubmit.add("${patient.patientName} (${patient.patientAge}")
+                        }
                         val newHouse = House(
                             houseName = houseName.value,
                             houseAddress = houseAddress.value,
@@ -533,7 +574,7 @@ fun SupervisorAddHouseSheet(
                             houseContactPerson = houseContactPerson.value,
                             houseContactNumber = houseContactNumber.value,
                             houseIs3rdParty = houseIs3rdParty.value,
-                            houseNameOfPatients = houseNameOfPatients,
+                            houseNameOfPatients = houseClientsToSubmit,
                             houseNecessaryInformation = houseNecessaryInformation.value,
                             houseDateAdded = System.currentTimeMillis().toString(),
                             houseAddingSupervisor = userInfo.userID,

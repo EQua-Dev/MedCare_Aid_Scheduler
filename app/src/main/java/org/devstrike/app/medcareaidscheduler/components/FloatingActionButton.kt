@@ -66,7 +66,6 @@ fun FloatActionButton(
         containerColor = MaterialTheme.colorScheme.secondary,
         contentColor = Color.White,
         onClick = {
-            context.toast("Fab clicked")
             onClick()
 //            showModal = true
 //            isNewHouseClicked = true

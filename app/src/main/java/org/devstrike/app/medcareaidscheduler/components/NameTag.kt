@@ -9,6 +9,7 @@ package org.devstrike.app.medcareaidscheduler.components
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -30,11 +31,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun NameTag(name: String, onDeleteClick: () -> Unit = {}) {
+fun NameTag(name: String, age: String, onDeleteClick: () -> Unit = {}) {
 
     Card(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(1.dp)
             .height(24.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
@@ -42,10 +43,11 @@ fun NameTag(name: String, onDeleteClick: () -> Unit = {}) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp)) {
             Text(
-                text = name,
+                text = "$name, $age",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                style = Typography.bodySmall
+                style = Typography.bodySmall,
+                modifier = Modifier.offset(x = 2.dp)
             )
             IconButton(onClick = { onDeleteClick() }) {
                 Icon(

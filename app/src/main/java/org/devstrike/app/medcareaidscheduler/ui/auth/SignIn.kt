@@ -104,6 +104,7 @@ fun SignIn(navController: NavHostController) {
             value = email.value,
             onValueChange = { email.value = it },
             label = "Email",
+            singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 autoCorrect = false,
                 keyboardType = KeyboardType.Email,
@@ -118,6 +119,7 @@ fun SignIn(navController: NavHostController) {
             value = password.value,
             onValueChange = { password.value = it },
             label = "Password",
+            singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 autoCorrect = false,
                 keyboardType = KeyboardType.Password,

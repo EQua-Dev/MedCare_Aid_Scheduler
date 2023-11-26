@@ -48,7 +48,8 @@ fun TextFieldComponent(
     keyboardActions: KeyboardActions = KeyboardActions(),
     leadingIcon: Int? = null,
     inputType: String = "",
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    singleLine: Boolean? = null
 ) {
 
     var isPasswordVisible by remember { mutableStateOf(true) }
@@ -56,6 +57,7 @@ fun TextFieldComponent(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
+        singleLine = singleLine ?: true,
         label = { Text(text = label) },
         modifier = modifier
             .fillMaxWidth()

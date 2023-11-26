@@ -14,7 +14,7 @@
     <string name="search_placeholder">search</string>
     <string name="invalid_email">Invalid Email or Password</string>
     <string name="no_of_patients_text">No of Clients</string>
-    <string name="names_of_patients_title">Name of Patients</string>
+    <string name="names_of_patients_title">Name of Clients</string>
     <string name="contact_title">Contact</string>
     <string name="contact_address_title">Address</string>
     <string name="district_province_title">District and Province</string>
@@ -83,8 +83,8 @@
     <string name="new_house_contact_person_name_placeholder">House Contact Person Name</string>
     <string name="new_house_contact_number_title">Enter House Contact Number</string>
     <string name="new_house_contact_number_placeholder">House Contact Number</string>
-    <string name="new_house_patient_names_title">Enter Patient Names</string>
-    <string name="new_house_patient_names_placeholder">Patient Name</string>
+    <string name="new_house_patient_names_title">Enter Client Names</string>
+    <string name="new_house_patient_names_placeholder">Client Name</string>
     <string name="new_house_necessary_info_title">Enter House Necessary Information</string>
     <string name="new_house_necessary_info_placeholder">House Necessary Info</string>
     <string name="add_text">Add</string>
@@ -99,6 +99,9 @@
     <string name="select_province_placeholder">Select Province</string>
     <string name="new_user_address_title">Address</string>
     <string name="create_user_text">Create User</string>
+    <string name="is_special_care_text">Special Care Required</string>
+    <string name="new_house_patient_age_title">Age</string>
+    <string name="new_house_patient_age_placeholder">00</string>
 
 
     <string-array name="genders">
