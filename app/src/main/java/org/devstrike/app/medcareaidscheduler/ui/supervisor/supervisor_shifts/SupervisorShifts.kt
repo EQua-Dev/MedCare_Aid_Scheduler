@@ -179,7 +179,7 @@ fun SupervisorShifts(navController: NavHostController) {
 
 
     Scaffold(
-        floatingActionButton = {
+       /* floatingActionButton = {
             FloatActionButton(modifier = Modifier.clickable {
 //            isNewConnectClicked = true
             }, fabText = "Add Shift Type", onClick = {
@@ -187,7 +187,7 @@ fun SupervisorShifts(navController: NavHostController) {
                 isNewShiftClicked = true
             })
         },
-        floatingActionButtonPosition = FabPosition.End,
+        floatingActionButtonPosition = FabPosition.End,*/
     ) {
         val sheetState = rememberModalBottomSheetState()
         var isSheetOpen by rememberSaveable {

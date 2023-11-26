@@ -37,6 +37,7 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.navigation.Screen
+import org.devstrike.app.medcareaidscheduler.ui.theme.Balsamiq
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 
 //@Preview(showSystemUi = true, showBackground = true)
@@ -70,9 +71,9 @@ fun AnimatedSplashScreen(alpha: Float) {
             text = stringResource(id = R.string.app_name),
             style = Typography.displayMedium,
             modifier = Modifier
-                .alpha(alpha)
-                .fillMaxSize(),
-            textAlign = TextAlign.Center
+                .alpha(alpha),
+            textAlign = TextAlign.Center,
+            fontFamily = Balsamiq
         )
 
     }
