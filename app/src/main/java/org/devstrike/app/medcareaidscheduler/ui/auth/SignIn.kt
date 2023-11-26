@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -132,7 +133,8 @@ fun SignIn(navController: NavHostController) {
             modifier = Modifier.padding(8.dp)
 
         )
-        Row (verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End){
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+
             Text(
                 text = stringResource(id = R.string.forgot_password_text),
                 color = MaterialTheme.colorScheme.primary,
@@ -148,55 +150,82 @@ fun SignIn(navController: NavHostController) {
                 fontWeight = FontWeight.Bold
             )
         }
+
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        ButtonComponent(modifier = Modifier.fillMaxWidth().padding(16.dp),enabled = email.value.isNotBlank() && password.value.isNotBlank(), onClick = {
-            signInUser(email.value, password.value, context, onSuccess = {
-                isTaskRunning.value = false
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        withContext(Dispatchers.Main) {
+        ButtonComponent(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+            enabled = email.value.isNotBlank() && password.value.isNotBlank(),
+            onClick = {
+                signInUser(email.value, password.value, context, onSuccess = {
+                    isTaskRunning.value = false
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            withContext(Dispatchers.Main) {
 
-                            val getUser = getUser(auth.uid!!, context)
+                                val getUser = getUser(auth.uid!!, context)
 
-                            if (getUser?.userChangedPassword!!){
-                                when (getUser.userRole) {
-                                    STAFF_ROLE -> navController.navigate(Screen.StaffLanding.route)
-                                    SUPERVISOR_ROLE -> navController.navigate(Screen.SupervisorLanding.route)
-                                    else -> context.toast("User Invalid")
+                                if (getUser?.userChangedPassword!!) {
+                                    when (getUser.userRole) {
+                                        STAFF_ROLE -> navController.navigate(Screen.StaffLanding.route)
+                                        SUPERVISOR_ROLE -> navController.navigate(Screen.SupervisorLanding.route)
+                                        else -> context.toast("User Invalid")
+                                    }
+                                } else {
+                                    navController.navigate(Screen.ForgotPassword.route)
                                 }
-                            }else {
-                                navController.navigate(Screen.ForgotPassword.route)
+                            }
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                context.toast(e.message.toString())
+
                             }
                         }
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                                    context.toast(e.message.toString())
-
-                        }
                     }
-                }
 
-            }, isLoading = {
-                isTaskRunning.value = true
-            }, onFailure = {e ->
-                isTaskRunning.value = false
-                context.toast(e)
-            })
+                }, isLoading = {
+                    isTaskRunning.value = true
+                }, onFailure = { e ->
+                    isTaskRunning.value = false
+                    context.toast(e)
+                })
 
-    }, buttonText = stringResource(id = R.string.sign_in_text))
+            },
+            buttonText = stringResource(id = R.string.sign_in_text)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp), contentAlignment = Alignment.Center
+        ) {
+            TextButton(onClick = { navController.navigate(Screen.CreateUser.route) }) {
+                Text(text = "Create new User (Simulation)")
+            }
+        }
 
 
+    }
 }
-}
 
-fun signInUser(email: String, password: String, context: Context, onSuccess:() -> Unit, isLoading: () -> Unit, onFailure: (error: String) -> Unit) {
+fun signInUser(
+    email: String,
+    password: String,
+    context: Context,
+    onSuccess: () -> Unit,
+    isLoading: () -> Unit,
+    onFailure: (error: String) -> Unit
+) {
 
     if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
         context.toast("Invalid Email or Password")
-    }else if (email.isEmpty() || password.isEmpty()){
+    } else if (email.isEmpty() || password.isEmpty()) {
         context.toast("Invalid Email or Password")
-    }else{
+    } else {
 
         CoroutineScope(Dispatchers.IO).launch {
             isLoading()

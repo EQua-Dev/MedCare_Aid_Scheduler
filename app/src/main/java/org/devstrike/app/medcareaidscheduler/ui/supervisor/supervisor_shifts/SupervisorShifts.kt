@@ -809,10 +809,7 @@ fun SupervisorShifts(navController: NavHostController) {
                             isNewShiftClicked = false
                         })
                 }
-
             }
-
-
         }
     }
 

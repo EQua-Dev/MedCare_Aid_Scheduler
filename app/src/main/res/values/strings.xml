@@ -88,4 +88,26 @@
     <string name="new_house_necessary_info_title">Enter House Necessary Information</string>
     <string name="new_house_necessary_info_placeholder">House Necessary Info</string>
     <string name="add_text">Add</string>
+    <string name="creat_user_text">Create User Simulation</string>
+    <string name="create_user_sub_text">Enter details of new user</string>
+    <string name="gender">Gender</string>
+    <string name="new_user_contact_number_title">Contact Number</string>
+    <string name="role">User Role</string>
+    <string name="last_name_title">Last Name</string>
+    <string name="first_name_title">First Name</string>
+    <string name="new_user_district_title">District</string>
+    <string name="select_province_placeholder">Select Province</string>
+    <string name="new_user_address_title">Address</string>
+    <string name="create_user_text">Create User</string>
+
+
+    <string-array name="genders">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+    <string-array name="roles">
+        <item>supervisor</item>
+        <item>staff</item>
+    </string-array>
 </resources>

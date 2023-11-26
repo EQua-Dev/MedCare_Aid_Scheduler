@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import org.devstrike.app.medcareaidscheduler.ui.AppSplashScreen
+import org.devstrike.app.medcareaidscheduler.ui.auth.CreateNewUser
 import org.devstrike.app.medcareaidscheduler.ui.auth.ResetPassword
 import org.devstrike.app.medcareaidscheduler.ui.auth.SignIn
 import org.devstrike.app.medcareaidscheduler.ui.staff.StaffHome
@@ -29,6 +30,11 @@ fun SetupNavGraph(navController: NavHostController) {
             route = Screen.SignIn.route
         ){
             SignIn(navController = navController)
+        }
+        composable(
+            route = Screen.CreateUser.route
+        ){
+            CreateNewUser(navController = navController)
         }
         composable(
             route = Screen.ForgotPassword.route

@@ -1,7 +1,7 @@
 package org.devstrike.app.medcareaidscheduler.data
 
 data class UserData(
-    val userID: String = "",
+    var userID: String = "",
     val userRole: String = "",
     val userFirstName: String = "",
     val userLastName: String = "",

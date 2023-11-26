@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -43,22 +45,12 @@ import org.devstrike.app.medcareaidscheduler.utils.toast
 
 //@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ResetPassword(navController: NavHostController) {
+fun ResetPassword(navController: NavHostController, userEmail: String? = null) {
     val context = LocalContext.current
     val email: MutableState<String> = remember { mutableStateOf("") }
 
     val isTaskRunning = remember { mutableStateOf(false) }
     // Show the progress bar while the task is running
-
-
-    // Perform the task
-    LaunchedEffect(Unit) {
-        isTaskRunning.value = true
-
-        // Do something
-
-        isTaskRunning.value = false
-    }
 
     val TAG = "ResetPassword"
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -71,7 +63,10 @@ fun ResetPassword(navController: NavHostController) {
 
     Column {
 
-        AuthHeader(title = stringResource(id = R.string.forgot_password_text), subtitle = stringResource(id = R.string.forgot_password_sub_text))
+        AuthHeader(
+            title = stringResource(id = R.string.forgot_password_text),
+            subtitle = stringResource(id = R.string.forgot_password_sub_text)
+        )
 
         Spacer(modifier = Modifier.height(124.dp))
 
@@ -85,58 +80,56 @@ fun ResetPassword(navController: NavHostController) {
                 imeAction = ImeAction.Next
             ),
             inputType = "Email",
-            leadingIcon = R.drawable.ic_email
+            leadingIcon = R.drawable.ic_email,
+            modifier = Modifier.padding(8.dp)
         )
 
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ButtonComponent(onClick = {
+        ButtonComponent(
+            onClick = {
 
-            if (!Patterns.EMAIL_ADDRESS.matcher(email.value).matches() || email.value.isEmpty()) {
-                context.toast("Invalid Email")
-            }else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    isTaskRunning.value = true
+                if (!Patterns.EMAIL_ADDRESS.matcher(email.value)
+                        .matches() || email.value.isEmpty()
+                ) {
+                    context.toast("Invalid Email")
+                } else {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        isTaskRunning.value = true
 
-                    val querySnapshot = userCollectionRef.get().await()
-                    for (doc in querySnapshot.documents){
-                        val user = doc.toObject(UserData::class.java)
-                        if (email.value == user?.userEmail){
-                            auth.sendPasswordResetEmail(email.value)
-                                .addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        userCollectionRef.document(auth.uid!!).update("userChangedPassword", true).addOnCompleteListener {
-                                            isTaskRunning.value = false
-                                            // Password reset email sent successfully
-                                            context.toast("Password reset email sent")
-                                                navController.navigate(Screen.SignIn.route)
-                                                navController.popBackStack()
-
-
-                                        }.addOnFailureListener { e ->
-                                            isTaskRunning.value = false
-                                            context.toast(e.message.toString())
-                                        }
-                                    } else {
+                        auth.sendPasswordResetEmail(email.value)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    userCollectionRef.document(auth.uid!!)
+                                        .update("userChangedPassword", true).addOnCompleteListener {
                                         isTaskRunning.value = false
-                                        // Error occurred while sending password reset email
-                                        context.toast("Failed to send password reset email")
+                                        // Password reset email sent successfully
+                                        context.toast("Password reset email sent")
+                                        navController.navigate(Screen.SignIn.route)
+                                        navController.popBackStack()
+
+
+                                    }.addOnFailureListener { e ->
+                                        isTaskRunning.value = false
+                                        context.toast(e.message.toString())
                                     }
-                                    return@addOnCompleteListener
+                                } else {
+                                    isTaskRunning.value = false
+                                    // Error occurred while sending password reset email
+                                    context.toast("Failed to send password reset email")
                                 }
-                        }else{
-                            withContext(Dispatchers.Main){
-                                isTaskRunning.value = false
-                                context.toast("Email Not Found. Enter a registered email")
+                                return@addOnCompleteListener
                             }
-                        }
 
                     }
                 }
-            }
-        }, buttonText = stringResource(id = R.string.reset_password_text))
-
+            },
+            buttonText = stringResource(id = R.string.reset_password_text),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        )
 
 
     }

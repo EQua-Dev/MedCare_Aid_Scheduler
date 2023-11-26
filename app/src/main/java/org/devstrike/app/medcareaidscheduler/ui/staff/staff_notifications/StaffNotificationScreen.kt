@@ -245,7 +245,7 @@ fun ShiftNotificationScreen(notificationTabType: String) {
                         modifier = Modifier
                             .padding(4.dp)
                             .fillMaxWidth(),
-                        fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
+                        fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, style = Typography.titleLarge
                     )
                     Text(
                         text = notificationData.value.notificationMessage,

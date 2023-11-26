@@ -261,8 +261,7 @@ fun StaffHouseDetail(house: House, upcomingShiftData: AssignedShift, onDismissed
             Card(
                 modifier = Modifier
                     .padding(8.dp)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.secondary),
+                    .fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 8.dp
                 )
@@ -344,8 +343,7 @@ fun StaffHouseDetail(house: House, upcomingShiftData: AssignedShift, onDismissed
             Card(
                 modifier = Modifier
                     .padding(8.dp)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.secondary),
+                    .fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 8.dp
                 )
@@ -391,7 +389,7 @@ fun StaffHouseDetail(house: House, upcomingShiftData: AssignedShift, onDismissed
                         id = R.string.staff_contest_shift
                     ), onClick = {
                         context.toast("Editing ${house.houseName}")
-                    }, modifier = Modifier.padding(8.dp)
+                    }, modifier = Modifier.padding(8.dp).fillMaxWidth()
                 )
             }
 

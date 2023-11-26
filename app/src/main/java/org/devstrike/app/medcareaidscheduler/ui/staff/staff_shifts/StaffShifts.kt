@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.ui.staff.staff_shifts.concluded_shifts.StaffConcludedShifts
 import org.devstrike.app.medcareaidscheduler.ui.staff.staff_shifts.upcoming_shifts.StaffUpcomingShift
+import org.devstrike.app.medcareaidscheduler.ui.theme.Balsamiq
 import org.devstrike.app.medcareaidscheduler.ui.theme.Purple80
 import org.devstrike.app.medcareaidscheduler.utils.getCurrentDate
 
@@ -78,7 +80,7 @@ fun StaffShifts(navController: NavHostController) {
                 text = stringResource(
                     id = R.string.staff_shift_screen_title,
                     getCurrentDate("MMMM, yyyy")
-                ), fontStyle = FontStyle.Italic, modifier = Modifier.padding(8.dp)
+                ), fontStyle = FontStyle.Italic, modifier = Modifier.padding(8.dp), fontFamily = Balsamiq
             )
             // on the below line we are specifying the top app bar
             // and specifying background color for it.

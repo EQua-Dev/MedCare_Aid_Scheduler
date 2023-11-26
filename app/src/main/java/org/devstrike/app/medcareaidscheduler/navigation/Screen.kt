@@ -9,6 +9,7 @@ package org.devstrike.app.medcareaidscheduler.navigation
 sealed class Screen(val route: String){
     object Splash: Screen(route = "splash_screen")
     object SignIn: Screen(route = "sign_in_screen")
+    object CreateUser: Screen(route = "create_user_screen")
     object ForgotPassword: Screen(route = "forgot_password_screen")
     object SupervisorLanding: Screen(route = "supervisor_landing_screen")
     object AddNewHouse: Screen(route = "add_new_house_screen")

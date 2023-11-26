@@ -164,13 +164,12 @@ fun StaffUpcomingShift() {
                         .offset(x = 16.dp),
                     textAlign = TextAlign.Center
                 )
-                Text(text = "No active shift", fontStyle = FontStyle.Italic)
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Divider(Modifier.padding(8.dp))
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             //search bar
             TextFieldComponent(
                 value = searchQuery.value,
@@ -181,7 +180,7 @@ fun StaffUpcomingShift() {
                 ),
                 inputType = "Search",
                 leadingIcon = R.drawable.ic_search,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(8.dp)
 
             )
             //list of cards
