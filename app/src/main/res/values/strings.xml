@@ -17,7 +17,7 @@
     <string name="names_of_patients_title">Name of Clients</string>
     <string name="contact_title">Contact</string>
     <string name="contact_address_title">Address</string>
-    <string name="district_province_title">District and Province</string>
+    <string name="district_province_title">District and County</string>
     <string name="email_title">Email Address</string>
     <string name="phone_number_title">Contact Number</string>
     <string name="report_staff_btn_text">Report %s</string>
@@ -65,7 +65,7 @@
     <string name="bank_name_title">Bank Name</string>
     <string name="account_holder_name_title">Account Holder Name</string>
     <string name="reset_password_text_button">Reset Password</string>
-    <string name="request_province_switch_text">Request Province Switch</string>
+    <string name="request_province_switch_text">Request County Switch</string>
     <string name="select_staff_to_message_placeholder">Staff to message</string>
     <string name="notification_title_title">Message Title</string>
     <string name="notification_body_title">Message Body</string>
@@ -96,12 +96,23 @@
     <string name="last_name_title">Last Name</string>
     <string name="first_name_title">First Name</string>
     <string name="new_user_district_title">District</string>
-    <string name="select_province_placeholder">Select Province</string>
+    <string name="select_province_placeholder">Select County</string>
     <string name="new_user_address_title">Address</string>
     <string name="create_user_text">Create User</string>
     <string name="is_special_care_text">Special Care Required</string>
     <string name="new_house_patient_age_title">Age</string>
     <string name="new_house_patient_age_placeholder">00</string>
+    <string name="shift_start_time_title">Shift Start Time</string>
+    <string name="shift_stop_time_title">Shift Stop Time</string>
+    <string name="staff_clockout_dialog_title">Clock Out</string>
+    <string name="clock_in_time_title">Clock In:</string>
+    <string name="clock_out_time_title">Clock Out:</string>
+    <string name="hours_text">Hours</string>
+    <string name="total_hours_title">Total Hours:</string>
+    <string name="day_title">D:</string>
+    <string name="night_title">"N: "</string>
+    <string name="sleep_over_title">"S/O: "</string>
+    <string name="confirm_clock_out_btn">Confirm Clock Out</string>
 
 
     <string-array name="genders">

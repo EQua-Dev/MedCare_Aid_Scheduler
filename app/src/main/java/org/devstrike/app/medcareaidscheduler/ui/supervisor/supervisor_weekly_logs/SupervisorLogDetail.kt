@@ -67,7 +67,6 @@ import org.devstrike.app.medcareaidscheduler.utils.Common.notificationsCollectio
 import org.devstrike.app.medcareaidscheduler.utils.Common.paymentsCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getHouse
-import org.devstrike.app.medcareaidscheduler.utils.getShiftType
 import org.devstrike.app.medcareaidscheduler.utils.getUser
 import org.devstrike.app.medcareaidscheduler.utils.toast
 import java.util.UUID
@@ -438,7 +437,7 @@ fun LogShiftDialog(
 ) {
     Dialog(onDismissRequest = { onDismiss() }) {
         val houseDetails = getHouse(logShift.assignedHouseID, context)!!
-        val shiftTypeDetails = getShiftType(logShift.assignedShiftTypeID, context)!!
+//        val shiftTypeDetails = getShiftType(logShift.assignedShiftTypeID, context)!!
         Card(modifier = Modifier.padding(8.dp)) {
             Text(
                 text = stringResource(id = R.string.log_shift_report),
@@ -452,11 +451,11 @@ fun LogShiftDialog(
                 Modifier.padding(4.dp)
             )
             Text(text = houseDetails.houseName, Modifier.padding(4.dp))
-            Text(text = shiftTypeDetails.shiftTypeName, Modifier.padding(4.dp))
-            Text(
+//            Text(text = shiftTypeDetails.shiftTypeName, Modifier.padding(4.dp))
+            /*Text(
                 text = "Hours: ${shiftTypeDetails.shiftTypeNoOfHours.toDouble().toInt()}",
                 Modifier.padding(4.dp)
-            )
+            )*/
 
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 ButtonComponent(buttonText = stringResource(id = R.string.okay_button), onClick = {

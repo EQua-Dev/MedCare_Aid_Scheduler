@@ -5,7 +5,9 @@ data class AssignedShift(
     val assignedHouseID: String = "",
     val assignedStaffID: String = "",
     val assignedSupervisorID: String = "",
-    val assignedShiftTypeID: String = "",
+    val assignedShiftStartTime: String = "",
+    val assignedShiftStopTime: String = "",
+    val assignedShiftTypes: String = "", //will be a text containing all the shift types that the assigned times fall into
     val assignedShiftStatus: String = "",
     val assignedShiftClockInTime: String = "",
     val assignedShiftClockOutTime: String = "",

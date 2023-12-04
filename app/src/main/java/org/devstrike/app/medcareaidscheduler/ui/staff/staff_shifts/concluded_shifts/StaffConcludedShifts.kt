@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,10 +22,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -58,7 +55,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.google.firebase.firestore.MetadataChanges
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,9 +77,7 @@ import org.devstrike.app.medcareaidscheduler.utils.Common.auth
 import org.devstrike.app.medcareaidscheduler.utils.Common.weeklyShiftsReportLogCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getHouse
-import org.devstrike.app.medcareaidscheduler.utils.getShiftType
 import org.devstrike.app.medcareaidscheduler.utils.getUser
-import org.devstrike.app.medcareaidscheduler.utils.isDateWithinThisWeek
 import org.devstrike.app.medcareaidscheduler.utils.toast
 import java.util.UUID
 
@@ -148,43 +142,48 @@ fun StaffConcludedShifts() {
                 Common.assignedShiftsCollectionRef.whereEqualTo(
                     "assignedStaffID",
                     Common.auth.uid!!
-                )
+                ).get().addOnCompleteListener { querySnapshot ->
+                    if (querySnapshot.isSuccessful) {
+                        concludedShiftsList.clear()
+                        for (document in querySnapshot.result) {
+                            val item = document.toObject(AssignedShift::class.java)
+                            // check if the time of the shift is in the past and the shift is inactive (to remove the ongoing shift)
 
-
-            querySnapshot.addSnapshotListener(MetadataChanges.INCLUDE) { snapshot, e ->
-                if (e != null) {
-                    Log.d(TAG, "Listen Failed: ", e)
-                    return@addSnapshotListener
-                }
-                concludedShiftsList.clear()
-                for (document in snapshot!!) {
-                    val item = document.toObject(AssignedShift::class.java)
-                    // check if the time of the shift is in the past and the shift is inactive (to remove the ongoing shift)
-                    if (item.assignedShiftDate.toLong() < System.currentTimeMillis() && item.assignedShiftStatus != Common.SHIFT_ACTIVE)
-                        concludedShiftsList.add(item)
-                }
-                concludedShiftList.value = concludedShiftsList
-                for (shift in concludedShiftList.value) {
-                    if (isDateWithinThisWeek(shift.assignedShiftDate.toLong()) && shift.assignedShiftClockOutTime.isNotBlank()) {
-                        concludedWeekShiftList.add(shift)
-                        staffShiftsServed.value++
-                        val staffShiftType = getShiftType(
-                            shift.assignedShiftTypeID,
-                            context
-                        )!!
-                        staffWeekHours.value = staffWeekHours.value.toInt().plus(
-                            staffShiftType.shiftTypeNoOfHours.toDouble().toInt()
+                            if (item.assignedShiftStopTime.toLong() < System.currentTimeMillis())
+                                concludedShiftsList.add(item)
+                        }
+                        concludedShiftList.value = concludedShiftsList
+                    } else {
+                        context.toast(
+                            querySnapshot.exception?.localizedMessage ?: "Some error occurred"
                         )
+                    }
+                }.addOnFailureListener { e ->
+                    context.toast(e.localizedMessage ?: "Some error occurred")
+                }
+
+
+            /*for (shift in concludedShiftList.value) {
+                if (isDateWithinThisWeek(shift.assignedShiftDate.toLong()) && shift.assignedShiftClockOutTime.isNotBlank()) {
+                    concludedWeekShiftList.add(shift)
+                    staffShiftsServed.value++
+                    val staffShiftType = getShiftType(
+                        shift.assignedShiftTypeID,
+                        context
+                    )!!
+                    staffWeekHours.value = staffWeekHours.value.toInt().plus(
+                        staffShiftType.shiftTypeNoOfHours.toDouble().toInt()
+                    )
 //                            staffWeekShiftTypeHours[staffShiftType.shiftTypeName] =
 //                                staffShiftType.shiftTypeNoOfHours.toDouble().toInt()
-                        /*
+                    *//*
                         **the key is being replaced instead of adding the hours to the value of the keys**
                          *  1. loop through the keys of the map
                          *  2. check if the key already exists
                          *  3. if exists, then add the hours to the value of that key and stop the check
                          *  4. else write to the new key
                          *
-                         * */
+                         * *//*
                         if (staffWeekShiftTypeHours.entries.isEmpty()) {
                             staffWeekShiftTypeHours[staffShiftType.shiftTypeAliasName] =
                                 staffShiftType.shiftTypeNoOfHours.toDouble().toInt()
@@ -232,10 +231,7 @@ fun StaffConcludedShifts() {
                     if (isDateWithinThisWeek(shift.assignedShiftDate.toLong())) {
                         allWeekShiftList.add(shift)
                     }
-                }
-
-            }
-
+                }*/
         }
 
     }
@@ -374,7 +370,6 @@ fun StaffConcludedShifts() {
                             */
 
                             val totalHours = staffWeekShiftTypeHours.values.sum()
-                            Log.d(TAG, "totalHours: $totalHours")
 
                             staffWeekPayableAmount.value =
                                 totalHours.toDouble().times(SHIFT_HOURLY_PAY.toDouble())
@@ -450,12 +445,9 @@ fun StaffConcludedShifts() {
             }
 
             val listOfUpcomingShifts = concludedShiftList.value
-            Log.d(TAG, "listOfUpcomingShifts: $listOfUpcomingShifts")
 
             val filteredList = listOfUpcomingShifts.filter { assignedShift ->
                 val houseInfo = getHouse(assignedShift.assignedHouseID, context)!!
-                val shiftTypeInfo =
-                    getShiftType(assignedShift.assignedShiftTypeID, context)!!
 //                    val supervisorInfo = getUser(houseInfo.houseName, context)!!
                 houseInfo.houseName.contains(
                     searchQuery.value,
@@ -467,10 +459,9 @@ fun StaffConcludedShifts() {
                     assignedShift.assignedShiftDate.toLong(),
                     "EEE, dd MMM, yyyy"
                 ).contains(searchQuery.value, true)
-                        || shiftTypeInfo.shiftTypeName.contains(searchQuery.value, true)
+                        || assignedShift.assignedShiftTypes.contains(searchQuery.value, true)
             }
 
-            Log.d(TAG, "filteredList: $filteredList")
             items(filteredList) { assignedShift ->
                 UpcomingShiftItemCard(assignedShift = assignedShift, onClick = {
                     concludedShiftData = assignedShift

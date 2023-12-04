@@ -7,11 +7,8 @@
 package org.devstrike.app.medcareaidscheduler.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,7 +26,6 @@ import org.devstrike.app.medcareaidscheduler.data.AssignedShift
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getHouse
-import org.devstrike.app.medcareaidscheduler.utils.getShiftType
 import org.devstrike.app.medcareaidscheduler.utils.getUser
 
 @Composable
@@ -53,7 +49,7 @@ fun CardItem(
         val houseDetail = getHouse(assignment.assignedHouseID, context)!!
         val staffDetail = getUser(assignment.assignedStaffID, context)!!
         val supervisorDetail = getUser(assignment.assignedSupervisorID, context)!!
-        val shiftDetail = getShiftType(assignment.assignedShiftTypeID, context)!!
+        val shiftDetail = assignment.assignedShiftTypes
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(4.dp)) {
             Text(
                 text = getDate(assignment.assignedShiftDate.toLong(), "EEE, dd MMM, yyyy"),
@@ -86,7 +82,7 @@ fun CardItem(
                 style = Typography.bodySmall
             )
             Text(
-                text = shiftDetail.shiftTypeName,
+                text = shiftDetail,
                 modifier = Modifier.weight(0.5f).padding(2.dp),
                 fontStyle = FontStyle.Italic,
                 style = Typography.bodySmall,

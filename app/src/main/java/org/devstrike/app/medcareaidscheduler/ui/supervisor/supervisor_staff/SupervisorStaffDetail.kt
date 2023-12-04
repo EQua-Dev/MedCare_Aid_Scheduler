@@ -10,7 +10,6 @@ import android.app.DatePickerDialog
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -35,31 +34,33 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -77,10 +78,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.components.ButtonComponent
 import org.devstrike.app.medcareaidscheduler.data.AssignedShift
@@ -91,19 +90,18 @@ import org.devstrike.app.medcareaidscheduler.data.UserData
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.Common.NOTIFICATION_TYPE_SHIFT_ASSIGNMENT
+import org.devstrike.app.medcareaidscheduler.utils.Common.SHIFT_ACTIVE
 import org.devstrike.app.medcareaidscheduler.utils.Common.assignedShiftsCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.Common.auth
 import org.devstrike.app.medcareaidscheduler.utils.Common.housesCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.Common.notificationsCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.Common.shiftCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.getDate
-import org.devstrike.app.medcareaidscheduler.utils.getHouse
 import org.devstrike.app.medcareaidscheduler.utils.getProvince
-import org.devstrike.app.medcareaidscheduler.utils.getShiftType
 import org.devstrike.app.medcareaidscheduler.utils.getUser
 import org.devstrike.app.medcareaidscheduler.utils.isTimeInCurrentMonth
-import org.devstrike.app.medcareaidscheduler.utils.isTimeInCurrentWeek
 import org.devstrike.app.medcareaidscheduler.utils.toast
+import org.devstrike.libs.android.timetravel.TimeTraveller
 import java.util.Calendar
 import java.util.UUID
 
@@ -169,10 +167,7 @@ fun SupervisorStaffDetail(staff: UserData) {
                     )
                 }
             }
-
-            //staff.value = staffList
         }
-
     }
 
 
@@ -389,7 +384,10 @@ fun SupervisorStaffDetail(staff: UserData) {
                                                                 AssignedShift::class.java
                                                             )
 
-                                                            if (isTimeInCurrentMonth(item.assignedShiftDate.toLong())) {
+                                                            if (TimeTraveller.isTimeInCurrentMonth(
+                                                                    item.assignedShiftDate.toLong()
+                                                                )
+                                                            ) {
                                                                 //time is in current month
                                                                 allShiftsList.add(item)
                                                                 allStaffAssignedShifts.value =
@@ -480,10 +478,7 @@ fun SupervisorStaffDetail(staff: UserData) {
                                         .fillMaxWidth(0.5F),
                                 )
                                 Text(
-                                    text = getShiftType(
-                                        shift.assignedShiftTypeID,
-                                        context
-                                    )!!.shiftTypeName,
+                                    text = "${shift.assignedShiftStartTime} - ${shift.assignedShiftStopTime}",
                                     modifier = Modifier
                                         .padding(4.dp)
                                         .fillMaxWidth(0.5F),
@@ -549,19 +544,59 @@ fun AssignStaffShiftFormDialog(
     var selectedAssignmentDay by remember {
         mutableStateOf("")
     }
+    var selectedAssignmentDayToSave by remember {
+        mutableStateOf("")
+    }
     var selectedAssignmentType by remember {
         mutableStateOf("")
     }
+    var assignmentStartTime by remember { mutableStateOf("") }
+    var assignmentStopTime by remember { mutableStateOf("") }
+
+    var assignmentStartTimeToSave by remember {
+        mutableStateOf("")
+    }
+    var assignmentStopTimeToSave by remember {
+        mutableStateOf("")
+    }
+
+    var assignmentShiftTypes by remember {
+        mutableStateOf("")
+    }
+    var selectedHour by remember { mutableIntStateOf(0) }
+    var selectedMinute by remember { mutableIntStateOf(0) }
+    var shiftIsWithinDay by remember { mutableStateOf(false) }
+    var shiftIsWithinNight by remember { mutableStateOf(false) }
+    var shiftIsWithinSleepOver by remember { mutableStateOf(false) }
 
     var assignmentNecessaryInfo by remember {
         mutableStateOf("")
     }
-
     var staffIsFreeThatDay by remember {
         mutableStateOf(false)
     }
     var shiftIsFreeForStaff by remember {
         mutableStateOf(false)
+    }
+    var dayStartTime by remember {
+        mutableStateOf("")
+    }
+    var dayStopTime by remember {
+        mutableStateOf("")
+    }
+
+    var nightStartTime by remember {
+        mutableStateOf("")
+    }
+    var nightStopTime by remember {
+        mutableStateOf("")
+    }
+
+    var sleepoverStartTime by remember {
+        mutableStateOf("")
+    }
+    var sleepoverStopTime by remember {
+        mutableStateOf("")
     }
     val isTaskRunning = remember { mutableStateOf(false) }
     // Show the progress bar while the task is running
@@ -572,6 +607,41 @@ fun AssignStaffShiftFormDialog(
         isTaskRunning.value = true
 
         // Do something
+        val supervisorInfo = getUser(auth.uid!!, context)!!
+        coroutineScope.launch {
+            shiftCollectionRef.whereEqualTo(
+                "shiftTypeOwnerProvinceID",
+                supervisorInfo.userProvinceID
+            ).get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    for (document in task.result) {
+                        val item = document.toObject(ShiftType::class.java)
+                        when (item.shiftTypeName) {
+                            "Day" -> {
+                                dayStartTime =
+                                    TimeTraveller.convertMillisToHourAndMinute(item.shiftTypeStartTime.toLong())
+                                dayStopTime =
+                                    TimeTraveller.convertMillisToHourAndMinute(item.shiftTypeEndTime.toLong())
+                            }
+
+                            "Night" -> {
+                                nightStartTime =
+                                    TimeTraveller.convertMillisToHourAndMinute(item.shiftTypeStartTime.toLong())
+                                nightStopTime =
+                                    TimeTraveller.convertMillisToHourAndMinute(item.shiftTypeEndTime.toLong())
+                            }
+
+                            "Sleep Over" -> {
+                                sleepoverStartTime =
+                                    TimeTraveller.convertMillisToHourAndMinute(item.shiftTypeStartTime.toLong())
+                                sleepoverStopTime =
+                                    TimeTraveller.convertMillisToHourAndMinute(item.shiftTypeEndTime.toLong())
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         isTaskRunning.value = false
     }
@@ -589,9 +659,9 @@ fun AssignStaffShiftFormDialog(
 
 // Set the futureDate to the last day of the current month
     val futureDate = Calendar.getInstance()
-    futureDate.set(Calendar.YEAR, currentMonth.get(Calendar.YEAR))
-    futureDate.set(Calendar.MONTH, currentMonth.get(Calendar.MONTH))
-    futureDate.set(Calendar.DAY_OF_MONTH, currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH))
+    futureDate.time = currentMonth.time
+    futureDate.set(Calendar.DAY_OF_MONTH, 30)
+
 
     val datePicker = DatePickerDialog(
         context,
@@ -599,11 +669,13 @@ fun AssignStaffShiftFormDialog(
             val selectedDate = Calendar.getInstance()
             selectedDate.set(selectedYear, selectedMonth, selectedDayOfMonth)
 
-            if (isDateSelectable(selectedDate, currentMonth, futureDate)) {
+            if (TimeTraveller.isDateSelectable(selectedDate, currentMonth, futureDate)) {
                 // The selected date is within the allowed range
                 val selectedMillis = selectedDate.timeInMillis
                 // Now, 'selectedMillis' contains the time in milliseconds
-                selectedAssignmentDay = selectedMillis.toString()
+                selectedAssignmentDayToSave = selectedMillis.toString()
+                selectedAssignmentDay =
+                    TimeTraveller.getDate(selectedMillis.toString().toLong(), "EEE, dd MMM, yyyy")
             } else {
                 // The selected date is not within the allowed range
                 context.toast("Invalid date selection")
@@ -613,17 +685,6 @@ fun AssignStaffShiftFormDialog(
         month,
         dayOfMonth
     )
-
-
-// Show the DatePickerDialog
-    datePicker.datePicker.maxDate = futureDate.timeInMillis
-    datePicker.datePicker.minDate = currentMonth.timeInMillis
-
-
-    /*
-    when supervisor selects the date, only this month's dates will be clickable, future ones
-    when supervisor selects a date, the system checks if the staff already has a shift that day
-     */
 
     datePicker.datePicker.minDate = calendar.timeInMillis
 
@@ -638,9 +699,12 @@ fun AssignStaffShiftFormDialog(
         mutableStateOf(false)
     }
 
+
     val interactionSource = remember {
         MutableInteractionSource()
     }
+
+
     /*
     the dialog will be a form of 4 fields
     a. house to assign: which will be fetched from the list of province house ☑️
@@ -683,15 +747,10 @@ fun AssignStaffShiftFormDialog(
 
                     //house to assign
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        TextField(modifier = Modifier
+                        OutlinedTextField(modifier = Modifier
                             .fillMaxWidth()
                             .height(heightTextFields)
                             .padding(4.dp)
-                            .border(
-                                width = 1.8.dp,
-                                color = Color.Black,
-                                shape = RoundedCornerShape(15.dp)
-                            )
                             .onGloballyPositioned { coordinates ->
                                 textFieldsSize = coordinates.size.toSize()
                             },
@@ -758,22 +817,15 @@ fun AssignStaffShiftFormDialog(
 
                     //day to assign
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        TextField(
+                        OutlinedTextField(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(heightTextFields)
                                 .padding(4.dp)
-                                .border(
-                                    width = 1.8.dp,
-                                    color = Color.Black,
-                                    shape = RoundedCornerShape(15.dp)
-                                )
-                                .clickable {
-                                    datePicker.show()
-                                }
                                 .onFocusChanged {
                                     if (it.isFocused) {
                                         // focused
+                                        //TimeTraveller.pickADate(context)
                                         datePicker.show()
                                     }
                                 },
@@ -781,6 +833,10 @@ fun AssignStaffShiftFormDialog(
                             value = selectedAssignmentDay,
                             onValueChange = {
                                 selectedAssignmentDay = it
+                                Log.d(
+                                    TAG,
+                                    "AssignStaffShiftFormDialog: $selectedAssignmentDayToSave"
+                                )
                             },
                             textStyle = TextStyle(
                                 color = Color.Black,
@@ -790,108 +846,227 @@ fun AssignStaffShiftFormDialog(
                         )
                     }
 
-                    //shift type to assign
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        TextField(modifier = Modifier
+
+                    OutlinedTextField(
+                        modifier = Modifier
                             .fillMaxWidth()
                             .height(heightTextFields)
                             .padding(4.dp)
-                            .border(
-                                width = 1.8.dp,
-                                color = Color.Black,
-                                shape = RoundedCornerShape(15.dp)
-                            )
-                            .onGloballyPositioned { coordinates ->
-                                textFieldsSize = coordinates.size.toSize()
-                            },
-                            placeholder = { Text(text = stringResource(id = R.string.select_shift_to_assign_placeholder)) },
-                            value = selectedAssignmentType, onValueChange = {
-                                selectedAssignmentType = it
-                                shiftListExpanded = true
-                            }, colors = TextFieldDefaults.colors(
-                                cursorColor = Color.Black,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            ),
-                            textStyle = TextStyle(
-                                color = Color.Black,
-                                fontSize = 16.sp
-                            ),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Done
-                            ),
-                            singleLine = true,
-                            trailingIcon = {
-                                IconButton(onClick = { shiftListExpanded = !shiftListExpanded }) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.ArrowDropDown,
-                                        contentDescription = "arrow"
-                                    )
-                                }
-                            }
-                        )
-                    }
+                            .onFocusChanged {
+                                if (it.isFocused) {
+                                    // focused
+                                    TimeTraveller.pickATime(
+                                        context,
+                                        selectedHour,
+                                        selectedMinute
+                                    ) { hour, minute ->
+                                        selectedHour = hour
+                                        selectedMinute = minute
+                                        assignmentStartTime = "${String.format("%02d", hour)}:${
+                                            String.format(
+                                                "%02d",
+                                                minute
+                                            )
+                                        }"
+                                        assignmentStartTimeToSave =
+                                            TimeTraveller
+                                                .calculateHourTimeInMillis(hour, minute)
+                                                .toString()
 
-                    AnimatedVisibility(visible = shiftListExpanded) {
-                        Card(
-                            modifier = Modifier
-                                .padding(horizontal = 5.dp)
-                                .width(textFieldsSize.width.dp)
+                                        Log.d(
+                                            TAG,
+                                            "AssignStaffShiftFormDialog: assignmentStartTime = $assignmentStartTime"
+                                        )
+                                        Log.d(
+                                            TAG,
+                                            "AssignStaffShiftFormDialog: assignmentStartTimeToSave = $assignmentStartTimeToSave"
+                                        )
+                                    }
+                                }
+                            },
+                        placeholder = { Text(text = stringResource(id = R.string.shift_start_time_title)) },
+                        value = assignmentStartTime,
+                        onValueChange = {
+                            assignmentStartTime = it
+                        },
+                        textStyle = TextStyle(
+                            color = Color.Black,
+                            fontSize = 16.sp
+                        ),
+                    )
+
+
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(heightTextFields)
+                            .padding(4.dp)
+                            .onFocusChanged {
+                                if (it.isFocused) {
+                                    // focused
+                                    TimeTraveller.pickATime(
+                                        context,
+                                        selectedHour,
+                                        selectedMinute
+                                    ) { hour, minute ->
+                                        assignmentStopTime = "${String.format("%02d", hour)}:${
+                                            String.format(
+                                                "%02d",
+                                                minute
+                                            )
+                                        }"
+                                        assignmentStopTimeToSave =
+                                            TimeTraveller
+                                                .calculateHourTimeInMillis(hour, minute)
+                                                .toString()
+                                        if (TimeTraveller.isTimeInRange(
+                                                dayStartTime,
+                                                dayStopTime,
+                                                assignmentStartTime,
+                                                assignmentStopTime
+                                            )
+                                        ) {
+                                            shiftIsWithinDay = true
+                                            assignmentShiftTypes.plus("D, ")
+                                            //append Day to to the string
+                                        }
+                                        Log.d(TAG, "shiftIsWithinDay: $shiftIsWithinDay")
+                                        if (TimeTraveller.isTimeInRange(
+                                                nightStartTime,
+                                                nightStopTime,
+                                                assignmentStartTime,
+                                                assignmentStopTime
+                                            )
+                                        ) {
+                                            shiftIsWithinNight = true
+                                            assignmentShiftTypes.plus("N, ")
+                                            //append Night to the string
+                                        }
+
+                                        Log.d(TAG, "shiftIsWithinNight: $shiftIsWithinNight")
+                                        if (TimeTraveller.isTimeInRange(
+                                                sleepoverStartTime,
+                                                sleepoverStopTime,
+                                                assignmentStartTime,
+                                                assignmentStopTime
+                                            )
+                                        ) {
+                                            shiftIsWithinSleepOver = true
+                                            assignmentShiftTypes.plus("SO, ")
+                                            //append Sleepover to the string
+                                        }
+
+                                        Log.d(
+                                            TAG,
+                                            "shiftIsWithinSleepOver: $shiftIsWithinSleepOver"
+                                        )
+
+                                        Log.d(
+                                            TAG,
+                                            "AssignStaffShiftFormDialog: assignmentStartTime = $assignmentStartTime"
+                                        )
+                                        Log.d(
+                                            TAG,
+                                            "AssignStaffShiftFormDialog: assignmentStartTimeToSave = $assignmentStartTimeToSave"
+                                        )
+                                    }
+                                }
+                            },
+                        enabled = assignmentStartTime != "",
+                        placeholder = { Text(text = stringResource(id = R.string.shift_stop_time_title)) },
+                        value = assignmentStopTime,
+                        onValueChange = {
+                            assignmentStopTime = it
+
+                            /*
+                                 shiftIsWithinDay = isTimeWithinDayRange
+
+                                 shiftIsWithinNight = isTimeWithinNightRange
+
+                                 shiftIsWithinSleepOver = isTimeWithinNightRange
+ */
+                        },
+                        textStyle = TextStyle(
+                            color = Color.Black,
+                            fontSize = 16.sp
+                        ),
+                    )
+
+
+                    Row(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(0.33f)
                         ) {
-                            LazyColumn(modifier = Modifier.heightIn(max = 150.dp)) {
-                                if (selectedAssignmentType.isNotEmpty()) {
-                                    items(
-                                        shiftTypes.filter {
-                                            it.shiftTypeName.lowercase()
-                                                .contains(selectedAssignmentType.lowercase())
-                                        }//.sortedBy{}
-                                    ) {
-                                        DropDownListItem(title = it.shiftTypeName) { title ->
-                                            selectedAssignmentType = title
-                                            shiftListExpanded = false
-
-                                        }
-                                    }
-                                } else {
-                                    items(shiftTypes) {
-                                        DropDownListItem(title = it.shiftTypeName) { title ->
-                                            selectedAssignmentType = title
-                                            shiftListExpanded = false
-                                        }
-                                    }
-                                }
-                            }
+                            Checkbox(
+                                enabled = false,
+                                checked = shiftIsWithinDay,
+                                onCheckedChange = { isChecked -> shiftIsWithinDay = isChecked },
+                                modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                            )
+                            Text(text = "Day")
                         }
-                    }
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(0.33f)
+                        ) {
+                            Checkbox(
+                                enabled = false,
+                                checked = shiftIsWithinNight,
+                                onCheckedChange = { isChecked -> shiftIsWithinNight = isChecked },
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                            )
+                            Text(text = "Night")
+                        }
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(0.33f)
+                        ) {
+                            Checkbox(
+                                enabled = false,
+                                checked = shiftIsWithinSleepOver,
+                                onCheckedChange = { isChecked ->
+                                    shiftIsWithinSleepOver = isChecked
+                                },
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                            )
+                            Text(text = "Sleep Over")
+                        }
 
-                    //any necessary information
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(heightTextFields)
-                                .padding(4.dp)
-                                .border(
-                                    width = 1.8.dp,
-                                    color = Color.Black,
-                                    shape = RoundedCornerShape(15.dp)
-                                ),
-                            placeholder = { Text(text = stringResource(id = R.string.necessary_info_title)) },
-                            value = assignmentNecessaryInfo,
-                            onValueChange = {
-                                assignmentNecessaryInfo = it
-                            },
-                            textStyle = TextStyle(
-                                color = Color.Black,
-                                fontSize = 16.sp
-                            ),
-                        )
                     }
+                    //any necessary information
+
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(heightTextFields)
+                            .padding(4.dp),
+                        placeholder = { Text(text = stringResource(id = R.string.necessary_info_title)) },
+                        value = assignmentNecessaryInfo,
+                        onValueChange = {
+                            assignmentNecessaryInfo = it
+                        },
+                        textStyle = TextStyle(
+                            color = Color.Black,
+                            fontSize = 16.sp
+                        ),
+                    )
+
 
                     ButtonComponent(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                         buttonText = stringResource(id = R.string.assign_shift_title),
-                        enabled = selectedHouse.isNotBlank() && selectedAssignmentDay.isNotBlank() && selectedAssignmentType.isNotBlank(),
+                        enabled = selectedHouse.isNotBlank() && selectedAssignmentDay.isNotBlank() && assignmentStartTimeToSave.isNotBlank() && assignmentStopTimeToSave.isNotBlank(),
                         onClick = {
                             coroutineScope.launch {
                                 housesCollectionRef.whereEqualTo(
@@ -905,129 +1080,124 @@ fun AssignStaffShiftFormDialog(
                                             selectedHouseId = item.houseID
                                     }
 
-                                    for (staffShift in staffAssignedShiftsList) {
-                                        staffAssignedShiftsList.forEach { staffShift ->
-                                            //val assignedHouseName = getHouse(it.assignedHouseID, context)!!.houseName
-                                            //check if the staff has been assigned to a house that day already
-                                            staffIsFreeThatDay = if (getDate(
-                                                    staffShift.assignedShiftDate.toLong(),
-                                                    "EEE, dd MMM, yyyy"
-                                                ) != getDate(
-                                                    selectedAssignmentDay.toLong(),
-                                                    "EEE, dd MMM, yyyy"
-                                                )
-                                            ) {
-                                                true
-                                            } else {
-                                                context.toast("Staff already assigned for this day")
-                                                //false
-                                                return@addOnCompleteListener
-                                            }
+                                    /*staffAssignedShiftsList.forEach { staffShift ->
+                                        //val assignedHouseName = getHouse(it.assignedHouseID, context)!!.houseName
+                                        //check if the staff has been assigned to a house that day already
+
+                                        staffIsFreeThatDay = if (TimeTraveller.getDate(
+                                                staffShift.assignedShiftDate.toLong(),
+                                                "EEE, dd MMM, yyyy"
+                                            ) !=
+                                            selectedAssignmentDay
+                                        ) {
+                                            true
+                                        } else {
+                                            context.toast("Staff already assigned for this day")
+                                            //false
+                                            return@addOnCompleteListener
                                         }
                                     }
-                                    allMonthShifts.forEach { otherShift ->
-                                        //check if that house has already been assigned for that day
-                                        val shiftHasBeenAssignedToOtherStaff = getDate(
+
+                                allMonthShifts.forEach { otherShift ->
+                                    val sameAssignmentTime = assignmentStartTime in (otherShift.assignedShiftStartTime..otherShift.assignedShiftStopTime)
+                                    //check if that house has already been assigned for that day
+                                    val shiftHasBeenAssignedToOtherStaff =
+                                        TimeTraveller.getDate(
                                             otherShift.assignedShiftDate.toLong(),
                                             "EEE, dd MMM, yyyy"
-                                        ) == getDate(
-                                            selectedAssignmentDay.toLong(),
-                                            "EEE, dd MMM, yyyy"
-                                        ) && getHouse(
+                                        ) ==
+                                                selectedAssignmentDay
+                                                && getHouse(
                                             otherShift.assignedHouseID,
                                             context
-                                        )!!.houseName == selectedHouse && getShiftType(
-                                            otherShift.assignedShiftTypeID,
-                                            context
-                                        )!!.shiftTypeName == selectedAssignmentType
-                                        shiftIsFreeForStaff =
-                                            if (!shiftHasBeenAssignedToOtherStaff) {
+                                        )!!.houseName == selectedHouse && !sameAssignmentTime
+                                    shiftIsFreeForStaff =
+                                        if (!shiftHasBeenAssignedToOtherStaff) {
 
-                                                true
-                                            } else {
-                                                context.toast("shift has been assigned to another staff already")
-                                                //false
-                                                return@addOnCompleteListener
+                                            true
+                                        } else {
+                                            context.toast("shift has been assigned to another staff already")
+                                            //false
+                                            return@addOnCompleteListener
 
-                                            }
-                                    }
-                                    Log.d(
-                                        TAG,
-                                        "AssignStaffShiftFormDialog: staffIsFreeThatDay => $staffIsFreeThatDay\nshiftIsFreeForStaff => $shiftIsFreeForStaff"
-                                    )
-                                    if (staffIsFreeThatDay && shiftIsFreeForStaff) {
-                                        val shiftUID = UUID.randomUUID().toString()
-                                        //upload assigned shift
-                                        //get title of shift type
-                                        coroutineScope.launch {
-                                            shiftCollectionRef.whereEqualTo(
-                                                "shiftTypeOwnerProvinceID",
-                                                staff.userProvinceID
-                                            ).get().addOnCompleteListener {
-                                                var selectedShiftTypeID = ""
-                                                for (document in it.result) {
-                                                    val item =
-                                                        document.toObject(ShiftType::class.java)
-                                                    if (item.shiftTypeName == selectedAssignmentType)
-                                                        selectedShiftTypeID = item.shiftTypeID
-
-                                                }
-                                                val assignedShift = AssignedShift(
-                                                    assignedShiftID = shiftUID,
-                                                    assignedHouseID = selectedHouseId,
-                                                    assignedStaffID = staff.userID,
-                                                    assignedSupervisorID = auth.uid!!,
-                                                    assignedShiftTypeID = selectedShiftTypeID,
-                                                    assignedShiftDate = selectedAssignmentDay,
-                                                    assignedShiftDateAdded = System.currentTimeMillis()
-                                                        .toString(),
-                                                    assignedShiftNecessaryInformation = assignmentNecessaryInfo,
-                                                )
-                                                coroutineScope.launch {
-                                                    isTaskRunning.value = true
-                                                    assignedShiftsCollectionRef.document(
-                                                        shiftUID
-                                                    ).set(assignedShift).addOnCompleteListener {
-                                                        //add notification
-                                                        val notification = Notification(
-                                                            notificationID = System.currentTimeMillis()
-                                                                .toString(),
-                                                            notificationType = NOTIFICATION_TYPE_SHIFT_ASSIGNMENT,
-                                                            notificationSenderID = auth.uid!!,
-                                                            notificationReceiverID = staff.userID,
-                                                            notificationTitle = "New shift assignment!",
-                                                            notificationProvinceID = getUser(
-                                                                auth.uid!!,
-                                                                context
-                                                            )!!.userProvinceID,
-                                                            notificationMessage = "You have been assigned to $selectedHouse on ${
-                                                                getDate(
-                                                                    selectedAssignmentDay.toLong(),
-                                                                    "EEE, dd MMM, yyyy"
-                                                                )
-                                                            } for $selectedAssignmentType",
-                                                            notificationSentDate = System.currentTimeMillis()
-                                                                .toString(),
-                                                        )
-
-                                                        notificationsCollectionRef.document(
-                                                            System.currentTimeMillis().toString()
-                                                        ).set(notification).addOnCompleteListener {
-                                                            isTaskRunning.value = false
-                                                            onDismiss()
-                                                        }
-
-                                                    }.addOnFailureListener { e ->
-                                                        isTaskRunning.value = false
-                                                        context.toast(e.message.toString())
-                                                    }
-                                                }
-
-
-                                            }
                                         }
+                                }
+                                Log.d(
+                                    TAG,
+                                    "AssignStaffShiftFormDialog: staffIsFreeThatDay => $staffIsFreeThatDay\nshiftIsFreeForStaff => $shiftIsFreeForStaff"
+                                )*/
+                                    //if (staffIsFreeThatDay && shiftIsFreeForStaff) {
+                                    val shiftUID = UUID.randomUUID().toString()
+                                    //upload assigned shift
+                                    //get title of shift type
+                                    coroutineScope.launch {
+                                        shiftCollectionRef.whereEqualTo(
+                                            "shiftTypeOwnerProvinceID",
+                                            staff.userProvinceID
+                                        ).get().addOnCompleteListener {
+                                            var selectedShiftTypeID = ""
+                                            for (document in it.result) {
+                                                val item =
+                                                    document.toObject(ShiftType::class.java)
+                                                if (item.shiftTypeName == selectedAssignmentType)
+                                                    selectedShiftTypeID = item.shiftTypeID
 
+                                            }
+                                            val assignedShift = AssignedShift(
+                                                assignedShiftID = shiftUID,
+                                                assignedHouseID = selectedHouseId,
+                                                assignedStaffID = staff.userID,
+                                                assignedSupervisorID = auth.uid!!,
+                                                assignedShiftStartTime = assignmentStartTimeToSave,
+                                                assignedShiftStopTime = assignmentStopTimeToSave,
+                                                assignedShiftTypes = assignmentShiftTypes,
+                                                assignedShiftDate = selectedAssignmentDayToSave,
+                                                assignedShiftDateAdded = System.currentTimeMillis()
+                                                    .toString(),
+                                                assignedShiftNecessaryInformation = assignmentNecessaryInfo,
+                                                assignedShiftStatus = SHIFT_ACTIVE
+                                            )
+                                            coroutineScope.launch {
+                                                isTaskRunning.value = true
+                                                assignedShiftsCollectionRef.document(
+                                                    shiftUID
+                                                ).set(assignedShift).addOnCompleteListener {
+                                                    //add notification
+                                                    val notification = Notification(
+                                                        notificationID = System.currentTimeMillis()
+                                                            .toString(),
+                                                        notificationType = NOTIFICATION_TYPE_SHIFT_ASSIGNMENT,
+                                                        notificationSenderID = auth.uid!!,
+                                                        notificationReceiverID = staff.userID,
+                                                        notificationTitle = "New shift assignment!",
+                                                        notificationProvinceID = getUser(
+                                                            auth.uid!!,
+                                                            context
+                                                        )!!.userProvinceID,
+                                                        notificationMessage = "You have been assigned to $selectedHouse on $selectedAssignmentDay for $assignmentStartTime -$assignmentStopTime ($assignmentShiftTypes)", //use string resource
+                                                    notificationSentDate =
+                                                        System.currentTimeMillis()
+                                                            .toString(),
+                                                    )
+
+                                                    notificationsCollectionRef.document(
+                                                        System.currentTimeMillis().toString()
+                                                    ).set(notification).addOnCompleteListener {
+                                                        isTaskRunning.value = false
+                                                        onDismiss()
+                                                    }
+
+                                                }.addOnFailureListener { e ->
+                                                    isTaskRunning.value = false
+                                                    context.toast(e.message.toString())
+                                                }
+                                            }
+
+
+                                        }
                                     }
+
+                                    //}
 
                                 }
                             }
@@ -1055,12 +1225,4 @@ fun DropDownListItem(title: String, onSelect: (String) -> Unit) {
         Text(text = title, fontSize = 16.sp)
     }
 
-}
-
-fun isDateSelectable(
-    selectedDate: Calendar,
-    currentMonth: Calendar,
-    futureDate: Calendar
-): Boolean {
-    return selectedDate >= currentMonth && selectedDate <= futureDate
 }

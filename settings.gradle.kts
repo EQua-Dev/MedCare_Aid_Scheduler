@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MedCare Aid Scheduler"
 include(":app")
+include(":TimeTravel")

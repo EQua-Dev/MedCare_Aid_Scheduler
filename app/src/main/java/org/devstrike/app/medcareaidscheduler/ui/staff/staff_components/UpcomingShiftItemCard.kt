@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,13 +26,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.devstrike.app.medcareaidscheduler.components.ButtonComponent
 import org.devstrike.app.medcareaidscheduler.data.AssignedShift
+import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getHouse
-import org.devstrike.app.medcareaidscheduler.utils.getShiftType
-import org.devstrike.app.medcareaidscheduler.utils.getUser
+import org.devstrike.libs.android.timetravel.TimeTraveller
 
 @Composable
-fun UpcomingShiftItemCard(assignedShift: AssignedShift, onClick: () -> Unit, onContestClick: () -> Unit) {
+fun UpcomingShiftItemCard(
+    assignedShift: AssignedShift,
+    onClick: () -> Unit,
+    onContestClick: () -> Unit
+) {
 
     val context = LocalContext.current
 //    val configuration = LocalConfiguration.current
@@ -65,10 +68,11 @@ fun UpcomingShiftItemCard(assignedShift: AssignedShift, onClick: () -> Unit, onC
 
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().padding(4.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
         ) {
             //Spacer(modifier = Modifier.height(16.dp))
-            val shiftTypeInfo = getShiftType(assignedShift.assignedShiftTypeID, context)!!
             val houseInfo = getHouse(assignedShift.assignedHouseID, context)!!
 
             Row(modifier = Modifier.fillMaxWidth()) {
@@ -81,19 +85,31 @@ fun UpcomingShiftItemCard(assignedShift: AssignedShift, onClick: () -> Unit, onC
 
                     )
                 Text(
-                    text = shiftTypeInfo.shiftTypeName,
+                    text = "${TimeTraveller.getDate(assignedShift.assignedShiftStartTime.toLong(), "HH:mm a")} - ${
+                        TimeTraveller.getDate(
+                            assignedShift.assignedShiftStopTime.toLong(), "HH:mm a"
+                        )
+                    }",
                     fontStyle = FontStyle.Italic,
                     style = Typography.titleSmall,
-                    modifier = Modifier.padding(4.dp).weight(0.5F),
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .weight(0.5F),
                     textAlign = TextAlign.End
                 )
             }
 
-            Text(text = houseInfo.houseName, modifier = Modifier.padding(4.dp), fontWeight = FontWeight.Bold)
+            Text(
+                text = houseInfo.houseName,
+                modifier = Modifier.padding(4.dp),
+                fontWeight = FontWeight.Bold
+            )
             Text(text = houseInfo.houseAddress, modifier = Modifier.padding(4.dp))
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            ) {
                 ButtonComponent(
                     buttonText = "contest",
                     modifier = Modifier.padding(4.dp),
