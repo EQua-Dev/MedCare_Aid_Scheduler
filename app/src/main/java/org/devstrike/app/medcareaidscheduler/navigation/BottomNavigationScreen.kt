@@ -4,14 +4,13 @@
  * Under the authority of Devstrike Digital Limited
  */
 
-package org.devstrike.app.medcareaidscheduler.data
+package org.devstrike.app.medcareaidscheduler.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.MarkChatUnread
-import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -65,8 +64,8 @@ sealed class BottomBarScreen(
         route = "staff_notifications"
     )
     object StaffPayments : BottomBarScreen(
-        title = "Payments",
-        icon = Icons.Default.Payments,
+        title = "Worksheet",
+        icon = Icons.Default.Assessment,
         route = "staff_payments"
     )
     object StaffProfile : BottomBarScreen(

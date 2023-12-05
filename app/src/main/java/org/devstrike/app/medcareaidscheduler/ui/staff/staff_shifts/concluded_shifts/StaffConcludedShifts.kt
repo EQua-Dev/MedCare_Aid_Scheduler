@@ -12,7 +12,6 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +24,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -135,8 +133,8 @@ fun StaffConcludedShifts() {
 
 
 
-    if (shouldRetry.value) {
-        LaunchedEffect(Unit) {
+
+        LaunchedEffect(shouldRetry.value) {
             val concludedShiftsList = mutableListOf<AssignedShift>()
 
             withContext(Dispatchers.IO) {
@@ -163,8 +161,6 @@ fun StaffConcludedShifts() {
                     }.addOnFailureListener { e ->
                         context.toast(e.localizedMessage ?: "Some error occurred")
                     }
-
-
                 /*for (shift in concludedShiftList.value) {
                 if (isDateWithinThisWeek(shift.assignedShiftDate.toLong()) && shift.assignedShiftClockOutTime.isNotBlank()) {
                     concludedWeekShiftList.add(shift)
@@ -178,14 +174,16 @@ fun StaffConcludedShifts() {
                     )
 //                            staffWeekShiftTypeHours[staffShiftType.shiftTypeName] =
 //                                staffShiftType.shiftTypeNoOfHours.toDouble().toInt()
-                    *//*
+                    */
+            /*
                         **the key is being replaced instead of adding the hours to the value of the keys**
                          *  1. loop through the keys of the map
                          *  2. check if the key already exists
                          *  3. if exists, then add the hours to the value of that key and stop the check
                          *  4. else write to the new key
                          *
-                         * *//*
+                         * */
+            /*
                         if (staffWeekShiftTypeHours.entries.isEmpty()) {
                             staffWeekShiftTypeHours[staffShiftType.shiftTypeAliasName] =
                                 staffShiftType.shiftTypeNoOfHours.toDouble().toInt()
@@ -238,7 +236,7 @@ fun StaffConcludedShifts() {
             concludedShiftList.value = concludedShiftsList
             shouldRetry.value = false
         }
-    }
+
 
 
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -256,7 +254,7 @@ fun StaffConcludedShifts() {
         LazyColumn {
             item {
                 Column(modifier = Modifier.padding(8.dp)) {
-                    Card(
+             /*       Card(
                         modifier = Modifier
                             .padding(8.dp)
                             .fillMaxWidth(),
@@ -286,11 +284,13 @@ fun StaffConcludedShifts() {
                                     .padding(4.dp)
                             )
 
-                            /*
+                            */
+                    /*
                             ~ check the list of assigned shifts for the ones with the staff ID which is "concluded shift list .value"
                             ~ check the shifts that are within this week
                             ~ then check for the shifts that have clock out time || check the ones that have a status of 'served'
                             */
+                    /*
 
                             Text(
                                 text = staffShiftsServed.value.toString(),
@@ -310,13 +310,15 @@ fun StaffConcludedShifts() {
                                     .padding(4.dp)
                             )
 
-                            /*
+                            */
+                    /*
                             ~ check the list of assigned shifts for the ones with the staff ID
                             ~ check the shifts that are within this week
                             ~ check for the shifts that have clock out time || check the ones that have a status of 'served'
                             ~ then for each of the shifts, get the shift type ID and get the number of hours in those shift types
                             ~ then have a variable that will be increasing its value by adding every shift hour found
                             */
+                    /*
 
 
                             Text(
@@ -337,13 +339,15 @@ fun StaffConcludedShifts() {
                                     .padding(4.dp)
                             )
 
-                            /*
+                            */
+                    /*
                             ~ check the list of assigned shifts for the ones with the staff ID
                             ~ check the shifts that are within this week
                             ~ check for the shifts that have clock out time || check the ones that have a status of 'served'
                             ~ have three variables for each of the shift types {for each distinct shift type, there will be a map containing the type name and its hours total value}
                             ~ then for each of the items in the map, populate its alias name and its hours total
                             */
+                    /*
 
                             val hoursPayable =
                                 staffWeekShiftTypeHours.entries.joinToString(", ") { (key, value) -> "$key: $value" }
@@ -367,11 +371,13 @@ fun StaffConcludedShifts() {
                                     .padding(4.dp)
                             )
 
-                            /*
+                            */
+                    /*
                             ~ check the map of hours payable
                             ~ get all the values and add them, then multiply the cost of 1 shift by the sum
 
                             */
+                    /*
 
                             val totalHours = staffWeekShiftTypeHours.values.sum()
 
@@ -413,7 +419,7 @@ fun StaffConcludedShifts() {
                                     .padding(4.dp)
                             )
                         }
-                    }
+                    }*/
 
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -464,7 +470,7 @@ fun StaffConcludedShifts() {
                     "EEE, dd MMM, yyyy"
                 ).contains(searchQuery.value, true)
                         || assignedShift.assignedShiftTypes.contains(searchQuery.value, true)
-            }.sortedBy { assignedShift -> assignedShift.assignedShiftClockOutTime }
+            }.sortedBy { assignedShift -> assignedShift.assignedShiftStopTime }
 
             items(filteredList) { assignedShift ->
                 UpcomingShiftItemCard(assignedShift = assignedShift, onClick = {

@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import org.devstrike.app.medcareaidscheduler.data.BottomBarScreen
 import org.devstrike.app.medcareaidscheduler.ui.staff.staff_notifications.StaffNotifications
 import org.devstrike.app.medcareaidscheduler.ui.staff.staff_payments.StaffPayments
 import org.devstrike.app.medcareaidscheduler.ui.staff.staff_profile.StaffProfile

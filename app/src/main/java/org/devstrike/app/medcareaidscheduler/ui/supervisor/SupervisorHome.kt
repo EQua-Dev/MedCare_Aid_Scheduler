@@ -6,17 +6,14 @@
 
 package org.devstrike.app.medcareaidscheduler.ui.supervisor
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,10 +37,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import org.devstrike.app.medcareaidscheduler.data.BottomBarScreen
+import org.devstrike.app.medcareaidscheduler.navigation.BottomBarScreen
 import org.devstrike.app.medcareaidscheduler.navigation.Screen
 import org.devstrike.app.medcareaidscheduler.navigation.SupervisorBottomNavigationGraph
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography

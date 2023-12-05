@@ -38,11 +38,9 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import org.devstrike.app.medcareaidscheduler.data.BottomBarScreen
+import org.devstrike.app.medcareaidscheduler.navigation.BottomBarScreen
 import org.devstrike.app.medcareaidscheduler.navigation.Screen
 import org.devstrike.app.medcareaidscheduler.navigation.StaffBottomNavigationGraph
-import org.devstrike.app.medcareaidscheduler.navigation.SupervisorBottomNavigationGraph
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.BottomBar
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.getUser

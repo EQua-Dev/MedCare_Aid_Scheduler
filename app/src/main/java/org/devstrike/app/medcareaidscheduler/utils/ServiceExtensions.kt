@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import org.devstrike.app.medcareaidscheduler.data.AssignedShift
 import org.devstrike.app.medcareaidscheduler.data.House
 import org.devstrike.app.medcareaidscheduler.data.Province
 import org.devstrike.app.medcareaidscheduler.data.ShiftType
@@ -85,6 +86,26 @@ import org.devstrike.app.medcareaidscheduler.data.UserData
             val snapshot = Common.shiftCollectionRef.document(shiftTypeId).get().await()
             if (snapshot.exists()) {
                 return@async snapshot.toObject(ShiftType::class.java)
+            } else {
+                return@async null
+            }
+        } catch (e: Exception) {
+            Handler(Looper.getMainLooper()).post {
+                context.toast(e.message.toString())
+            }
+            return@async null
+        }
+    }
+
+    return runBlocking { deferred.await() }
+}
+
+fun getShift(shiftId: String, context: Context): AssignedShift? {
+    val deferred = CoroutineScope(Dispatchers.IO).async {
+        try {
+            val snapshot = Common.assignedShiftsCollectionRef.document(shiftId).get().await()
+            if (snapshot.exists()) {
+                return@async snapshot.toObject(AssignedShift::class.java)
             } else {
                 return@async null
             }

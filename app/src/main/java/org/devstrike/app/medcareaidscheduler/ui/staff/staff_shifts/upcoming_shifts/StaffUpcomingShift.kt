@@ -78,53 +78,53 @@ fun StaffUpcomingShift() {
     }
 
     val staffInfo = getUser(Common.auth.uid!!, context)!!
-    if (shouldRetry.value) {
-        LaunchedEffect(Unit) {
-            val upcomingShiftsList = mutableListOf<AssignedShift>()
+
+    LaunchedEffect(Unit) {
+        val upcomingShiftsList = mutableListOf<AssignedShift>()
 
 
-            withContext(Dispatchers.IO) {
-                //val querySnapshot =
-                Common.assignedShiftsCollectionRef.whereEqualTo(
-                    "assignedStaffID",
-                    Common.auth.uid!!
-                ).get().addOnCompleteListener { querySnapshot ->
-                    if (querySnapshot.isSuccessful) {
-                        upcomingShiftsList.clear()
-                        for (document in querySnapshot.result) {
-                            val item = document.toObject(AssignedShift::class.java)
-                            Log.d(TAG, "StaffUpcomingShift item: $item")
-                            /*if (item.assignedShiftStatus == SHIFT_ACTIVE)
-                                activeShiftData.value = item*/
-                            if (item.assignedShiftStartTime.toLong() > System.currentTimeMillis()) {
-                                Log.d(
-                                    TAG,
-                                    "StaffUpcomingShift: start time: ${item.assignedShiftStartTime.toLong()} > current time ${System.currentTimeMillis()}"
-                                )
-                                upcomingShiftsList.add(item)
-                            } else if (item.assignedShiftStartTime.toLong() < System.currentTimeMillis() && item.assignedShiftStopTime.toLong() > System.currentTimeMillis()) {
-                                activeShiftData.value = item
-                                Log.d(
-                                    TAG,
-                                    "StaffUpcomingShift: start time: ${item.assignedShiftStartTime.toLong()} < current time ${System.currentTimeMillis()}"
-                                )
+        withContext(Dispatchers.IO) {
+            //val querySnapshot =
+            Common.assignedShiftsCollectionRef.whereEqualTo(
+                "assignedStaffID",
+                Common.auth.uid!!
+            ).get().addOnCompleteListener { querySnapshot ->
+                if (querySnapshot.isSuccessful) {
+                    upcomingShiftsList.clear()
+                    for (document in querySnapshot.result) {
+                        val item = document.toObject(AssignedShift::class.java)
+                        Log.d(TAG, "StaffUpcomingShift item: $item")
+                        /*if (item.assignedShiftStatus == SHIFT_ACTIVE)
+                            activeShiftData.value = item*/
+                        if (item.assignedShiftStartTime.toLong() > System.currentTimeMillis()) {
+                            Log.d(
+                                TAG,
+                                "StaffUpcomingShift: start time: ${item.assignedShiftStartTime.toLong()} > current time ${System.currentTimeMillis()}"
+                            )
+                            upcomingShiftsList.add(item)
+                        } else if (item.assignedShiftStartTime.toLong() < System.currentTimeMillis() && item.assignedShiftStopTime.toLong() > System.currentTimeMillis()) {
+                            activeShiftData.value = item
+                            Log.d(
+                                TAG,
+                                "StaffUpcomingShift: start time: ${item.assignedShiftStartTime.toLong()} < current time ${System.currentTimeMillis()}"
+                            )
 
-                            }
-                            Log.d(TAG, "StaffUpcomingShift: list: $upcomingShiftList")
                         }
-                    } else {
-                        context.toast(
-                            querySnapshot.exception?.localizedMessage ?: "Some error occurred"
-                        )
+                        Log.d(TAG, "StaffUpcomingShift: list: $upcomingShiftList")
                     }
-                }.addOnFailureListener { e ->
-                    context.toast(e.localizedMessage ?: "Some error occurred")
+                } else {
+                    context.toast(
+                        querySnapshot.exception?.localizedMessage ?: "Some error occurred"
+                    )
                 }
+            }.addOnFailureListener { e ->
+                context.toast(e.localizedMessage ?: "Some error occurred")
             }
-            upcomingShiftList.value = upcomingShiftsList
-            shouldRetry.value = false
         }
+        upcomingShiftList.value = upcomingShiftsList
+        shouldRetry.value = false
     }
+
 
 
 
