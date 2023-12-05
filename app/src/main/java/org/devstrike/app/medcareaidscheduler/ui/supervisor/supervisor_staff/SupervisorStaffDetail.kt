@@ -478,7 +478,12 @@ fun SupervisorStaffDetail(staff: UserData) {
                                         .fillMaxWidth(0.5F),
                                 )
                                 Text(
-                                    text = "${shift.assignedShiftStartTime} - ${shift.assignedShiftStopTime}",
+                                    text = "${TimeTraveller.getDate(shift.assignedShiftStartTime.toLong(), "HH:mm a")} - ${
+                                        TimeTraveller.getDate(
+                                            shift.assignedShiftStopTime.toLong(),
+                                            "HH:mm a"
+                                        )
+                                    }",
                                     modifier = Modifier
                                         .padding(4.dp)
                                         .fillMaxWidth(0.5F),
@@ -1175,7 +1180,7 @@ fun AssignStaffShiftFormDialog(
                                                             context
                                                         )!!.userProvinceID,
                                                         notificationMessage = "You have been assigned to $selectedHouse on $selectedAssignmentDay for $assignmentStartTime -$assignmentStopTime ($assignmentShiftTypes)", //use string resource
-                                                    notificationSentDate =
+                                                        notificationSentDate =
                                                         System.currentTimeMillis()
                                                             .toString(),
                                                     )

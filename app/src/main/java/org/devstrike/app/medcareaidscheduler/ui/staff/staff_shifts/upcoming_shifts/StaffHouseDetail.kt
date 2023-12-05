@@ -71,8 +71,6 @@ import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.Common.SHIFT_ACTIVE
 import org.devstrike.app.medcareaidscheduler.utils.Common.TIME_FORMAT_HM
 import org.devstrike.app.medcareaidscheduler.utils.Common.shiftCollectionRef
-import org.devstrike.app.medcareaidscheduler.utils.convertDateTimeToMillis
-import org.devstrike.app.medcareaidscheduler.utils.getCurrentDate
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getProvince
 import org.devstrike.app.medcareaidscheduler.utils.getUser
@@ -190,33 +188,6 @@ fun StaffHouseDetail(house: House, upcomingShiftData: AssignedShift, onDismissed
                     * a. the current time must not be more than 5 minutes before the actual time (shift time - current time !> 300,000 milliseconds)
                     * */
                     if (upcomingShiftData.assignedShiftStartTime.toLong() - System.currentTimeMillis() > 300000) {
-                        Log.d(
-                            TAG,
-                            "shift time: ${
-                                getDate(
-                                    upcomingShiftData.assignedShiftDate.toLong(),
-                                    "dd-MMM-yyyy hh:mm"
-                                )
-                            }"
-                        )
-                        Log.d(
-                            TAG,
-                            "current time: ${
-                                convertDateTimeToMillis(
-                                    getCurrentDate("dd-MMM-yyyy hh:mm"),
-                                    "dd-MMM-yyyy hh:mm"
-                                )
-                            }"
-                        )
-                        Log.d(
-                            TAG,
-                            "time difference: ${upcomingShiftData.assignedShiftDate} - ${System.currentTimeMillis()} \n${
-                                upcomingShiftData.assignedShiftDate.toLong() - convertDateTimeToMillis(
-                                    getCurrentDate("dd-MMM-yyyy hh:mm"),
-                                    "dd-MMM-yyyy hh:mm"
-                                )
-                            }"
-                        )
                         openDialog.value = true
                     } else {
                         //allow clock in
@@ -287,7 +258,7 @@ fun StaffHouseDetail(house: House, upcomingShiftData: AssignedShift, onDismissed
                         Log.d(TAG, "currentMillisTime: $currentMillisTime")
                         Log.d(TAG, "shiftEndTime: $shiftEndTime")
 
-                        if (currentMillisTime < shiftEndTime) {
+                        if (System.currentTimeMillis() < shiftEndTime) {
                             context.toast("wait till the end of the shift")
                             Log.d(TAG, "StaffHouseDetail: Too early")
                         } else {

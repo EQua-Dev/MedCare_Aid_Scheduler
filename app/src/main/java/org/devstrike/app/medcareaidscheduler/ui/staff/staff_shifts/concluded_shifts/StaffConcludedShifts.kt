@@ -127,43 +127,45 @@ fun StaffConcludedShifts() {
         mutableStateOf(AssignedShift())
     }
     var isItemClicked = false
+    val shouldRetry: MutableState<Boolean> = remember {
+        mutableStateOf(true)
+    }
 
     val staffInfo = getUser(Common.auth.uid!!, context)!!
 
 
 
+    if (shouldRetry.value) {
+        LaunchedEffect(Unit) {
+            val concludedShiftsList = mutableListOf<AssignedShift>()
 
-    LaunchedEffect(Unit) {
-        val concludedShiftsList = mutableListOf<AssignedShift>()
+            withContext(Dispatchers.IO) {
 
-        withContext(Dispatchers.IO) {
+                val querySnapshot =
+                    Common.assignedShiftsCollectionRef.whereEqualTo(
+                        "assignedStaffID",
+                        Common.auth.uid!!
+                    ).get().addOnCompleteListener { querySnapshot ->
+                        if (querySnapshot.isSuccessful) {
+                            concludedShiftsList.clear()
+                            for (document in querySnapshot.result) {
+                                val item = document.toObject(AssignedShift::class.java)
+                                // check if the time of the shift is in the past and the shift is inactive (to remove the ongoing shift)
 
-            val querySnapshot =
-                Common.assignedShiftsCollectionRef.whereEqualTo(
-                    "assignedStaffID",
-                    Common.auth.uid!!
-                ).get().addOnCompleteListener { querySnapshot ->
-                    if (querySnapshot.isSuccessful) {
-                        concludedShiftsList.clear()
-                        for (document in querySnapshot.result) {
-                            val item = document.toObject(AssignedShift::class.java)
-                            // check if the time of the shift is in the past and the shift is inactive (to remove the ongoing shift)
-
-                            if (item.assignedShiftStopTime.toLong() < System.currentTimeMillis())
-                                concludedShiftsList.add(item)
+                                if (item.assignedShiftStopTime.toLong() < System.currentTimeMillis())
+                                    concludedShiftsList.add(item)
+                            }
+                        } else {
+                            context.toast(
+                                querySnapshot.exception?.localizedMessage ?: "Some error occurred"
+                            )
                         }
-                        concludedShiftList.value = concludedShiftsList
-                    } else {
-                        context.toast(
-                            querySnapshot.exception?.localizedMessage ?: "Some error occurred"
-                        )
+                    }.addOnFailureListener { e ->
+                        context.toast(e.localizedMessage ?: "Some error occurred")
                     }
-                }.addOnFailureListener { e ->
-                    context.toast(e.localizedMessage ?: "Some error occurred")
-                }
 
 
-            /*for (shift in concludedShiftList.value) {
+                /*for (shift in concludedShiftList.value) {
                 if (isDateWithinThisWeek(shift.assignedShiftDate.toLong()) && shift.assignedShiftClockOutTime.isNotBlank()) {
                     concludedWeekShiftList.add(shift)
                     staffShiftsServed.value++
@@ -232,8 +234,10 @@ fun StaffConcludedShifts() {
                         allWeekShiftList.add(shift)
                     }
                 }*/
+            }
+            concludedShiftList.value = concludedShiftsList
+            shouldRetry.value = false
         }
-
     }
 
 
@@ -460,7 +464,7 @@ fun StaffConcludedShifts() {
                     "EEE, dd MMM, yyyy"
                 ).contains(searchQuery.value, true)
                         || assignedShift.assignedShiftTypes.contains(searchQuery.value, true)
-            }
+            }.sortedBy { assignedShift -> assignedShift.assignedShiftClockOutTime }
 
             items(filteredList) { assignedShift ->
                 UpcomingShiftItemCard(assignedShift = assignedShift, onClick = {
@@ -488,6 +492,7 @@ fun StaffConcludedShifts() {
                     if (isItemClicked)
                         StaffHouseDetail(
                             houseInfo, concludedShiftData, onDismissed = {
+                                shouldRetry.value = true
                                 isItemClicked = false
                                 isSheetOpen = false
                             }

@@ -65,7 +65,7 @@ fun StaffUpcomingShift() {
     val configuration = LocalConfiguration.current
     val searchQuery: MutableState<String> = remember { mutableStateOf("") }
 
-    val upcomingShiftList = remember { mutableStateOf(mutableListOf<AssignedShift>()) }
+    val upcomingShiftList = remember { mutableStateOf(listOf<AssignedShift>()) }
 
     var upcomingShiftData = AssignedShift()
     var filteredList = listOf<AssignedShift>()
@@ -73,55 +73,59 @@ fun StaffUpcomingShift() {
         mutableStateOf(AssignedShift())
     }
     var isItemClicked = false
+    val shouldRetry: MutableState<Boolean> = remember {
+        mutableStateOf(true)
+    }
 
     val staffInfo = getUser(Common.auth.uid!!, context)!!
+    if (shouldRetry.value) {
+        LaunchedEffect(Unit) {
+            val upcomingShiftsList = mutableListOf<AssignedShift>()
 
-    LaunchedEffect(Unit) {
-        //val upcomingShiftsList = mutableListOf<AssignedShift>()
 
+            withContext(Dispatchers.IO) {
+                //val querySnapshot =
+                Common.assignedShiftsCollectionRef.whereEqualTo(
+                    "assignedStaffID",
+                    Common.auth.uid!!
+                ).get().addOnCompleteListener { querySnapshot ->
+                    if (querySnapshot.isSuccessful) {
+                        upcomingShiftsList.clear()
+                        for (document in querySnapshot.result) {
+                            val item = document.toObject(AssignedShift::class.java)
+                            Log.d(TAG, "StaffUpcomingShift item: $item")
+                            /*if (item.assignedShiftStatus == SHIFT_ACTIVE)
+                                activeShiftData.value = item*/
+                            if (item.assignedShiftStartTime.toLong() > System.currentTimeMillis()) {
+                                Log.d(
+                                    TAG,
+                                    "StaffUpcomingShift: start time: ${item.assignedShiftStartTime.toLong()} > current time ${System.currentTimeMillis()}"
+                                )
+                                upcomingShiftsList.add(item)
+                            } else if (item.assignedShiftStartTime.toLong() < System.currentTimeMillis() && item.assignedShiftStopTime.toLong() > System.currentTimeMillis()) {
+                                activeShiftData.value = item
+                                Log.d(
+                                    TAG,
+                                    "StaffUpcomingShift: start time: ${item.assignedShiftStartTime.toLong()} < current time ${System.currentTimeMillis()}"
+                                )
 
-        withContext(Dispatchers.IO) {
-            val upcomingShiftsToPopulate = mutableListOf<AssignedShift>()
-            //val querySnapshot =
-            Common.assignedShiftsCollectionRef.whereEqualTo(
-                "assignedStaffID",
-                Common.auth.uid!!
-            ).get().addOnCompleteListener { querySnapshot ->
-                if (querySnapshot.isSuccessful) {
-                    for (document in querySnapshot.result) {
-                        val item = document.toObject(AssignedShift::class.java)
-                        Log.d(TAG, "StaffUpcomingShift item: $item")
-                        /*if (item.assignedShiftStatus == SHIFT_ACTIVE)
-                            activeShiftData.value = item*/
-                        if (item.assignedShiftStartTime.toLong() > System.currentTimeMillis()) {
-                            Log.d(
-                                TAG,
-                                "StaffUpcomingShift: start time: ${item.assignedShiftStartTime.toLong()} > current time ${System.currentTimeMillis()}"
-                            )
-                            upcomingShiftsToPopulate.add(item)
-                        } else if (item.assignedShiftStartTime.toLong() < System.currentTimeMillis() && item.assignedShiftStopTime.toLong() > System.currentTimeMillis()) {
-                            activeShiftData.value = item
-                            Log.d(
-                                TAG,
-                                "StaffUpcomingShift: start time: ${item.assignedShiftStartTime.toLong()} < current time ${System.currentTimeMillis()}"
-                            )
-
+                            }
+                            Log.d(TAG, "StaffUpcomingShift: list: $upcomingShiftList")
                         }
-                        Log.d(TAG, "StaffUpcomingShift: list: $upcomingShiftList")
+                    } else {
+                        context.toast(
+                            querySnapshot.exception?.localizedMessage ?: "Some error occurred"
+                        )
                     }
-                    upcomingShiftList.value = upcomingShiftsToPopulate
-                } else {
-                    context.toast(
-                        querySnapshot.exception?.localizedMessage ?: "Some error occurred"
-                    )
+                }.addOnFailureListener { e ->
+                    context.toast(e.localizedMessage ?: "Some error occurred")
                 }
-            }.addOnFailureListener { e ->
-                context.toast(e.localizedMessage ?: "Some error occurred")
             }
+            upcomingShiftList.value = upcomingShiftsList
+            shouldRetry.value = false
         }
-
-
     }
+
 
 
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -233,6 +237,7 @@ fun StaffUpcomingShift() {
                     if (isItemClicked)
                         StaffHouseDetail(
                             houseInfo, upcomingShiftData, onDismissed = {
+                                shouldRetry.value = true
                                 isItemClicked = false
                                 isSheetOpen = false
                             }
