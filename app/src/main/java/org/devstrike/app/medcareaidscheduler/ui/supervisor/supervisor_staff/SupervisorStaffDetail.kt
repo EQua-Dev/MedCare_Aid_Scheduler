@@ -631,8 +631,6 @@ fun AssignStaffShiftFormDialog(
                                 dayStopTime =
                                     TimeTraveller.convertMillisToHourAndMinute(item.shiftTypeEndTime.toLong())
 
-                                Log.d(TAG, "AssignStaffShiftFormDialog: daystart=$dayStartTime")
-                                Log.d(TAG, "AssignStaffShiftFormDialog: daystop=$dayStopTime")
                             }
 
                             "Night" -> {
@@ -641,8 +639,6 @@ fun AssignStaffShiftFormDialog(
                                 nightStopTime =
                                     TimeTraveller.convertMillisToHourAndMinute(item.shiftTypeEndTime.toLong())
 
-                                Log.d(TAG, "AssignStaffShiftFormDialog: nightStartTime=$nightStartTime")
-                                Log.d(TAG, "AssignStaffShiftFormDialog: nightStopTime=$nightStopTime")
                             }
 
                             "Sleep Over" -> {
@@ -650,9 +646,6 @@ fun AssignStaffShiftFormDialog(
                                     TimeTraveller.convertMillisToHourAndMinute(item.shiftTypeStartTime.toLong())
                                 sleepoverStopTime =
                                     TimeTraveller.convertMillisToHourAndMinute(item.shiftTypeEndTime.toLong())
-
-                                Log.d(TAG, "AssignStaffShiftFormDialog: sleepoverStartTime=$sleepoverStartTime")
-                                Log.d(TAG, "AssignStaffShiftFormDialog: sleepoverStopTime=$sleepoverStopTime")
                             }
                         }
                     }
@@ -944,7 +937,7 @@ fun AssignStaffShiftFormDialog(
                                             )
                                         ) {
                                             shiftIsWithinDay = true
-                                            assignmentShiftTypes.plus("D, ")
+                                            assignmentShiftTypes += "D, "
                                             //append Day to to the string
                                         }
                                         Log.d(TAG, "shiftIsWithinDay: $shiftIsWithinDay")
@@ -956,7 +949,7 @@ fun AssignStaffShiftFormDialog(
                                             )
                                         ) {
                                             shiftIsWithinNight = true
-                                            assignmentShiftTypes.plus("N, ")
+                                            assignmentShiftTypes +="N, "
                                             //append Night to the string
                                         }
 
@@ -969,7 +962,7 @@ fun AssignStaffShiftFormDialog(
                                             )
                                         ) {
                                             shiftIsWithinSleepOver = true
-                                            assignmentShiftTypes.plus("SO, ")
+                                            assignmentShiftTypes+="SO, "
                                             //append Sleepover to the string
                                         }
 
