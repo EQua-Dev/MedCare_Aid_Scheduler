@@ -523,7 +523,7 @@ fun StaffHouseDetail(house: House, upcomingShiftData: AssignedShift, onDismissed
                                 val totalHours = TimeTraveller.calculateHoursBetweenTimes(
                                     lesserTime = upcomingShiftData.assignedShiftClockInTime,
                                     greaterTime = upcomingShiftData.assignedShiftClockOutTime
-                                )
+                                ) ?: "0"
 
                                 for (shiftType in provinceShiftTypeDetailsList) {
                                     /* LOGIC TO DETERMINE THE NUMBER OF HOURS IN EACH SHIFT TYPE THE ASSIGNED SHIFT CONTAINS

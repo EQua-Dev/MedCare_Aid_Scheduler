@@ -81,6 +81,11 @@ fun StaffPayments(navController: NavHostController) {
                 val assignedHouse = getHouse(assignedShift.assignedHouseID, context)!!
                 Log.d(TAG, "StaffPayments: assigned house = $assignedHouse")
 
+                Log.d(
+                    TAG,
+                    "StaffPayments: ${
+                        TimeTraveller.isDateWithinThisWeek(assignedShift.assignedShiftDate.toLong())}")
+
                 if (TimeTraveller.isDateWithinThisWeek(assignedShift.assignedShiftDate.toLong())) {
                     totalHours.plus(concludedShift.noOfTotalHours.toInt())
                     Text(
