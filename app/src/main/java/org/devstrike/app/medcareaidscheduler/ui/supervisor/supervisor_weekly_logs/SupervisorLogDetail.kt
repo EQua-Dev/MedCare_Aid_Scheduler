@@ -9,6 +9,7 @@ package org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_weekly_lo
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -43,34 +45,27 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.components.AlertDialogComponent
 import org.devstrike.app.medcareaidscheduler.components.ButtonComponent
 import org.devstrike.app.medcareaidscheduler.components.TextFieldComponent
 import org.devstrike.app.medcareaidscheduler.data.AssignedShift
-import org.devstrike.app.medcareaidscheduler.data.Notification
-import org.devstrike.app.medcareaidscheduler.data.Payment
-import org.devstrike.app.medcareaidscheduler.data.ReportLog
+import org.devstrike.app.medcareaidscheduler.data.ConcludedShift
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common
-import org.devstrike.app.medcareaidscheduler.utils.Common.LOG_REPORT_APPROVED_STATUS
-import org.devstrike.app.medcareaidscheduler.utils.Common.LOG_REPORT_REJECTED_STATUS
-import org.devstrike.app.medcareaidscheduler.utils.Common.NOTIFICATION_TYPE_LOG_REPORT_REJECTION
-import org.devstrike.app.medcareaidscheduler.utils.Common.NOTIFICATION_TYPE_PAYMENT_APPROVAL
-import org.devstrike.app.medcareaidscheduler.utils.Common.auth
-import org.devstrike.app.medcareaidscheduler.utils.Common.notificationsCollectionRef
-import org.devstrike.app.medcareaidscheduler.utils.Common.paymentsCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getHouse
+import org.devstrike.app.medcareaidscheduler.utils.getShift
 import org.devstrike.app.medcareaidscheduler.utils.getUser
 import org.devstrike.app.medcareaidscheduler.utils.toast
-import java.util.UUID
+import org.devstrike.libs.android.timetravel.TimeTraveller
 
 @Composable
-fun SupervisorLogDetail(report: ReportLog) {
+fun SupervisorLogDetail(
+    selectedStaffID: String,
+    selectedStaffWeekLog: List<ConcludedShift>,
+    totalHours: Int
+) {
 
     val TAG = "SupervisorHouseDetail"
     val context = LocalContext.current
@@ -90,58 +85,7 @@ fun SupervisorLogDetail(report: ReportLog) {
     var rejectLog by rememberSaveable {
         mutableStateOf(false)
     }
-    val staffDetail = getUser(report.reportLogOwnerID, context)!!
-    val totalNoOfHoursToPay = report.reportLogTotalPayableDaysHours.toInt()
-        .plus(report.reportLogTotalPayableNightsHours.toInt())
-        .plus(report.reportLogTotalPayableSleepOversHours.toInt())
-
-    /*
-        val houseAssignedShifts = remember {
-            mutableStateOf(listOf<AssignedShift>())
-
-        }*/
-
-
-    /* LaunchedEffect(key1 = Unit) {
-         val houseAssignedShiftsList = mutableListOf<AssignedShift>()
-
-         coroutineScope.launch {
-             val querySnapshot =
-                 Common.assignedShiftsCollectionRef
-                     .whereEqualTo("assignedHouseID", report.houseID)
- //                                            .whereEqualTo(
- //                                                "userProvinceID", supervisor.userProvinceID
- //                                            )
-                     .get()
-                     .await()
-
-             for (document in querySnapshot) {
-                 val item = document.toObject(AssignedShift::class.java)
-                 Log.d(
-                     TAG,
-                     "SupervisorStaffDetail Is current week?: ${
-                         isTimeInCurrentMonth(item.assignedShiftDate.toLong())
-                     }"
-                 )
-
-                 if (isTimeInCurrentMonth(item.assignedShiftDate.toLong())) {
-                     //time is in current week
-                     houseAssignedShiftsList.add(item)
-                     houseAssignedShifts.value = houseAssignedShiftsList
-                     Log.d(TAG, "SupervisorStaffDetail Item: $item")
-                     Log.d(
-                         TAG,
-                         "SupervisorStaffDetail Is current week?: ${
-                             isTimeInCurrentMonth(item.assignedShiftDate.toLong())
-                         }"
-                     )
-                 }
-             }
-
-             //staff.value = staffList
-         }
-
-     }*/
+    val staffDetail = getUser(selectedStaffID, context)!!
 
 
     Surface {
@@ -188,11 +132,6 @@ fun SupervisorLogDetail(report: ReportLog) {
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-                val totalHours = report.reportLogTotalPayableDaysHours.toInt()
-                    .plus(report.reportLogTotalPayableNightsHours.toInt()).plus(
-                        report
-                            .reportLogTotalPayableSleepOversHours.toInt()
-                    )
                 Row(
                     modifier = Modifier.fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -209,53 +148,58 @@ fun SupervisorLogDetail(report: ReportLog) {
                         modifier = Modifier.padding(4.dp)
                     )
                 }
-                Text(
-                    text = "D: ${report.reportLogTotalPayableDaysHours} N: ${report.reportLogTotalPayableNightsHours} S/O: ${report.reportLogTotalPayableSleepOversHours}",
-                    Modifier
-                        .padding(4.dp)
-                        .fillMaxWidth(), textAlign = TextAlign.Center
-                )
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Total Amount to Pay:",
-                        style = Typography.bodyMedium,
-                        modifier = Modifier.padding(4.dp)
-                    )
-                    Text(
-                        text = "€${report.reportLogTotalAmountToPay}",
-                        style = Typography.bodyMedium,
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-                Row(
-                    modifier = Modifier.padding(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ButtonComponent(
-                        buttonText = stringResource(id = R.string.reject_log_text), onClick = {
-                            rejectLog = true
-                            //isEditClicked = true
-                        }, modifier = Modifier
-                            .weight(0.5F)
-                            .padding(4.dp)
-                    )
-                    ButtonComponent(
-                        buttonText = stringResource(id = R.string.approve_log_text), onClick = {
-                            approveLog = true
-                        }, modifier = Modifier
-                            .weight(0.5F)
-                            .padding(4.dp)
-                    )
-                }
-                //total hours
-                //total amount to pay
-                //approve or reject pay buttons
-                Divider(Modifier.padding(8.dp))
 
+            }
+            items(selectedStaffWeekLog){shift ->
+                val shiftDate = TimeTraveller.getDate(shift.dateSubmitted.toLong(), Common.TIME_FORMAT_EDMY)
+                val assignedShift = getShift(shift.assignedShiftID, context)!!
+                val shiftHouse = getHouse(assignedShift.assignedHouseID, context)!!
+                Column(Modifier.padding(4.dp).fillMaxWidth()) {
+                    Text(text ="Date: $shiftDate", modifier = Modifier.padding(4.dp))
+                    Text(text ="Client: ${shiftHouse.houseName}", modifier = Modifier.padding(4.dp))
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text ="D: ${shift.noOfDayHours} Hours", modifier = Modifier
+                            .padding(4.dp)
+                            .weight(1f))
+                        Text(text ="N: ${shift.noOfNightHours} Hours", modifier = Modifier
+                            .padding(4.dp)
+                            .weight(1f))
+                        Text(text ="S/O: ${shift.noOfSleepOverHours} Hours", modifier = Modifier
+                            .padding(4.dp)
+                            .weight(1f))
+                    }
+                    Divider(Modifier.padding(2.dp))
+
+                }
+
+            }
+
+            item {
+
+                 Row(
+                     modifier = Modifier.padding(4.dp),
+                     verticalAlignment = Alignment.CenterVertically
+                 ) {
+                     ButtonComponent(
+                         buttonText = stringResource(id = R.string.reject_log_text), onClick = {
+                             rejectLog = true
+                             //isEditClicked = true
+                         }, modifier = Modifier
+                             .weight(0.5F)
+                             .padding(4.dp)
+                     )
+                     ButtonComponent(
+                         buttonText = stringResource(id = R.string.approve_log_text), onClick = {
+                             approveLog = true
+                         }, modifier = Modifier
+                             .weight(0.5F)
+                             .padding(4.dp)
+                     )
+                 }
+                 //total hours
+                 //total amount to pay
+                 //approve or reject pay buttons
+                 Divider(Modifier.padding(8.dp))
             }
 
         }
@@ -273,7 +217,8 @@ fun SupervisorLogDetail(report: ReportLog) {
                 title = "Approve Log Report",
                 message = "This will approve payment for ${staffDetail.userFirstName}, ${staffDetail.userLastName}.\nContinue?",
                 onConfirm = {
-                    CoroutineScope(Dispatchers.IO).launch {
+                            context.toast("Flow will be implemented when approved")
+                   /* CoroutineScope(Dispatchers.IO).launch {
                         isTaskRunning.value = true
                         Common.weeklyShiftsReportLogCollectionRef.document(report.reportLogID)
                             .update("reportLogStatus", LOG_REPORT_APPROVED_STATUS)
@@ -332,7 +277,7 @@ fun SupervisorLogDetail(report: ReportLog) {
                                     e.localizedMessage?.toString() ?: "Some error occurred"
                                 )
                             }
-                    }
+                    }*/
                 },//change status of paylog to approve and write a new table to db for payment,
                 onCancel = {
                     approveLog = false
@@ -366,7 +311,8 @@ fun SupervisorLogDetail(report: ReportLog) {
                         ButtonComponent(
                             buttonText = stringResource(id = R.string.submit_text),
                             onClick = {
-                                CoroutineScope(Dispatchers.IO).launch {
+                                      context.toast("Flow will be implemented when approved")
+                                /*CoroutineScope(Dispatchers.IO).launch {
                                     isTaskRunning.value = true
                                     Common.weeklyShiftsReportLogCollectionRef.document(report.reportLogID)
                                         .update("reportLogStatus", LOG_REPORT_REJECTED_STATUS)
@@ -406,7 +352,7 @@ fun SupervisorLogDetail(report: ReportLog) {
                                                     ?: "Some error occurred"
                                             )
                                         }
-                                }
+                                }*/
                             },  modifier = Modifier.fillMaxWidth())
                 }
             }

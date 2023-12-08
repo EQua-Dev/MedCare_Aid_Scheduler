@@ -6,7 +6,6 @@
 
 package org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_weekly_logs
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -55,9 +55,11 @@ fun SupervisorWeekLogs(navController: NavHostController) {
     val weeklyLogs = remember { mutableStateOf(listOf<ReportLog>()) }
     val weeklyLogsData: MutableState<ReportLog> = remember { mutableStateOf(ReportLog()) }
     val searchQuery: MutableState<String> = remember { mutableStateOf("") }
-    var staffWeekLogs = remember { mutableStateOf(mapOf<String, List<ConcludedShift>>())
+    var staffWeekLogs = remember { mutableStateOf(mapOf<String, List<ConcludedShift>>()) }
+    var selectedStaffID = remember { mutableStateOf("") }
+    var selectedStaffWeekLog = remember { mutableStateOf(listOf(ConcludedShift())) }
+    var selectedStaffTotalHours = remember { mutableIntStateOf(0) }
 
-    }
    /* val staffWeekLogs by remember{
         MutableMap<String, MutableList<ConcludedShift>>()
      }*/
@@ -151,22 +153,22 @@ fun SupervisorWeekLogs(navController: NavHostController) {
                     modifier = Modifier.padding(16.dp)
 
                 )
-                Log.d(TAG, "SupervisorWeekLogs: map withinsearch => ${staffWeekLogs.value.entries.toList()}")
 
             }
-            Log.d(TAG, "SupervisorWeekLogs: b4items map => ${staffWeekLogs.value.entries.toList()}")
             if (staffWeekLogs.value.isNotEmpty()){
-                Log.d(TAG, "SupervisorWeekLogs: in condition map => ${staffWeekLogs.value.entries.toList()}")
 
                 items(staffWeekLogs.value.entries.toList()){concludedShift ->
-
-                    Log.d(TAG, "SupervisorWeekLogs: concludedShift => $concludedShift")
                     var totalHours = 0
                     concludedShift.value.forEach {
                         totalHours += it.noOfTotalHours.toInt()
                     }
                     ReportItemCard(concludedShift.key, totalHours.toString()){
                         isSheetOpen = true
+                        isItemClicked = true
+                        selectedStaffID.value = concludedShift.key
+                        selectedStaffWeekLog.value = concludedShift.value
+                        selectedStaffTotalHours.intValue = totalHours
+
                     }
                 }
             }
@@ -184,7 +186,7 @@ fun SupervisorWeekLogs(navController: NavHostController) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (isItemClicked)
-                        SupervisorLogDetail(weeklyLogsData.value)
+                        SupervisorLogDetail(selectedStaffID.value, selectedStaffWeekLog.value, selectedStaffTotalHours.intValue)
 
                 }
 
