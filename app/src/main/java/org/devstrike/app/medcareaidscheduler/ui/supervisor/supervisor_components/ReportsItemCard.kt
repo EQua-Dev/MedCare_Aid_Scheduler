@@ -6,11 +6,9 @@
 
 package org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,21 +18,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.devstrike.app.medcareaidscheduler.R
-import org.devstrike.app.medcareaidscheduler.data.House
-import org.devstrike.app.medcareaidscheduler.data.ReportLog
-import org.devstrike.app.medcareaidscheduler.utils.getProvince
+import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.getUser
 
 @Composable
-fun ReportItemCard(report: ReportLog, onClick: () -> Unit) {
+fun ReportItemCard(staffID: String, totalHours: String, onClick: () -> Unit) {
 
     val context = LocalContext.current
 //    val isOwner: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -70,7 +61,7 @@ fun ReportItemCard(report: ReportLog, onClick: () -> Unit) {
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            val staffDetails = getUser(report.reportLogOwnerID, context)!!
+            val staffDetails = getUser(staffID, context)!!
             //Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "${staffDetails.userFirstName}, ${staffDetails.userLastName}",
@@ -78,20 +69,15 @@ fun ReportItemCard(report: ReportLog, onClick: () -> Unit) {
                 style = Typography.bodyLarge,
                 modifier = Modifier.padding(4.dp)
             )
-            val totalHours = report.reportLogTotalPayableDaysHours.toInt()
+      /*      val totalHours = report. reportLogTotalPayableDaysHours.toInt()
                 .plus(report.reportLogTotalPayableNightsHours.toInt()).plus(
                 report
                     .reportLogTotalPayableSleepOversHours.toInt()
             )
 
-
+*/
             Text(
                 text = "Total Hours Worked: $totalHours",
-                style = Typography.bodyMedium,
-                modifier = Modifier.padding(4.dp)
-            )
-            Text(
-                text = "Total Amount to Pay: €${report.reportLogTotalAmountToPay}",
                 style = Typography.bodyMedium,
                 modifier = Modifier.padding(4.dp)
             )

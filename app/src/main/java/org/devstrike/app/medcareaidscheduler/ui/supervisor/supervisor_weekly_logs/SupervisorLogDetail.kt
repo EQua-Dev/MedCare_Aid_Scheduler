@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -55,7 +54,6 @@ import org.devstrike.app.medcareaidscheduler.data.AssignedShift
 import org.devstrike.app.medcareaidscheduler.data.Notification
 import org.devstrike.app.medcareaidscheduler.data.Payment
 import org.devstrike.app.medcareaidscheduler.data.ReportLog
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_components.ReportItemCard
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
 import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.Common.LOG_REPORT_APPROVED_STATUS
@@ -257,15 +255,6 @@ fun SupervisorLogDetail(report: ReportLog) {
                 //total amount to pay
                 //approve or reject pay buttons
                 Divider(Modifier.padding(8.dp))
-
-            }
-
-            items(report.reportLogDailyShiftDetails.sortedBy { assignedShift -> assignedShift.assignedShiftDate }) { shift ->
-                ReportItemCard(shift, onClick = {
-                    showLogShiftDialog = true
-                    shiftToShow.value = shift
-                })
-
 
             }
 

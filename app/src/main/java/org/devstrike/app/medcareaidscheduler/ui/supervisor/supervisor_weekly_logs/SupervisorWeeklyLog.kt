@@ -7,20 +7,15 @@
 package org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_weekly_logs
 
 import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,13 +35,13 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.components.TextFieldComponent
+import org.devstrike.app.medcareaidscheduler.data.ConcludedShift
 import org.devstrike.app.medcareaidscheduler.data.ReportLog
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_components.HouseItemCard
 import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_components.ReportItemCard
-import org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_houses.SupervisorHouseDetail
 import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.Common.auth
 import org.devstrike.app.medcareaidscheduler.utils.getUser
+import org.devstrike.libs.android.timetravel.TimeTraveller
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +55,12 @@ fun SupervisorWeekLogs(navController: NavHostController) {
     val weeklyLogs = remember { mutableStateOf(listOf<ReportLog>()) }
     val weeklyLogsData: MutableState<ReportLog> = remember { mutableStateOf(ReportLog()) }
     val searchQuery: MutableState<String> = remember { mutableStateOf("") }
+    var staffWeekLogs = remember { mutableStateOf(mapOf<String, List<ConcludedShift>>())
+
+    }
+   /* val staffWeekLogs by remember{
+        MutableMap<String, MutableList<ConcludedShift>>()
+     }*/
 
 
     val isTaskRunning = remember { mutableStateOf(false) }
@@ -73,30 +74,64 @@ fun SupervisorWeekLogs(navController: NavHostController) {
 
     LaunchedEffect(Unit) {
 
-        val weeklyLogsList = mutableListOf<ReportLog>()
+        val weeklyLogsList = mutableListOf<ConcludedShift>()
+        val thisWeekLogs = mutableListOf<ConcludedShift>()
+        val weekLogs = mutableMapOf<String, MutableList<ConcludedShift>>()
         val userDetails = getUser(auth.uid!!, context)!!
 
         isTaskRunning.value = true
 
         withContext(Dispatchers.IO) {
             val querySnapshot =
-                Common.weeklyShiftsReportLogCollectionRef.whereEqualTo(
-                    "reportLogOwnerProvinceID",
+                Common.concludedShiftsCollectionRef.whereEqualTo(
+                    "shiftProvinceID",
                     userDetails.userProvinceID
                 )
                     .get().await()
 
-            Log.d(TAG, "SupervisorWeekLogs: $querySnapshot")
 
             isTaskRunning.value = false
 
             for (document in querySnapshot) {
-                val item = document.toObject(ReportLog::class.java)
+                val item = document.toObject(ConcludedShift::class.java)
                 weeklyLogsList.add(item)
-                Log.d(TAG, "SupervisorWeekLogs: $item")
+            }
+
+            /*
+            * 1. get all the concluded lists
+            * 2. sort the ones that are this week
+            * 3. group the logs into a map of staff and his logs
+            * 4. add all the total hours in each staff's logs
+            * 5. then display the list of all staff and their total week hours
+            * 6. on click of each of the staff log, it pulls up the list of the week's logs
+            * */
+            //weeklyLogs.value = weeklyLogsList
+            weeklyLogsList.forEach { log ->
+                if (TimeTraveller.isDateWithinThisWeek(log.dateSubmitted.toLong())) {
+                    thisWeekLogs.add(log)
+                }
+            }
+            for (staffLog in weeklyLogsList) {
+                if (weekLogs.isEmpty()) {
+                    weekLogs[staffLog.shiftStaffID] = mutableListOf(staffLog)
+
+                } else {
+                    for (key in weekLogs.keys) {
+                        if (key == staffLog.shiftStaffID) {
+                            val staffLogs = weekLogs[key]
+                            staffLogs?.add(staffLog)
+                            weekLogs[key] = staffLogs!!
+
+                            break
+                        } else {
+                            weekLogs[staffLog.shiftStaffID] = mutableListOf(staffLog)
+
+                        }
+                    }
+                }
             }
         }
-        weeklyLogs.value = weeklyLogsList
+        staffWeekLogs.value = weekLogs
 
     }
 
@@ -116,26 +151,26 @@ fun SupervisorWeekLogs(navController: NavHostController) {
                     modifier = Modifier.padding(16.dp)
 
                 )
+                Log.d(TAG, "SupervisorWeekLogs: map withinsearch => ${staffWeekLogs.value.entries.toList()}")
+
+            }
+            Log.d(TAG, "SupervisorWeekLogs: b4items map => ${staffWeekLogs.value.entries.toList()}")
+            if (staffWeekLogs.value.isNotEmpty()){
+                Log.d(TAG, "SupervisorWeekLogs: in condition map => ${staffWeekLogs.value.entries.toList()}")
+
+                items(staffWeekLogs.value.entries.toList()){concludedShift ->
+
+                    Log.d(TAG, "SupervisorWeekLogs: concludedShift => $concludedShift")
+                    var totalHours = 0
+                    concludedShift.value.forEach {
+                        totalHours += it.noOfTotalHours.toInt()
+                    }
+                    ReportItemCard(concludedShift.key, totalHours.toString()){
+                        isSheetOpen = true
+                    }
+                }
             }
 
-            val listOfWeeklyLogs = weeklyLogs.value
-            val filteredList = listOfWeeklyLogs.filter { reportLog ->
-                val staffDetails = getUser(reportLog.reportLogOwnerID, context)!!
-                staffDetails.userFirstName.contains(
-                    searchQuery.value,
-                    true
-                ) || staffDetails.userLastName.contains(
-                    searchQuery.value,
-                    true
-                )
-            }
-            items(filteredList) { report ->
-                ReportItemCard(report = report, onClick = {
-                    weeklyLogsData.value = report
-                    isSheetOpen = true
-                    isItemClicked = true
-                })
-            }
         }
 
         if (isSheetOpen) {
@@ -159,7 +194,6 @@ fun SupervisorWeekLogs(navController: NavHostController) {
         }
 
     }
-
 
 
 }
