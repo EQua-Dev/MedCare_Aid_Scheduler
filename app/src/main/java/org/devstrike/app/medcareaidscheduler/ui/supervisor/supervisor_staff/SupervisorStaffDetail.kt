@@ -929,6 +929,7 @@ fun AssignStaffShiftFormDialog(
                                             TimeTraveller
                                                 .calculateHourTimeInMillis(hour, minute)
                                                 .toString()
+                                        Log.d(TAG, "dayStartTime: $dayStartTime \ndayStopTime: $dayStopTime\nassignmentStartTime: $assignmentStartTime\nassignmentStopTime: $assignmentStopTime")
                                         if (TimeTraveller.isTimeInRange(
                                                 dayStartTime,
                                                 dayStopTime,
@@ -949,7 +950,7 @@ fun AssignStaffShiftFormDialog(
                                             )
                                         ) {
                                             shiftIsWithinNight = true
-                                            assignmentShiftTypes +="N, "
+                                            assignmentShiftTypes += "N, "
                                             //append Night to the string
                                         }
 
@@ -962,7 +963,7 @@ fun AssignStaffShiftFormDialog(
                                             )
                                         ) {
                                             shiftIsWithinSleepOver = true
-                                            assignmentShiftTypes+="SO, "
+                                            assignmentShiftTypes += "SO, "
                                             //append Sleepover to the string
                                         }
 

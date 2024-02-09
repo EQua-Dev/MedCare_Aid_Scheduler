@@ -688,7 +688,7 @@ fun StaffHouseDetail(house: House, upcomingShiftData: AssignedShift, onDismissed
                                                         )!!
                                                     }
                                             }
-                                            totalDayHoursWorked.value =
+                                            totalNightHoursWorked.value =
                                                 hoursWorked.toInt().toString()
 
                                         }

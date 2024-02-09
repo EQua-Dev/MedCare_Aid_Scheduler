@@ -11,13 +11,13 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,7 +28,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -67,13 +66,8 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.components.CardItem
-import org.devstrike.app.medcareaidscheduler.components.FloatActionButton
 import org.devstrike.app.medcareaidscheduler.data.AssignedShift
 import org.devstrike.app.medcareaidscheduler.data.ShiftType
-import org.devstrike.app.medcareaidscheduler.ui.staff.staff_shifts.StaffShiftsTabs
-import org.devstrike.app.medcareaidscheduler.ui.staff.staff_shifts.StaffShiftsTabsContent
-import org.devstrike.app.medcareaidscheduler.ui.staff.staff_shifts.concluded_shifts.StaffConcludedShifts
-import org.devstrike.app.medcareaidscheduler.ui.staff.staff_shifts.upcoming_shifts.StaffUpcomingShift
 import org.devstrike.app.medcareaidscheduler.ui.theme.Purple80
 import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.Common.TIME_FORMAT_HM
@@ -211,7 +205,17 @@ fun SupervisorShifts(navController: NavHostController) {
                     defaultElevation = 8.dp
                 ), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text(text = "Shift Types", modifier = Modifier.padding(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(text = "Shift Types", modifier = Modifier.padding(8.dp))
+                    if (shiftTypes.value.size < 3){
+                        Text(text = "Add Shift Type", modifier = Modifier.padding(8.dp).clickable {
+                            showModal = true
+                            isNewShiftClicked = true
+                        })
+
+                    }
+                }
+
 
                 if (shiftTypes.value.isEmpty()) {
                     Box(contentAlignment = Alignment.Center) {

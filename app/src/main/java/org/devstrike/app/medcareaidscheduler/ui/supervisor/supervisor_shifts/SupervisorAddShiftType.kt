@@ -7,35 +7,26 @@
 package org.devstrike.app.medcareaidscheduler.ui.supervisor.supervisor_shifts
 
 import android.app.TimePickerDialog
-import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -48,7 +39,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -59,17 +49,11 @@ import androidx.compose.ui.unit.toSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import org.devstrike.app.medcareaidscheduler.R
 import org.devstrike.app.medcareaidscheduler.components.ButtonComponent
-import org.devstrike.app.medcareaidscheduler.components.NameTag
-import org.devstrike.app.medcareaidscheduler.components.PlainFloatActionButton
 import org.devstrike.app.medcareaidscheduler.components.TextFieldComponent
-import org.devstrike.app.medcareaidscheduler.data.House
 import org.devstrike.app.medcareaidscheduler.data.ShiftType
 import org.devstrike.app.medcareaidscheduler.ui.theme.Typography
-import org.devstrike.app.medcareaidscheduler.utils.Common
 import org.devstrike.app.medcareaidscheduler.utils.Common.TIME_FORMAT_HM
 import org.devstrike.app.medcareaidscheduler.utils.Common.auth
 import org.devstrike.app.medcareaidscheduler.utils.Common.shiftCollectionRef
@@ -146,7 +130,7 @@ fun SupervisorAddShiftType(addedShiftTypes: List<ShiftType>, onClose: () -> Unit
     )
 
     // Perform the task
-    LaunchedEffect(Unit) {
+ /*   LaunchedEffect(Unit) {
         isTaskRunning.value = true
 
         // Do something
@@ -169,6 +153,7 @@ fun SupervisorAddShiftType(addedShiftTypes: List<ShiftType>, onClose: () -> Unit
             }
         }
         shiftTypesNames.value = shiftTypesList
+        Log.d(TAG, "shiftTypesNames: ${shiftTypesNames.value}\naddedShiftTypes: $addedShiftTypes")
 
         for (item in addedShiftTypes) {
             for (shiftType in shiftTypesNames.value) {
@@ -176,7 +161,9 @@ fun SupervisorAddShiftType(addedShiftTypes: List<ShiftType>, onClose: () -> Unit
                     shiftTypesNames.value.remove(shiftType)
             }
         }
-    }
+        Log.d(TAG, "shiftTypesNames mod: ${shiftTypesNames.value}")
+
+    }*/
 
     Box(
         modifier = Modifier
