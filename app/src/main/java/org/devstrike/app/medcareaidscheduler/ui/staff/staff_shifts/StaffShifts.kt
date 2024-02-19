@@ -10,11 +10,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -22,14 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import org.devstrike.app.medcareaidscheduler.R
@@ -122,40 +118,13 @@ fun StaffShiftsTabs(pagerState: PagerState) {
         // the selected index.
         selectedTabIndex = pagerState.currentPage,
 
-        // on below line we are
-        // specifying background color.
-//        containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-
-        // on below line we are specifying content color.
-//        contentColor = MarketPlaceDayColor,
-
-        // on below line we are specifying
-        // the indicator for the tab
-//        indicator = { tabPositions ->
-//            // on below line we are specifying the styling
-//            // for tab indicator by specifying height
-//            // and color for the tab indicator.
-//            TabRowDefaults.Indicator(
-//                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-//                height = 2.dp,
-////                color = MarketPlaceDayColor
-//            )
-//        }
     ) {
         // on below line we are specifying icon
         // and text for the individual tab item
         list.forEachIndexed { index, _ ->
             // on below line we are creating a tab.
             Tab(
-                // on below line we are specifying icon
-                // for each tab item and we are calling
-                // image from the list which we have created.
-//                icon = {
-//                    Icon(imageVector = list[index].second, contentDescription = null)
-//                },
-                // on below line we are specifying the text for
-                // the each tab item and we are calling data
-                // from the list which we have created.
+
                 text = {
                     Text(
                         list[index],

@@ -97,6 +97,7 @@ import org.devstrike.app.medcareaidscheduler.utils.Common.auth
 import org.devstrike.app.medcareaidscheduler.utils.Common.housesCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.Common.notificationsCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.Common.shiftCollectionRef
+import org.devstrike.app.medcareaidscheduler.utils.Common.userCollectionRef
 import org.devstrike.app.medcareaidscheduler.utils.getDate
 import org.devstrike.app.medcareaidscheduler.utils.getProvince
 import org.devstrike.app.medcareaidscheduler.utils.getUser
@@ -321,7 +322,10 @@ fun SupervisorStaffDetail(staff: UserData) {
                 )
             }
 
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = stringResource(id = R.string.shift_this_week_title),
                     fontWeight = FontWeight.Light,
@@ -329,114 +333,116 @@ fun SupervisorStaffDetail(staff: UserData) {
                         .padding(4.dp)
                         .weight(0.8F)
                 )
-                TextButton(onClick = {
-                    coroutineScope.launch {
-                        val houseList = mutableListOf<House>()
-                        Common.housesCollectionRef
-                            .whereEqualTo(
-                                "houseAddingSupervisor",
-                                Common.auth.uid!!
-                            )
-                            .get()
-                            .addOnCompleteListener { housesSnapshot ->
-                                for (document in housesSnapshot.result) {
-                                    val item = document.toObject(House::class.java)
-                                    houseList.add(item)
-                                }
+                TextButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            val houseList = mutableListOf<House>()
+                            Common.housesCollectionRef
+                                .whereEqualTo(
+                                    "houseAddingSupervisor",
+                                    Common.auth.uid!!
+                                )
+                                .get()
+                                .addOnCompleteListener { housesSnapshot ->
+                                    for (document in housesSnapshot.result) {
+                                        val item = document.toObject(House::class.java)
+                                        houseList.add(item)
+                                    }
 
-                                availableHousesToAssign.value = houseList
-
-
-                                val shiftTypeList = mutableListOf<ShiftType>()
-
-                                Common.shiftCollectionRef
-                                    .whereEqualTo(
-                                        "shiftTypeOwnerProvinceID",
-                                        staff.userProvinceID
-                                    )
-                                    .get()
-                                    .addOnCompleteListener { shiftTypeSnapshot ->
-                                        for (document in shiftTypeSnapshot.result) {
-                                            val item =
-                                                document.toObject(ShiftType::class.java)
-                                            shiftTypeList.add(item)
-                                        }
-
-                                        shiftTypes.value = shiftTypeList
+                                    availableHousesToAssign.value = houseList
 
 
-                                        val allShiftsList =
-                                            mutableListOf<AssignedShift>()
+                                    val shiftTypeList = mutableListOf<ShiftType>()
 
-                                        Common.assignedShiftsCollectionRef
-                                            .whereEqualTo(
-                                                "assignedSupervisorID",
-                                                auth.uid!!
-                                            )
-                                            .get()
-                                            .addOnCompleteListener { assignedShiftsSnapshot ->
-                                                for (document in assignedShiftsSnapshot.result) {
-                                                    val item = document.toObject(
-                                                        AssignedShift::class.java
-                                                    )
+                                    Common.shiftCollectionRef
+                                        .whereEqualTo(
+                                            "shiftTypeOwnerProvinceID",
+                                            staff.userProvinceID
+                                        )
+                                        .get()
+                                        .addOnCompleteListener { shiftTypeSnapshot ->
+                                            for (document in shiftTypeSnapshot.result) {
+                                                val item =
+                                                    document.toObject(ShiftType::class.java)
+                                                shiftTypeList.add(item)
+                                            }
 
-                                                    if (TimeTraveller.isTimeInCurrentMonth(
-                                                            item.assignedShiftDate.toLong()
-                                                        )
-                                                    ) {
-                                                        //time is in current month
-                                                        allShiftsList.add(item)
-                                                        allStaffAssignedShifts.value =
-                                                            allShiftsList
-                                                    }
-                                                }
+                                            shiftTypes.value = shiftTypeList
 
 
-                                                /* check if the assigned shifts of the staff is up to 7 || he has been assigned for every day of the week ☑️
-                                                 if he has been for all, show toast or even disable the 'assign' button ☑️
-                                                 if he is free...
-                                                 show assign staff dialog
+                                            val allShiftsList =
+                                                mutableListOf<AssignedShift>()
 
-
-                                                 when submitted...
-                                              system will get the date of the assigned shift
-                                              the system will then all assigned shifts where the date assigned is equal to the given date
-                                              the system then gets the ID of that shift
-                                              the system then checks the assigned shift ID (type) of this proposed shift
-                                              if the same, it indicates that the shift has been assigned already
-                                              if the supervisor proceeds to replace the currently assigned person to this new on...
-                                              a. the existing one will be deleted from the assigned shifts table
-                                              b. the previously assigned staff will be notified about the change
-
-
-
-                                              the system checks the list of assigned shifts, if that shift has already been assigned to someone else and the staff is informed*/
-                                                Log.d(
-                                                    TAG,
-                                                    "SupervisorStaffDetail staffAssignedShifts: ${staffAssignedShifts.value.size}"
+                                            Common.assignedShiftsCollectionRef
+                                                .whereEqualTo(
+                                                    "assignedSupervisorID",
+                                                    auth.uid!!
                                                 )
-                                                if (staffAssignedShifts.value.size > 6) {
+                                                .get()
+                                                .addOnCompleteListener { assignedShiftsSnapshot ->
+                                                    for (document in assignedShiftsSnapshot.result) {
+                                                        val item = document.toObject(
+                                                            AssignedShift::class.java
+                                                        )
 
-                                                    context.toast("Staff has been assigned for all days this week")
+                                                        if (TimeTraveller.isTimeInCurrentMonth(
+                                                                item.assignedShiftDate.toLong()
+                                                            )
+                                                        ) {
+                                                            //time is in current month
+                                                            allShiftsList.add(item)
+                                                            allStaffAssignedShifts.value =
+                                                                allShiftsList
+                                                        }
+                                                    }
 
 
-                                                } else {
-                                                    //create the form dialog
+                                                    /* check if the assigned shifts of the staff is up to 7 || he has been assigned for every day of the week ☑️
+                                                     if he has been for all, show toast or even disable the 'assign' button ☑️
+                                                     if he is free...
+                                                     show assign staff dialog
 
-                                                    showCustomDialog = !showCustomDialog
 
+                                                     when submitted...
+                                                  system will get the date of the assigned shift
+                                                  the system will then all assigned shifts where the date assigned is equal to the given date
+                                                  the system then gets the ID of that shift
+                                                  the system then checks the assigned shift ID (type) of this proposed shift
+                                                  if the same, it indicates that the shift has been assigned already
+                                                  if the supervisor proceeds to replace the currently assigned person to this new on...
+                                                  a. the existing one will be deleted from the assigned shifts table
+                                                  b. the previously assigned staff will be notified about the change
+
+
+
+                                                  the system checks the list of assigned shifts, if that shift has already been assigned to someone else and the staff is informed*/
                                                     Log.d(
                                                         TAG,
-                                                        "SupervisorStaffDetail: Staff has not been assigned for all days this week"
+                                                        "SupervisorStaffDetail staffAssignedShifts: ${staffAssignedShifts.value.size}"
                                                     )
+                                                    if (staffAssignedShifts.value.size > 6) {
+
+                                                        context.toast("Staff has been assigned for all days this week")
+
+
+                                                    } else {
+                                                        //create the form dialog
+
+                                                        showCustomDialog = !showCustomDialog
+
+                                                        Log.d(
+                                                            TAG,
+                                                            "SupervisorStaffDetail: Staff has not been assigned for all days this week"
+                                                        )
+                                                    }
                                                 }
-                                            }
-                                    }
-                            }
-                    }
-                }, modifier = Modifier
-                    .weight(0.2F)
-                    .padding(4.dp)) {
+                                        }
+                                }
+                        }
+                    }, modifier = Modifier
+                        .weight(0.2F)
+                        .padding(4.dp)
+                ) {
                     Text(
                         text = stringResource(id = R.string.assign_shift_title),
                         fontWeight = FontWeight.Bold,
@@ -470,7 +476,10 @@ fun SupervisorStaffDetail(staff: UserData) {
                         items(
                             staffAssignedShifts.value
                         ) { shift ->
-                            Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                modifier = Modifier.padding(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Text(
                                     text = getDate(
                                         shift.assignedShiftDate.toLong(),
@@ -481,7 +490,12 @@ fun SupervisorStaffDetail(staff: UserData) {
                                         .weight(0.5F),
                                 )
                                 Text(
-                                    text = "${TimeTraveller.getDate(shift.assignedShiftStartTime.toLong(), "HH:mm a")} - ${
+                                    text = "${
+                                        TimeTraveller.getDate(
+                                            shift.assignedShiftStartTime.toLong(),
+                                            "HH:mm a"
+                                        )
+                                    } - ${
                                         TimeTraveller.getDate(
                                             shift.assignedShiftStopTime.toLong(),
                                             "HH:mm a"
@@ -929,7 +943,10 @@ fun AssignStaffShiftFormDialog(
                                             TimeTraveller
                                                 .calculateHourTimeInMillis(hour, minute)
                                                 .toString()
-                                        Log.d(TAG, "dayStartTime: $dayStartTime \ndayStopTime: $dayStopTime\nassignmentStartTime: $assignmentStartTime\nassignmentStopTime: $assignmentStopTime")
+                                        Log.d(
+                                            TAG,
+                                            "dayStartTime: $dayStartTime \ndayStopTime: $dayStopTime\nassignmentStartTime: $assignmentStartTime\nassignmentStopTime: $assignmentStopTime"
+                                        )
                                         if (TimeTraveller.isTimeInRange(
                                                 dayStartTime,
                                                 dayStopTime,
@@ -1091,52 +1108,7 @@ fun AssignStaffShiftFormDialog(
                                             selectedHouseId = item.houseID
                                     }
 
-                                    /*staffAssignedShiftsList.forEach { staffShift ->
-                                        //val assignedHouseName = getHouse(it.assignedHouseID, context)!!.houseName
-                                        //check if the staff has been assigned to a house that day already
 
-                                        staffIsFreeThatDay = if (TimeTraveller.getDate(
-                                                staffShift.assignedShiftDate.toLong(),
-                                                "EEE, dd MMM, yyyy"
-                                            ) !=
-                                            selectedAssignmentDay
-                                        ) {
-                                            true
-                                        } else {
-                                            context.toast("Staff already assigned for this day")
-                                            //false
-                                            return@addOnCompleteListener
-                                        }
-                                    }
-
-                                allMonthShifts.forEach { otherShift ->
-                                    val sameAssignmentTime = assignmentStartTime in (otherShift.assignedShiftStartTime..otherShift.assignedShiftStopTime)
-                                    //check if that house has already been assigned for that day
-                                    val shiftHasBeenAssignedToOtherStaff =
-                                        TimeTraveller.getDate(
-                                            otherShift.assignedShiftDate.toLong(),
-                                            "EEE, dd MMM, yyyy"
-                                        ) ==
-                                                selectedAssignmentDay
-                                                && getHouse(
-                                            otherShift.assignedHouseID,
-                                            context
-                                        )!!.houseName == selectedHouse && !sameAssignmentTime
-                                    shiftIsFreeForStaff =
-                                        if (!shiftHasBeenAssignedToOtherStaff) {
-
-                                            true
-                                        } else {
-                                            context.toast("shift has been assigned to another staff already")
-                                            //false
-                                            return@addOnCompleteListener
-
-                                        }
-                                }
-                                Log.d(
-                                    TAG,
-                                    "AssignStaffShiftFormDialog: staffIsFreeThatDay => $staffIsFreeThatDay\nshiftIsFreeForStaff => $shiftIsFreeForStaff"
-                                )*/
                                     //if (staffIsFreeThatDay && shiftIsFreeForStaff) {
                                     val shiftUID = UUID.randomUUID().toString()
                                     //upload assigned shift
@@ -1194,9 +1166,17 @@ fun AssignStaffShiftFormDialog(
                                                     notificationsCollectionRef.document(
                                                         System.currentTimeMillis().toString()
                                                     ).set(notification).addOnCompleteListener {
-                                                        isTaskRunning.value = false
-                                                        onDismiss()
+                                                        userCollectionRef.document(staff.userID)
+                                                            .update(
+                                                                "userAssignedHouse",
+                                                                selectedHouseID
+                                                            ).addOnCompleteListener {
+                                                            isTaskRunning.value = false
+                                                            onDismiss()
+                                                        }
+
                                                     }
+
 
                                                 }.addOnFailureListener { e ->
                                                     isTaskRunning.value = false
